@@ -21,8 +21,7 @@
     emacs -q ~/.emacs.d/solarion-emacs.org
   #+end_src
      
-  For the first time loading the org file, you might be prompted for permission of local variables, please type =y= to enable it.
-  Then press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
+  Press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
   After =org-babel-tangle= is finished, =C-x C-c= to quit emacs.
      
   *Create alias for running emacs in terminal mode*
@@ -34,13 +33,10 @@
      
   *Launch Emacs and have fun!*
 
+* init.el
 
+  #+begin_src emacs-lisp :tangle ./init.el
+    ;;; init.el -*- lexical-binding: t -*-
 
+  #+end_src
 
-* Local variables
-
-  Local variables should be placed by the end of this file
-
-  ;; Local Variables:
-  ;; eval: (add-hook 'after-save-hook (lambda () (if (y-or-n-p "Tangle?") (org-babel-tangle))) nil t)
-  ;; END:
