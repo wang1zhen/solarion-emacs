@@ -65,7 +65,6 @@
 
     ;; Preferences
     (require 'init-basic)
-    (require 'init-hydra)
 
     (require 'init-ui)
     (when (display-graphic-p)
@@ -76,7 +75,12 @@
     (require 'init-company)
     (require 'init-yasnippet)
 
+    ;; Keybindings
+    (require 'init-hydra)
+    (require 'init-general)
+    (require 'init-map)
 
+    (require 'init-magit)
     (require 'init-ibuffer)
 
 
@@ -84,6 +88,8 @@
     (global-set-key [f12] 'indent-buffer)
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
     (require 'org-tempo)
+    (use-package xclip
+      :hook (after-init . xclip-mode))
   #+end_src
 
 * init-benchmarking.el
@@ -158,7 +164,8 @@
             auto-package-update-hide-results t
             auto-package-update-interval 7
             auto-package-update-prompt-before-update t)
-      (defalias 'upgrade-packages #'auto-package-update-now))
+      (defalias 'upgrade-packages #'auto-package-update-now)
+      :hook (after-init . auto-package-update-maybe))
 
     (use-package try)
 
@@ -184,7 +191,7 @@
       :init
       (setq gcmh-idle-delay 5
             gcmh-high-cons-threshold #x1000000) ; 16MB
-      (gcmh-mode 1))
+      :hook (after-init . gcmh-mode))
 
     ;; Encoding
     ;; UTF-8 as the default coding system
@@ -227,13 +234,15 @@
       :ensure nil
       :bind (("C-x C-r" . recentf-open-files))
       :hook (after-init . recentf-mode)
-      :init (setq recentf-max-saved-items 300
-                  recentf-exclude
-                  '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
-                    "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
-                    "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
-                    "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
-                    (lambda (file) (file-in-directory-p file package-user-dir))))
+      :init
+      (setq recentf-max-saved-items 300
+            recentf-max-menu-items 5
+            recentf-exclude
+            '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+              "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+              "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
+              "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
+              (lambda (file) (file-in-directory-p file package-user-dir))))
       :config
       (push (expand-file-name recentf-save-file) recentf-exclude)
       (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
@@ -241,7 +250,8 @@
     (use-package savehist
       :ensure nil
       :hook (after-init . savehist-mode)
-      :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
+      :init
+      (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
                   history-length 1000
                   savehist-additional-variables '(mark-ring
                                                   global-mark-ring
@@ -309,18 +319,6 @@
     (xterm-mouse-mode)
 
     (provide 'init-basic)
-  #+end_src
-
-* init-hydra.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-hydra.el :mkdirp yes
-    ;;; init-hydra.el --- Hydra configurations -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    ;; TODO
-
-    (provide 'init-hydra)
   #+end_src
 
 * init-func.el
@@ -413,8 +411,7 @@
 
     (use-package display-line-numbers
       :ensure nil
-      :init
-      (global-display-line-numbers-mode)
+      :hook (after-init . global-display-line-numbers-mode)
       :config
       (dolist (mode '(org-mode-hook
                       term-mode-hook
@@ -445,10 +442,10 @@
 
     (use-package which-key
       :diminish which-key-mode
+      :hook (after-init . which-key-mode)
       :init
       (setq which-key-idle-delay 0.2
-            which-key-sort-order 'which-key-key-order-alpha)
-      (which-key-mode))
+            which-key-sort-order 'which-key-key-order-alpha))
 
     (use-package command-log-mode)
 
@@ -462,7 +459,7 @@
       ([remap describe-key] . helpful-key))
 
     (use-package winum
-      :init (winum-mode))
+      :hook (after-init . winum-mode))
 
     (provide 'init-ui)
   #+end_src
@@ -600,7 +597,7 @@
        evil-want-C-u-scroll t
        evil-want-C-i-jump nil
        evil-disable-insert-state-bindings t)
-      (evil-mode 1)
+      :hook (after-init . evil-mode)
       :config
       (evil-global-set-key 'insert (kbd "C-g") 'evil-normal-state)
 
@@ -629,7 +626,8 @@
     (use-package evil-collection
       :after evil
       :init
-      (evil-collection-init))
+      (evil-collection-init)
+      (evil-collection-magit-setup))
 
     (use-package evil-escape
       :after evil
@@ -641,8 +639,7 @@
     (unless (display-graphic-p)
       (use-package evil-terminal-cursor-changer
         :after evil
-        :init
-        (evil-terminal-cursor-changer-activate))) ;; or (etcc-on)
+        :init (etcc-on)))
 
     (use-package evil-nerd-commenter
       :after evil)
@@ -661,7 +658,7 @@
 
     (use-package ivy
       :diminish ivy-mode
-      :init (ivy-mode 1)
+      :hook (after-init . ivy-mode)
       :custom
       (ivy-use-selectable-prompt 1)
       (ivy-initial-inputs-alist nil))
@@ -669,14 +666,14 @@
     (use-package ivy-rich
       :diminish ivy-rich-mode
       :after (ivy counsel)
-      :init (ivy-rich-mode 1))
+      :init (ivy-rich-mode))
 
     (use-package swiper
       :bind (("C-s" . swiper)))
 
     (use-package counsel
       :diminish counsel-mode
-      :init (counsel-mode 1))
+      :hook (after-init . counsel-mode))
 
     (use-package amx
       :ensure t)
@@ -706,6 +703,7 @@
             company-idle-delay 0.2
             company-dabbrev-ignore-case nil
             company-dabbrev-downcase nil
+            company-require-match nil
             company-global-modes t
             company-backends '((company-capf :with company-yasnippet)
                                (company-dabbrev-code company-keywords company-files)
@@ -760,4 +758,66 @@
           ))))
 
     (provide 'init-ibuffer)
+  #+end_src
+
+* init-hydra.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-hydra.el :mkdirp yes
+    ;;; init-hydra.el --- Hydra configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package hydra
+      :config
+      (defhydra hydra-window-resize (:timeout 4)
+        "Resize window"
+        ("j" evil-window-increase-height "Increase height")
+        ("k" evil-window-decrease-height "Decrease height")
+        ("h" evil-window-decrease-width "Decrease width")
+        ("l" evil-window-increase-width "Increase width")
+        ("SPC" balance-windows "Balance windows")
+        ("q" nil "quit" :exit t)))
+
+    (provide 'init-hydra)
+  #+end_src
+
+* init-general.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
+    ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package general)
+
+    (use-package key-chord
+      :diminish
+      :hook (after-init . key-chord-mode))
+
+    (provide 'init-general)
+  #+end_src
+
+* init-map.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-map.el :mkdirp yes
+    ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (provide 'init-map)
+  #+end_src
+
+* init-magit.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-magit.el :mkdirp yes
+    ;;; init-magit.el --- Configuration for magit -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package magit
+      :init
+      (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+      :hook (git-commit-mode . evil-insert-state))
+
+    (provide 'init-magit)
   #+end_src
