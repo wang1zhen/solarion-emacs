@@ -85,7 +85,6 @@
 
 
     ;; 还没决定好放到哪里的设置
-    (global-set-key [f12] 'indent-buffer)
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
     (require 'org-tempo)
     (use-package xclip
@@ -252,13 +251,13 @@
       :hook (after-init . savehist-mode)
       :init
       (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
-                  history-length 1000
-                  savehist-additional-variables '(mark-ring
-                                                  global-mark-ring
-                                                  search-ring
-                                                  regexp-search-ring
-                                                  extended-command-history)
-                  savehist-autosave-interval 300))
+            history-length 1000
+            savehist-additional-variables '(mark-ring
+                                            global-mark-ring
+                                            search-ring
+                                            regexp-search-ring
+                                            extended-command-history)
+            savehist-autosave-interval 300))
 
     (use-package simple
       :ensure nil
@@ -599,29 +598,25 @@
        evil-disable-insert-state-bindings t)
       :hook (after-init . evil-mode)
       :config
-      (evil-global-set-key 'insert (kbd "C-g") 'evil-normal-state)
+      (general-def 'insert "C-g" #'evil-normal-state)
 
       ;; Visual line motions
-      (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-      (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+      (general-def 'motion
+        "j" #'evil-next-visual-line
+        "k" #'evil-previous-visual-line)
 
-      ;; Emacs flavour moving in normal and visual mode
-
-      (evil-global-set-key 'motion (kbd "C-a") 'mwim-beginning-of-code-or-line)
-      (evil-global-set-key 'motion (kbd "C-e") 'mwim-end-of-code-or-line)
-      (evil-global-set-key 'insert (kbd "C-a") 'mwim-beginning-of-code-or-line)
-      (evil-global-set-key 'insert (kbd "C-e") 'mwim-end-of-code-or-line)
-
-      (evil-global-set-key 'motion (kbd "C-f") 'forward-char)
-      (evil-global-set-key 'motion (kbd "C-b") 'backward-char)
-
-      (evil-global-set-key 'normal (kbd "C-n") 'next-line)
-      (evil-global-set-key 'normal (kbd "C-p") 'previous-line)
-
-      (evil-global-set-key 'visual (kbd "C-n") 'next-line)
-      (evil-global-set-key 'visual (kbd "C-p") 'previous-line)
-
-      (evil-global-set-key 'insert (kbd "C-u") 'undo))
+      ;; Emacs flavour moving
+      (general-def '(motion normal visual insert)
+        "C-a" #'mwim-beginning-of-code-or-line
+        "C-e" #'mwim-end-of-code-or-line)
+      (general-def '(motion normal visual)
+        "C-f" #'forward-char
+        "C-b" #'backward-char)
+      (general-def '(motion normal visual)
+        "C-n" #'next-line
+        "C-p" #'previous-line)
+      (general-def 'insert
+        "C-u" #'undo-fu-only-undo))
 
     (use-package evil-collection
       :after evil
@@ -640,6 +635,10 @@
       (use-package evil-terminal-cursor-changer
         :after evil
         :init (etcc-on)))
+
+    (use-package evil-surround
+      :after evil
+      :init (global-evil-surround-mode))
 
     (use-package evil-nerd-commenter
       :after evil)
@@ -783,6 +782,7 @@
 
 * init-general.el
 
+  Only prepare the packages here, specific keybindings goes to =init-map.el=.
   #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
     ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
 
@@ -799,10 +799,122 @@
 
 * init-map.el
 
+  Define the majority of keybindings here.
   #+begin_src emacs-lisp :tangle ./lisp/init-map.el :mkdirp yes
-    ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
+        ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
 
-    ;;; Code:
+        ;;; Code:
+
+    (general-def "<escape>" #'keyboard-escape-quit)
+    (general-def [f12] #'indent-buffer)
+    (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
+
+    (general-create-definer spc-leader-def
+      :states '(normal insert visual emacs)
+      :prefix "SPC"
+      :non-normal-prefix (general-chord ",."))
+
+    (general-create-definer local-leader-def
+      :states '(normal insert visual emacs)
+      :prefix "SPC m"
+      :non-normal-prefix (general-chord ",,"))
+
+    ;; Global SPC leader
+    (spc-leader-def 'override
+      ;; maps
+      "h" #'(help-command :which-key "Help")
+
+      ;; keys
+      "SPC" '(counsel-M-x :which-key "Execute")
+      "a" '(avy-goto-char-2 :which-key "Avy")
+      "g" '(magit-status :which-key "Magit")
+      "u" 'universal-argument
+
+      ;; window
+      "w" '(evil-window-map :which-key "Window")
+      "ws" 'evil-window-split-and-focus
+      "wv" 'evil-window-vsplit-and-focus
+      "wr" '(hydra-window-resize/body :which-key "window resize")
+      "1" '(winum-select-window-1 :which-key "Switch to window 1")
+      "2" '(winum-select-window-2 :which-key "Switch to window 2")
+      "3" '(winum-select-window-3 :which-key "Switch to window 3")
+      "4" '(winum-select-window-4 :which-key "Switch to window 4")
+      "5" '(winum-select-window-5 :which-key "Switch to window 5")
+
+      ;; buffer
+      "b" '(:ignore t :which-key "Buffer")
+      "bp" '(previous-buffer :which-key "Previous Buffer")
+      "bn" '(next-buffer :which-key "Next Buffer")
+      "bb" '(switch-to-buffer :which-key "Switch Buffer")
+      "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
+      "bd" '(kill-current-buffer :which-key "Kill Buffer")
+      "bi" 'ibuffer
+      "bm" '(bookmark-set :which-key "Set Bookmark")
+      "bM" '(bookmark-delete :which-key "Delete Bookmark")
+      ;; investigate bookmarks
+      "bN" '(evil-buffer-new :which-key "New Empty Buffer")
+      "br" '(revert-buffer :which-key "Revert Buffer")
+      "bs" '(basic-save-buffer :which-key "Save Buffer")
+      "bS" '(evil-write-all :which-key "Save All Buffers")
+
+      ;; file
+      "f" '(:ignore t :which-key "File")
+      "fd" '(dired-jump :which-key "Dired Jump")
+      "ff" '(find-file :which-key "Find File")
+      "fs" '(save-buffer :which-key "Save File")
+      "fS" '(write-file :which-key "Save File As")
+      "fr" '(counsel-recentf :which-key "Recent Files")
+
+      ;; quit
+      "q" '(:ignore t :which-key "Quit")
+      "qf" '(delete-frame :which-key "Delete Frame")
+      "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
+
+      ;; custom
+      "o" '(:ignore t :which-key "Custom Entry")
+      "ot" '(counsel-load-theme :which-key "Choose Theme")
+      "oy" '(youdao-dictionary-search-at-point :which-key "Youdao Dict")
+      )
+
+
+    ;; Local leader
+    ;; (local-leader-def 'override
+    ;; "a" #'(lambda () (messsage "aaa")))
+
+    (general-def help-map
+      ;; new keybinds
+      "'"    #'describe-char
+
+      ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
+      ;; <leader> h prefix. It's already on ? and F1 anyway.
+      "C-h"  nil
+
+      ;; replacement keybinds
+      ;; replaces `info-emacs-manual' b/c it's on C-m now
+      "r"    nil
+
+      "b"   #'describe-bindings
+      "B"   #'general-describe-keybindings
+
+      ;; replaces `apropos-command'
+      "a"    #'apropos
+      "A"    #'apropos-documentation
+      ;; replaces `describe-copying' b/c not useful
+      "C-c"  #'describe-coding-system
+      ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
+      "F"    #'describe-face
+      ;; replaces `view-hello-file' b/c annoying
+      "h"    nil
+      ;; replaces `view-emacs-news' b/c it's on C-n too
+      "n"    #'doom/help-news
+      ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
+      "t"    #'counsel-load-theme
+      ;; replaces `finder-by-keyword' b/c not useful
+      "p"    nil)
+
+    (general-def evil-window-map
+      "c" nil
+      "d" #'evil-window-delete)
 
     (provide 'init-map)
   #+end_src
