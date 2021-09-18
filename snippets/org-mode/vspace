@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: vspace
+# key: vspace
+# --
+#+LATEX: \vspace{5cm}
+$0

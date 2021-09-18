@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: newpage
+# key: newpage
+# --
+#+LATEX: \phantom{苟利国家生死以，岂因祸福避趋之。}
+#+LATEX: \thispagestyle{empty}
+#+LATEX: \clearpage
+#+LATEX: \setcounter{page}{1}

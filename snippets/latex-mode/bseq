@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: bseq
+# key: bseq
+# --
+\begin{equation*}
+$1
+\end{equation*}
+$0

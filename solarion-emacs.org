@@ -686,20 +686,49 @@
 
 * init-company.el
 
+  Company is a text completion framework for Emacs. The name stands for “complete anything”. It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
   #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
-    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
+        ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
 
-    ;;; Code:
+        ;;; Code:
+
+    (use-package company
+      :diminish
+      :hook (after-init . global-company-mode)
+      :bind
+      (:map company-active-map
+            ("TAB" . company-complete-common-or-cycle)
+            ("<tab>" . company-complete-common-or-cycle)
+            ("RET" . company-complete-selection)
+            ("<return>" . company-complete-selection))
+      :init
+      (setq company-minimum-prefix-length 3
+            company-idle-delay 0.2
+            company-dabbrev-ignore-case nil
+            company-dabbrev-downcase nil
+            company-global-modes t
+            company-backends '((company-capf :with company-yasnippet)
+                               (company-dabbrev-code company-keywords company-files)
+                               company-dabbrev)
+            ))
 
     (provide 'init-company)
   #+end_src
 
 * init-yasnippet.el
 
+  YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
   #+begin_src emacs-lisp :tangle ./lisp/init-yasnippet.el :mkdirp yes
     ;;; init-yasnippet.el --- Configure yasnippet -*- lexical-binding: t -*-
 
     ;;; Code:
+
+    (use-package yasnippet
+      :diminish yas-minor-mode
+      :hook (after-init . yas-global-mode))
+
+    (use-package yasnippet-snippets
+      :after yasnippet)
 
     (provide 'init-yasnippet)
   #+end_src
