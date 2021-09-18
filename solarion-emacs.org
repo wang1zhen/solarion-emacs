@@ -68,12 +68,22 @@
     (require 'init-hydra)
 
     (require 'init-ui)
+    (when (display-graphic-p)
+      (require 'init-fonts))       ;; 字体检查 言 ♪
     (require 'init-edit)
     (require 'init-evil)
+    (require 'init-ivy)
+    (require 'init-company)
+    (require 'init-yasnippet)
 
 
+    (require 'init-ibuffer)
 
 
+    ;; 还没决定好放到哪里的设置
+    (global-set-key [f12] 'indent-buffer)
+    (add-hook 'after-save-hook #'org-babel-auto-tangle)
+    (require 'org-tempo)
   #+end_src
 
 * init-benchmarking.el
@@ -149,6 +159,8 @@
             auto-package-update-interval 7
             auto-package-update-prompt-before-update t)
       (defalias 'upgrade-packages #'auto-package-update-now))
+
+    (use-package try)
 
     (provide 'init-package)
   #+end_src
@@ -256,8 +268,7 @@
       (defun enable-trailing-whitespace ()
         "Show trailing spaces and delete on saving."
         (setq show-trailing-whitespace t)
-        (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
-      )
+        (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
 
     (use-package time
       :ensure nil
@@ -279,6 +290,7 @@
           inhibit-compacting-font-caches t  ; Don’t compact font caches during GC.
           delete-by-moving-to-trash t       ; Deleting files go to OS's trash folder
           make-backup-files nil             ; Forbide to make backup files
+          create-lockfiles nil              ; Forbide to make lockfiles
           auto-save-default nil             ; Disable auto save
 
           uniquify-buffer-name-style 'post-forward-angle-brackets ; Show path if names are same
@@ -286,6 +298,15 @@
           adaptive-fill-first-line-regexp "^* *$"
           sentence-end "\\([。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
           sentence-end-double-space nil)
+
+    ;; Use the system clipboard
+    (setq x-select-enable-clipboard t)
+
+    ;; Always focus the help window
+    (setq help-window-select t)
+
+    ;; Enable mouse in terminal mode
+    (xterm-mouse-mode)
 
     (provide 'init-basic)
   #+end_src
@@ -314,7 +335,30 @@
       (save-excursion
         (indent-region (point-min) (point-max) nil)))
 
-    (global-set-key [f12] 'indent-buffer)
+    ;; Font
+    (defun font-installed-p (font-name)
+      "Check if font with FONT-NAME is available."
+      (find-font (font-spec :name font-name)))
+
+    ;; Auto tangle babel file
+    (defun org-babel-auto-tangle ()
+      (when (and (eq major-mode 'org-mode)
+                 (string-equal (buffer-name) "solarion-emacs.org")
+                 (y-or-n-p "Tangle?"))
+        (org-babel-tangle)))
+
+    ;; Define split-window-below-and-focus and split-window-right-and-focus
+    (defun evil-window-split-and-focus ()
+      "Split the window vertically and focus the new window."
+      (interactive)
+      (evil-window-split)
+      (windmove-down))
+
+    (defun evil-window-vsplit-and-focus ()
+      "Split the window horizontally and focus the new window."
+      (interactive)
+      (split-window-right)
+      (windmove-right))
 
     (provide 'init-func)
   #+end_src
@@ -357,14 +401,14 @@
 
     ;; Mode-line
     (use-package doom-modeline
-      :hook (after-init . doom-modeline-mode)
-      :diminish)
+      :diminish doom-modeline-mode
+      :hook (after-init . doom-modeline-mode))
 
     ;; Icons
     ;; NOTE: Must run `M-x all-the-icons-install-fonts', and install fonts manually on Windows
     (use-package all-the-icons
       :if (display-graphic-p)
-      :init (unless (or sys/win32p (font-installed-p "all-the-icons"))
+      :init (unless (font-installed-p "all-the-icons")
               (all-the-icons-install-fonts t)))
 
     (use-package display-line-numbers
@@ -394,7 +438,65 @@
           window-divider-default-right-width 1)
     (add-hook 'window-setup-hook #'window-divider-mode)
 
+    (use-package rainbow-delimiters
+      :hook
+      (prog-mode . rainbow-delimiters-mode)
+      (LaTeX-mode . rainbow-delimiters-mode))
+
+    (use-package which-key
+      :diminish which-key-mode
+      :init
+      (setq which-key-idle-delay 0.2
+            which-key-sort-order 'which-key-key-order-alpha)
+      (which-key-mode))
+
+    (use-package command-log-mode)
+
+    (use-package helpful
+      :custom
+      (counsel-describe-function-function #'helpful-callable)
+      (counsel-describe-variable-function #'helpful-variable)
+      :bind
+      ([remap describe-function] . counsel-describe-function)
+      ([remap describe-variable] . counsel-describe-variable)
+      ([remap describe-key] . helpful-key))
+
+    (use-package winum
+      :init (winum-mode))
+
     (provide 'init-ui)
+  #+end_src
+
+* init-fonts.el
+
+  The font settings are mainly for GUI Emacs, this would not affect TUI Emacs.
+  #+begin_src emacs-lisp :tangle ./lisp/init-fonts.el :mkdirp yes
+    ;;; init-fonts.el --- Fonts configurations (for GUI) -*- lexical-bindings: t -*-
+
+    ;;; Code:
+
+    (require 'cl-lib)
+
+    ;; Set default font
+    (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
+                           "FiraCode Nerd Font" "Fira Code"
+                           "Hack" "Source Code Pro" "Consolas")
+             when (font-installed-p font)
+             return (set-face-attribute 'default nil
+                                        :font font
+                                        :height (* font-size-factor 60)))
+
+    ;; Specify font for all unicode characters
+    (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+             when (font-installed-p font)
+             return(set-fontset-font t 'unicode font nil 'prepend))
+
+    ;; Specify font for Chinese characters
+    (cl-loop for font in '("Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
+             when (font-installed-p font)
+             return (set-fontset-font t '(#x4e00 . #x9fff) font))
+
+    (provide 'init-fonts)
   #+end_src
 
 * init-edit.el
@@ -408,6 +510,8 @@
     (use-package autorevert
       :ensure nil
       :diminish
+      :init
+      (setq global-auto-revert-non-file-buffers t)
       :hook (after-init . global-auto-revert-mode))
 
     ;; Jump to things in Emacs tree-style
@@ -458,9 +562,7 @@
                   '(help-mode minibuffer-mode minibuffer-inactive-mode calc-mode)))
 
     ;; Move to the beginning/end of line or code
-    (use-package mwim
-      :bind (([remap move-beginning-of-line] . mwim-beginning-of-code-or-line)
-             ([remap move-end-of-line] . mwim-end-of-code-or-line)))
+    (use-package mwim)
 
     ;; Undo-fu
     (use-package undo-fu
@@ -484,8 +586,11 @@
 
 * init-evil.el
 
+  Evil is a vim emulator for Emacs. I use Emacs keybindings to move cursor within the insert state, so I disabled insert state bindings. Evil-collection has a lot of good keybindings to enhance the experience with evil.
   #+begin_src emacs-lisp :tangle ./lisp/init-evil.el :mkdirp yes
-    ;;; init-evil.el --- Initialize evil settings -*- lexical-binding: t; -*-
+    ;;; init-evil.el --- Initialize evil settings -*- lexical-binding: t -*-
+
+    ;;; Code:
 
     (use-package evil
       :init
@@ -504,26 +609,126 @@
       (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
       ;; Emacs flavour moving in normal and visual mode
-      (evil-global-set-key 'normal (kbd "C-f") 'forward-char)
-      (evil-global-set-key 'normal (kbd "C-b") 'backward-char)
+
+      (evil-global-set-key 'motion (kbd "C-a") 'mwim-beginning-of-code-or-line)
+      (evil-global-set-key 'motion (kbd "C-e") 'mwim-end-of-code-or-line)
+      (evil-global-set-key 'insert (kbd "C-a") 'mwim-beginning-of-code-or-line)
+      (evil-global-set-key 'insert (kbd "C-e") 'mwim-end-of-code-or-line)
+
+      (evil-global-set-key 'motion (kbd "C-f") 'forward-char)
+      (evil-global-set-key 'motion (kbd "C-b") 'backward-char)
+
       (evil-global-set-key 'normal (kbd "C-n") 'next-line)
       (evil-global-set-key 'normal (kbd "C-p") 'previous-line)
-      (evil-global-set-key 'normal (kbd "C-a") 'move-beginning-of-line)
-      (evil-global-set-key 'normal (kbd "C-e") 'move-end-of-line)
 
-      (evil-global-set-key 'visual (kbd "C-f") 'forward-char)
-      (evil-global-set-key 'visual (kbd "C-b") 'backward-char)
       (evil-global-set-key 'visual (kbd "C-n") 'next-line)
       (evil-global-set-key 'visual (kbd "C-p") 'previous-line)
-      (evil-global-set-key 'visual (kbd "C-a") 'move-beginning-of-line)
-      (evil-global-set-key 'visual (kbd "C-e") 'move-end-of-line)
 
       (evil-global-set-key 'insert (kbd "C-u") 'undo))
 
     (use-package evil-collection
       :after evil
-      :config
+      :init
       (evil-collection-init))
 
+    (use-package evil-escape
+      :after evil
+      :init
+      (setq-default evil-escape-key-sequence "jk")
+      (setq-default evil-escape-delay 0.1)
+      (evil-escape-mode))
+
+    (unless (display-graphic-p)
+      (use-package evil-terminal-cursor-changer
+        :after evil
+        :init
+        (evil-terminal-cursor-changer-activate))) ;; or (etcc-on)
+
+    (use-package evil-nerd-commenter
+      :after evil)
+    ;; TODO
+
     (provide 'init-evil)
+  #+end_src
+
+* init-ivy.el
+
+  The Ivy bundle. Amx provides enhancements to ivy and counsel.
+  #+begin_src emacs-lisp :tangle ./lisp/init-ivy.el :mkdirp yes
+    ;;; init-ivy.el --- Initialize ivy configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package ivy
+      :diminish ivy-mode
+      :init (ivy-mode 1)
+      :custom
+      (ivy-use-selectable-prompt 1)
+      (ivy-initial-inputs-alist nil))
+
+    (use-package ivy-rich
+      :diminish ivy-rich-mode
+      :after (ivy counsel)
+      :init (ivy-rich-mode 1))
+
+    (use-package swiper
+      :bind (("C-s" . swiper)))
+
+    (use-package counsel
+      :diminish counsel-mode
+      :init (counsel-mode 1))
+
+    (use-package amx
+      :ensure t)
+
+    (provide 'init-ivy)
+  #+end_src
+
+* init-company.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
+    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (provide 'init-company)
+  #+end_src
+
+* init-yasnippet.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-yasnippet.el :mkdirp yes
+    ;;; init-yasnippet.el --- Configure yasnippet -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (provide 'init-yasnippet)
+  #+end_src
+
+* init-ibuffer.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-ibuffer.el :mkdirp yes
+    ;;; init-ibuffer.el --- Initialize ibuffer configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package ibuffer
+      :ensure nil
+      :bind ("C-x C-b" . ibuffer)
+      :hook (ibuffer-mode . (lambda () (ibuffer-switch-to-saved-filter-groups "custom")))
+      :custom
+      (ibuffer-show-empty-filter-groups nil)
+      (ibuffer-saved-filter-groups
+       '(("custom"
+          ("Dired" (mode . dired-mode))
+          ("Org" (mode . org-mode))
+          ("Emacs" (or
+                    (name . "^\\*scratch\\*$")
+                    (name . "^\\*Backtrace\\*$")
+                    (name . "^\\*Messages\\*$")))
+          ("Help" (or
+                   (name . "Help")
+                   (name . "^helpful")))
+          ))))
+
+    (provide 'init-ibuffer)
   #+end_src
