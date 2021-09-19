@@ -641,6 +641,11 @@
         "C-p" #'previous-line)
       (general-def 'insert
         "C-u" #'undo-fu-only-undo)
+      (general-def 'motion
+        "SPC" nil
+        "RET" nil
+        "TAB" nil)
+
       (general-def evil-window-map
         "c" nil
         "d" #'evil-window-delete))
@@ -710,19 +715,13 @@
 
   Company is a text completion framework for Emacs. The name stands for “complete anything”. It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
   #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
-        ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
+    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
 
-        ;;; Code:
+    ;;; Code:
 
     (use-package company
       :diminish
       :hook (after-init . global-company-mode)
-      :bind
-      (:map company-active-map
-            ("TAB" . company-complete-common-or-cycle)
-            ("<tab>" . company-complete-common-or-cycle)
-            ("RET" . company-complete-selection)
-            ("<return>" . company-complete-selection))
       :init
       (setq company-minimum-prefix-length 3
             company-idle-delay 0.2
@@ -733,7 +732,14 @@
             company-backends '((company-capf :with company-yasnippet)
                                (company-dabbrev-code company-keywords company-files)
                                company-dabbrev)
-            ))
+            )
+      :config
+      (general-def company-active-map
+        "TAB" #'company-complete-common-or-cycle
+        "<tab>" #'company-complete-common-or-cycle
+        "RET" #'company-complete-selection
+        "<return>" #'company-complete-selection)
+      )
 
     (provide 'init-company)
   #+end_src
@@ -987,6 +993,7 @@
          (python . t)))
       :config
       (setq
+       org-return-follows-link t
        org-directory "~/org"
        org-ellipsis "\t▾"
        org-tags-column -80
