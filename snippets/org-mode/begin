@@ -3,6 +3,5 @@
 # key: begin
 # --
 \begin{$1}
-$2
-\end{$1}
 $0
+\end{$1}

@@ -54,6 +54,7 @@
 - [[#init-mapel][init-map.el]]
 - [[#init-magitel][init-magit.el]]
 - [[#init-orgel][init-org.el]]
+- [[#init-latexel][init-latex.el]]
 
 * init.el
 
@@ -106,11 +107,10 @@
     (require 'init-ibuffer)
 
     (require 'init-org)
+    (require 'init-latex)
 
 
     ;; 还没决定好放到哪里的设置
-    (add-hook 'after-save-hook #'org-babel-auto-tangle)
-    (require 'org-tempo)
     (use-package xclip
       :hook (after-init . xclip-mode))
   #+end_src
@@ -341,6 +341,9 @@
     ;; Enable mouse in terminal mode
     (xterm-mouse-mode)
 
+    ;; Auto tangle this file after save (with prompt)
+    (add-hook 'after-save-hook #'org-babel-auto-tangle)
+
     (provide 'init-basic)
   #+end_src
 
@@ -380,6 +383,10 @@
       (interactive)
       (split-window-right)
       (windmove-right))
+
+    (defun solarion/org-mode-setup ()
+      (auto-fill-mode 0)
+      (visual-line-mode 1))
 
     (provide 'init-func)
   #+end_src
@@ -622,6 +629,7 @@
        evil-disable-insert-state-bindings t)
       :hook (after-init . evil-mode)
       :config
+      (evil-set-initial-state 'snippet-mode 'insert)
       (general-def 'insert "C-g" #'evil-normal-state)
 
       ;; Visual line motions
@@ -641,10 +649,6 @@
         "C-p" #'previous-line)
       (general-def 'insert
         "C-u" #'undo-fu-only-undo)
-      (general-def 'motion
-        "SPC" nil
-        "RET" nil
-        "TAB" nil)
 
       (general-def evil-window-map
         "c" nil
@@ -754,7 +758,8 @@
 
     (use-package yasnippet
       :diminish yas-minor-mode
-      :hook (after-init . yas-global-mode))
+      :hook
+      (after-init . yas-global-mode))
 
     (use-package yasnippet-snippets
       :after yasnippet)
@@ -868,7 +873,7 @@
       "w" '(evil-window-map :which-key "Window")
       "ws" 'evil-window-split-and-focus
       "wv" 'evil-window-vsplit-and-focus
-      "wr" '(hydra-window-resize/body :which-key "window resize")
+      "wr" '(hydra-window-resize/body :which-key "Window Resize")
       "1" '(winum-select-window-1 :which-key "Switch to window 1")
       "2" '(winum-select-window-2 :which-key "Switch to window 2")
       "3" '(winum-select-window-3 :which-key "Switch to window 3")
@@ -969,10 +974,6 @@
 
     ;;; Code:
 
-    (defun solarion/org-mode-setup ()
-      (auto-fill-mode 0)
-      (visual-line-mode 1))
-
     (use-package org
       :ensure nil
       :bind
@@ -981,7 +982,6 @@
       (add-to-list 'org-modules 'org-tempo)
       (add-to-list 'org-src-lang-modes '("conf-unix" . conf-unix))
       (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-      (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
       (add-to-list 'org-structure-template-alist '("py" . "src python"))
       (add-to-list 'org-structure-template-alist '("la" . "src latex"))
       (add-to-list 'org-structure-template-alist '("conf" . "src conf-unix"))
@@ -993,7 +993,6 @@
          (python . t)))
       :config
       (setq
-       org-return-follows-link t
        org-directory "~/org"
        org-ellipsis "\t▾"
        org-tags-column -80
@@ -1014,12 +1013,10 @@
        org-latex-title-command "\\maketitle\n\\thispagestyle{empty}"))
 
     (use-package ox-gfm
-      :after org
-      :init (add-to-list 'org-export-backends 'md))
+      :config (add-to-list 'org-export-backends 'md))
 
     (use-package org-superstar
       :diminish org-superstar-mode
-      :after org
       :hook (org-mode . (lambda () (org-superstar-mode)))
       :init
       (setq
@@ -1027,28 +1024,16 @@
        org-superstar-cycle-headline-bullets nil
        org-superstar-prettify-item-bullets nil))
 
-    ;; TODO
     (use-package org-download
-      :custom
-      (org-download-method 'directory)
-      (org-download-image-dir "images")
-      (org-download-heading-lvl nil)
-      (org-download-timestamp "%Y%m%d-%H%M%S_")
-      :config
-      ;; to change image width seperately (also hide the annotate #+DOWNLOADED)
-      (setq org-download-annotate-function (lambda (_link) "#+ATTR_LATEX: :width \\linewidth\n"))
+      :init
+      (setq
+       org-download-method 'directory
+       org-download-image-dir "images"
+       org-download-heading-lvl nil
+       org-download-timestamp "%Y%m%d-%H%M%S_")
 
-      ;; ask for the filename before pasting an image
-      ;; filename should end with ".png/.jpg/.svg"
-      (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
-        (interactive "P")
-        (let ((file
-               (if (not use-default-filename)
-                   (read-string (format "Filename [%s]: "
-                                        org-download-screenshot-basename)
-                                nil nil org-download-screenshot-basename)
-                 nil)))
-          (org-download-clipboard file))))
+      ;; to change image width seperately (also hide the annotate #+DOWNLOADED)
+      (setq org-download-annotate-function (lambda (_link) "#+ATTR_LATEX: :width \\linewidth\n")))
 
     (use-package org-roam
       :diminish
@@ -1073,4 +1058,41 @@
       :hook (org-mode . org-fragtog-mode))
 
     (provide 'init-org)
+  #+end_src
+
+* init-latex.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-latex.el :mkdirp yes
+    ;;; init-latex.el --- Initialize LaTeX settings -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package auctex
+      :config
+      (setq
+       LaTeX-electric-left-right-brace t
+       TeX-engine 'xetex
+       TeX-parse-self t ;; parse onload
+       TeX-auto-save t ;; parse on save
+       ;; use hidden dirs for auctex files
+       TeX-auto-local ".auctex-auto"
+       TeX-style-local ".auctex-style"
+
+       TeX-source-correlate-method 'synctex
+       ;; don't start the emacs server when correlating sources
+       TeX-source-correlate-start-server nil
+       ;; just save, dont ask me before each compilation
+       TeX-save-query nil)
+
+      (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
+      (TeX-source-correlate-mode))
+
+    (use-package auctex-latexmk
+      :init
+      (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+      (auctex-latexmk-setup)
+      :hook
+      (LaTeX-mode . (lambda () (setq TeX-command-default "LatexMk"))))
+
+    (provide 'init-latex)
   #+end_src
