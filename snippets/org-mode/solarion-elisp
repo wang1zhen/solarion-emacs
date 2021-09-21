@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: solarion-elisp
+# key: <el
+# --
+#+begin_src emacs-lisp :tangle ./lisp/$1.el :mkdirp yes
+;;; $2.el --- $3 -*- lexical-binding: t -*-
+
+;;; Code:
+
+(provide ')
+#+end_src

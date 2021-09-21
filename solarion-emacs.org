@@ -7,6 +7,29 @@
 
   Solarion Emacs aims to enhance the Emacs experience, mainly in Terminal mode. The whole README file is a symlink to =solarion-emacs.org=, and with =org babel=, this file could be tangled into different emacs-lisp files under =$HOME/.emacs.d/=.
 
+* Table of Contents                                                        :TOC:
+- [[#solarion-emacs][Solarion Emacs]]
+- [[#installation][Installation]]
+- [[#initel][init.el]]
+- [[#init-benchmarkingel][init-benchmarking.el]]
+- [[#init-packageel][init-package.el]]
+- [[#init-basicel][init-basic.el]]
+- [[#init-funcel][init-func.el]]
+- [[#init-uiel][init-ui.el]]
+- [[#init-fontsel][init-fonts.el]]
+- [[#init-editel][init-edit.el]]
+- [[#init-evilel][init-evil.el]]
+- [[#init-ivyel][init-ivy.el]]
+- [[#init-companyel][init-company.el]]
+- [[#init-yasnippetel][init-yasnippet.el]]
+- [[#init-ibufferel][init-ibuffer.el]]
+- [[#init-hydrael][init-hydra.el]]
+- [[#init-generalel][init-general.el]]
+- [[#init-mapel][init-map.el]]
+- [[#init-magitel][init-magit.el]]
+- [[#init-orgel][init-org.el]]
+- [[#init-latexel][init-latex.el]]
+
 * Installation
 
   *Clone the repository*
@@ -32,29 +55,6 @@
   #+end_src
 
   *Launch Emacs and have fun!*
-
-* Table of Contents                                                        :TOC:
-- [[#solarion-emacs][Solarion Emacs]]
-- [[#installation][Installation]]
-- [[#initel][init.el]]
-- [[#init-benchmarkingel][init-benchmarking.el]]
-- [[#init-packageel][init-package.el]]
-- [[#init-basicel][init-basic.el]]
-- [[#init-funcel][init-func.el]]
-- [[#init-uiel][init-ui.el]]
-- [[#init-fontsel][init-fonts.el]]
-- [[#init-editel][init-edit.el]]
-- [[#init-evilel][init-evil.el]]
-- [[#init-ivyel][init-ivy.el]]
-- [[#init-companyel][init-company.el]]
-- [[#init-yasnippetel][init-yasnippet.el]]
-- [[#init-ibufferel][init-ibuffer.el]]
-- [[#init-hydrael][init-hydra.el]]
-- [[#init-generalel][init-general.el]]
-- [[#init-mapel][init-map.el]]
-- [[#init-magitel][init-magit.el]]
-- [[#init-orgel][init-org.el]]
-- [[#init-latexel][init-latex.el]]
 
 * init.el
 
@@ -388,6 +388,19 @@
       (auto-fill-mode 0)
       (visual-line-mode 1))
 
+    ;; ask for the filename before pasting an image
+    ;; filename should end with ".png/.jpg/.svg"
+    (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
+      (interactive "P")
+      (require 'org-download)
+      (let ((file
+             (if (not use-default-filename)
+                 (read-string (format "Filename [%s]: "
+                                      org-download-screenshot-basename)
+                              nil nil org-download-screenshot-basename)
+               nil)))
+        (org-download-clipboard file)))
+
     (provide 'init-func)
   #+end_src
 
@@ -626,7 +639,9 @@
        evil-want-keybinding nil
        evil-want-C-u-scroll t
        evil-want-C-i-jump nil
-       evil-disable-insert-state-bindings t)
+       evil-disable-insert-state-bindings t
+       evil-undo-function #'undo-fu-only-undo
+       evil-redo-function #'undo-fu-only-redo)
       :hook (after-init . evil-mode)
       :config
       (evil-set-initial-state 'snippet-mode 'insert)
@@ -841,114 +856,146 @@
     ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
 
     ;;; Code:
+    (with-eval-after-load 'general
+      (general-def "<escape>" #'keyboard-escape-quit)
+      (general-def [f12] #'indent-buffer)
+      (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
+      (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
 
-    (general-def "<escape>" #'keyboard-escape-quit)
-    (general-def [f12] #'indent-buffer)
-    (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
+      (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
 
-    (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
+      (general-create-definer spc-leader-def
+        :states '(normal insert visual emacs)
+        :keymaps 'override
+        :prefix "SPC"
+        :non-normal-prefix (general-chord ",."))
 
-    (general-create-definer spc-leader-def
-      :states '(normal insert visual emacs)
-      :prefix "SPC"
-      :non-normal-prefix (general-chord ",."))
+      (general-create-definer local-leader-def
+        :states '(normal insert visual emacs)
+        :keymaps 'override
+        :prefix "SPC m"
+        :non-normal-prefix (general-chord ",,"))
 
-    (general-create-definer local-leader-def
-      :states '(normal insert visual emacs)
-      :prefix "SPC m"
-      :non-normal-prefix (general-chord ",,"))
+      ;; Global SPC leader
+      ;; TODO
+      (spc-leader-def
 
-    ;; Global SPC leader
-    (spc-leader-def 'override
-      ;; maps
-      "h" #'(help-command :which-key "Help")
+        "m" '(:ignore t :which-key "<local>")
+        ;; maps
+        "h" #'(help-command :which-key "Help")
 
-      ;; keys
-      "SPC" '(counsel-M-x :which-key "Execute")
-      "a" '(avy-goto-char-2 :which-key "Avy")
-      "g" '(magit-status :which-key "Magit")
-      "u" 'universal-argument
+        ;; keys
+        "SPC" '(counsel-M-x :which-key "Execute")
+        "a" '(avy-goto-char-2 :which-key "Avy")
+        "g" '(magit-status :which-key "Magit")
+        "u" 'universal-argument
 
-      ;; window
-      "w" '(evil-window-map :which-key "Window")
-      "ws" 'evil-window-split-and-focus
-      "wv" 'evil-window-vsplit-and-focus
-      "wr" '(hydra-window-resize/body :which-key "Window Resize")
-      "1" '(winum-select-window-1 :which-key "Switch to window 1")
-      "2" '(winum-select-window-2 :which-key "Switch to window 2")
-      "3" '(winum-select-window-3 :which-key "Switch to window 3")
-      "4" '(winum-select-window-4 :which-key "Switch to window 4")
-      "5" '(winum-select-window-5 :which-key "Switch to window 5")
+        ;; window
+        "w" '(evil-window-map :which-key "Window")
+        "ws" 'evil-window-split-and-focus
+        "wv" 'evil-window-vsplit-and-focus
+        "wr" '(hydra-window-resize/body :which-key "Window Resize")
+        "1" '(winum-select-window-1 :which-key "Switch to window 1")
+        "2" '(winum-select-window-2 :which-key "Switch to window 2")
+        "3" '(winum-select-window-3 :which-key "Switch to window 3")
+        "4" '(winum-select-window-4 :which-key "Switch to window 4")
+        "5" '(winum-select-window-5 :which-key "Switch to window 5")
 
-      ;; buffer
-      "b" '(:ignore t :which-key "Buffer")
-      "bp" '(previous-buffer :which-key "Previous Buffer")
-      "bn" '(next-buffer :which-key "Next Buffer")
-      "bb" '(switch-to-buffer :which-key "Switch Buffer")
-      "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
-      "bd" '(kill-current-buffer :which-key "Kill Buffer")
-      "bi" 'ibuffer
-      "bm" '(bookmark-set :which-key "Set Bookmark")
-      "bM" '(bookmark-delete :which-key "Delete Bookmark")
-      ;; investigate bookmarks
-      "bN" '(evil-buffer-new :which-key "New Empty Buffer")
-      "br" '(revert-buffer :which-key "Revert Buffer")
-      "bs" '(basic-save-buffer :which-key "Save Buffer")
-      "bS" '(evil-write-all :which-key "Save All Buffers")
+        ;; buffer
+        "b" '(:ignore t :which-key "Buffer")
+        "bp" '(previous-buffer :which-key "Previous Buffer")
+        "bn" '(next-buffer :which-key "Next Buffer")
+        "bb" '(switch-to-buffer :which-key "Switch Buffer")
+        "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
+        "bd" '(kill-current-buffer :which-key "Kill Buffer")
+        "bi" 'ibuffer
+        "bm" '(bookmark-set :which-key "Set Bookmark")
+        "bM" '(bookmark-delete :which-key "Delete Bookmark")
+        ;; investigate bookmarks
+        "bN" '(evil-buffer-new :which-key "New Empty Buffer")
+        "br" '(revert-buffer :which-key "Revert Buffer")
+        "bs" '(basic-save-buffer :which-key "Save Buffer")
+        "bS" '(evil-write-all :which-key "Save All Buffers")
 
-      ;; file
-      "f" '(:ignore t :which-key "File")
-      "fd" '(dired-jump :which-key "Dired Jump")
-      "ff" '(find-file :which-key "Find File")
-      "fs" '(save-buffer :which-key "Save File")
-      "fS" '(write-file :which-key "Save File As")
-      "fr" '(counsel-recentf :which-key "Recent Files")
+        ;; file
+        "f" '(:ignore t :which-key "File")
+        "fd" '(dired-jump :which-key "Dired Jump")
+        "ff" '(find-file :which-key "Find File")
+        "fs" '(save-buffer :which-key "Save File")
+        "fS" '(write-file :which-key "Save File As")
+        "fr" '(counsel-recentf :which-key "Recent Files")
 
-      ;; quit
-      "q" '(:ignore t :which-key "Quit")
-      "qf" '(delete-frame :which-key "Delete Frame")
-      "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
+        ;; quit
+        "q" '(:ignore t :which-key "Quit")
+        "qf" '(delete-frame :which-key "Delete Frame")
+        "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
 
-      ;; custom
-      "o" '(:ignore t :which-key "Custom Entry")
-      "ot" '(counsel-load-theme :which-key "Choose Theme")
-      "oy" '(youdao-dictionary-search-at-point :which-key "Youdao Dict")
+        ;; roam
+        "r" '(:ignore t :which-key "Roam")
+
+        ;; custom
+        "o" '(:ignore t :which-key "Custom Entry")
+        "ot" '(counsel-load-theme :which-key "Choose Theme")
+        "oy" '(youdao-dictionary-search-at-point :which-key "Youdao Dict")
+        )
+
+      ;; Local leader
+      ;; org-mode
+      (local-leader-def org-mode-map
+        "," #'org-switchb
+        "." #'counsel-org-goto
+        "/" #'counsel-org-goto-all
+        "a" '(:ignore t :which-key "Attach")
+        "aa" #'org-attach
+        "ap" #'solarion/org-download-paste-clipboard
+        "e" #'(org-export-dispatch :which-key "Export")
+        "d" '(:ignore t :which-key "Date")
+        "dd" #'org-deadline
+        "ds" #'org-schedule
+        "dt" #'org-time-stamp
+        "dT" #'org-time-stamp-inactive
+        "f" #'org-footnote-action
+        "h" #'org-toggle-heading
+        "i" #'org-toggle-item
+        "r" '(:ignore t :which-key "Roam")
+        ;; TODO
+        "p" '(:ignore t :which-key "Priority")
+        "pd" #'org-priority-down
+        "pp" #'org-priority
+        "pu" #'org-priority-up
+        "R" #'org-refile
+        "t" #'org-todo
+        "x" #'org-toggle-checkbox)
+
+      (general-def help-map
+        ;; new keybinds
+        "'"    #'describe-char
+
+        ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
+        ;; <leader> h prefix. It's already on ? and F1 anyway.
+        "C-h"  nil
+
+        ;; replacement keybinds
+        ;; replaces `info-emacs-manual' b/c it's on C-m now
+        "r"    nil
+
+        "b"   #'describe-bindings
+        "B"   #'general-describe-keybindings
+
+        ;; replaces `apropos-command'
+        "a"    #'apropos
+        "A"    #'apropos-documentation
+        ;; replaces `describe-copying' b/c not useful
+        "C-c"  #'describe-coding-system
+        ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
+        "F"    #'describe-face
+        ;; replaces `view-hello-file' b/c annoying
+        "h"    nil
+        ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
+        "t"    #'counsel-load-theme
+        ;; replaces `finder-by-keyword' b/c not useful
+        "p"    nil)
       )
-
-
-    ;; Local leader
-    ;; (local-leader-def 'override
-    ;; "a" #'(lambda () (messsage "aaa")))
-
-    (general-def help-map
-      ;; new keybinds
-      "'"    #'describe-char
-
-      ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
-      ;; <leader> h prefix. It's already on ? and F1 anyway.
-      "C-h"  nil
-
-      ;; replacement keybinds
-      ;; replaces `info-emacs-manual' b/c it's on C-m now
-      "r"    nil
-
-      "b"   #'describe-bindings
-      "B"   #'general-describe-keybindings
-
-      ;; replaces `apropos-command'
-      "a"    #'apropos
-      "A"    #'apropos-documentation
-      ;; replaces `describe-copying' b/c not useful
-      "C-c"  #'describe-coding-system
-      ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
-      "F"    #'describe-face
-      ;; replaces `view-hello-file' b/c annoying
-      "h"    nil
-      ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
-      "t"    #'counsel-load-theme
-      ;; replaces `finder-by-keyword' b/c not useful
-      "p"    nil)
-
     (provide 'init-map)
   #+end_src
 
@@ -1026,6 +1073,7 @@
 
     (use-package org-download
       :init
+      (org-download-enable)
       (setq
        org-download-method 'directory
        org-download-image-dir "images"
