@@ -29,6 +29,13 @@
 - [[#init-magitel][init-magit.el]]
 - [[#init-orgel][init-org.el]]
 - [[#init-latexel][init-latex.el]]
+- [[#init-projectileel][init-projectile.el]]
+- [[#init-dashboardel][init-dashboard.el]]
+- [[#init-diredel][init-dired.el]]
+- [[#init-dictel][init-dict.el]]
+- [[#init-perspel][init-persp.el]]
+- [[#init-rimeel][init-rime.el]]
+- [[#init-dashboardel-1][init-dashboard.el]]
 
 * Installation
 
@@ -59,9 +66,9 @@
 * init.el
 
   #+begin_src emacs-lisp :tangle ./init.el
-    ;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
+     ;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
 
-    ;;; Code:
+     ;;; Code:
 
     (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
@@ -108,6 +115,10 @@
 
     (require 'init-org)
     (require 'init-latex)
+
+    (require 'init-projectile)
+
+    (require 'init-dashboard)
 
 
     ;; 还没决定好放到哪里的设置
@@ -880,9 +891,12 @@
       ;; TODO
       (spc-leader-def
 
+        ;; local-leader
         "m" '(:ignore t :which-key "<local>")
+
         ;; maps
         "h" #'(help-command :which-key "Help")
+        "p" #'(projectile-command-map :which-key "Projectile")
 
         ;; keys
         "SPC" '(counsel-M-x :which-key "Execute")
@@ -1002,7 +1016,7 @@
 * init-magit.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-magit.el :mkdirp yes
-    ;;; init-magit.el --- Configuration for magit -*- lexical-binding: t -*-
+    ;;; init-magit.el --- Configuration related to git -*- lexical-binding: t -*-
 
     ;;; Code:
 
@@ -1010,6 +1024,10 @@
       :init
       (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
       :hook (git-commit-mode . evil-insert-state))
+
+    (use-package git-gutter
+      :diminish
+      :hook (after-init . global-git-gutter-mode))
 
     (provide 'init-magit)
   #+end_src
@@ -1093,9 +1111,7 @@
        org-id-locations-file (file-truename "~/org-roam/.orgids"))
       :config
       (unless (file-exists-p org-roam-directory)
-        (make-directory org-roam-directory))
-      ;; bindings TODO
-      )
+        (make-directory org-roam-directory)))
 
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
@@ -1143,4 +1159,84 @@
       (LaTeX-mode . (lambda () (setq TeX-command-default "LatexMk"))))
 
     (provide 'init-latex)
+  #+end_src
+
+* init-projectile.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-projectile.el :mkdirp yes
+    ;;; init-projectile.el --- Projectile configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package projectile
+      :diminish
+      :hook (after-init . projectile-mode)
+      :init
+      (when (file-directory-p solarion-projectile-dir)
+        (setq projectile-project-search-path `(,(file-truename solarion-projectile-dir))))
+      (setq projectile-switch-project-action #'projectile-dired)
+      :config
+      (setq projectile-mode-line-prefix nil
+            projectile-sort-order 'recentf
+            projectile-use-git-grep t))
+
+    (use-package counsel-projectile
+      :diminish
+      :after projectile
+      :hook (after-init . counsel-projectile-mode))
+
+    (provide 'init-projectile)
+  #+end_src
+
+* TODO init-dashboard.el
+
+* TODO init-dired.el
+
+* TODO init-dict.el
+
+* TODO init-persp.el
+
+  Restore previous session.
+  #+begin_src emacs-lisp :tangle ./lisp/init-persp.el :mkdirp yes
+    ;;; init-persp.el --- Configurations for persp-mode -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (provide 'init-persp)
+  #+end_src
+
+* TODO init-rime.el
+
+* init-dashboard.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-dashboard.el :mkdirp yes
+    ;;; init-dashboard.el --- Setup for the splash screen (dashboard) -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package dashboard
+      :diminish
+      :init
+      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
+            dashboard-banner-logo-title "Solarion Emacs"
+            dashboard-startup-banner 2
+            dashboard-page-separator "\n\f\n"
+            dashboard-center-content t
+            dashboard-show-shortcuts t
+            dashboard-items '((recents . 5)
+                              (bookmarks . 5)
+                              (projects . 3)
+                              (agenda . 5))
+            dashboard-set-init-info t
+            dashboard-set-footer nil
+            dashboard-set-navigator t
+            dashboard-navigator-buttons '(() ;; Empty line
+                                          ;; line 2
+                                          ((nil "Homepage" "Browse homepage" (lambda (&rest _) (browse-url "https://github.com/wang1zhen/solarion-emacs")))
+                                           (nil "Restore" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
+                                           (nil "Config" "Open custom file" (lambda (&rest _) (find-file (concat user-emacs-directory "solarion.org"))))
+                                           (nil "Update" "Update Packages" (lambda (&rest _) (auto-package-update-now))))))
+      (dashboard-setup-startup-hook))
+
+    (provide 'init-dashboard)
   #+end_src
