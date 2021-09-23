@@ -434,7 +434,7 @@
       (doom-themes-enable-bold t)
       (doom-themes-enable-italic t)
       :init
-      (load-theme 'doom-gruvbox)
+      (load-theme 'doom-gruvbox t)
       :config
       (doom-themes-visual-bell-config)
       (doom-themes-org-config))
