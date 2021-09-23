@@ -75,8 +75,8 @@
     (setq custom-example-file (concat user-emacs-directory "custom-example.el"))
     (when (and (not (file-exists-p custom-file))
                (file-exists-p custom-example-file))
-      (copy-file custom-example-file custom-file)
-      (load custom-file))
+      (copy-file custom-example-file custom-file))
+    (load custom-file)
 
     ;; Adjust garbage collection thresholds during startup, and thereafter
 
