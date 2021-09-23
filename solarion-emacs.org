@@ -11,7 +11,6 @@
 - [[#solarion-emacs][Solarion Emacs]]
 - [[#installation][Installation]]
 - [[#initel][init.el]]
-- [[#init-benchmarkingel][init-benchmarking.el]]
 - [[#init-packageel][init-package.el]]
 - [[#init-basicel][init-basic.el]]
 - [[#init-funcel][init-func.el]]
@@ -76,8 +75,6 @@
     (when (and (file-exists-p custom-file) (file-readable-p custom-file)
                (load custom-file)))
 
-    (require 'init-benchmarking)
-
     ;; Adjust garbage collection thresholds during startup, and thereafter
 
     (let ((normal-gc-cons-threshold (* 20 1024 1024))
@@ -124,28 +121,6 @@
     ;; 还没决定好放到哪里的设置
     (use-package xclip
       :hook (after-init . xclip-mode))
-  #+end_src
-
-* init-benchmarking.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-benchmarking.el :mkdirp yes
-    ;;; init-benchmarking.el --- Measure startup time -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (defun solarion/startup-benchmark ()
-      "Showing Emacs initializing time, packages loaded and GC"
-      (format "Emacs loaded %d packages in %.2f ms with %d garbage collections."
-              (- (length load-path) (length (get 'load-path 'initial-value)))
-              (* 1000 (float-time (time-subtract after-init-time before-init-time)))
-              gcs-done))
-
-    (add-hook 'emacs-startup-hook
-              (lambda ()
-                (setq init-message (solarion/startup-benchmark))
-                (message init-message)))
-
-    (provide 'init-benchmarking)
   #+end_src
 
 * init-package.el
@@ -411,6 +386,14 @@
                               nil nil org-download-screenshot-basename)
                nil)))
         (org-download-clipboard file)))
+
+    ;; benchmark
+    (defun solarion-init-time ()
+      "Showing Emacs initializing time, packages loaded and GC"
+      (format "Emacs loaded %d packages in %.2f ms with %d garbage collections."
+              (- (length load-path) (length (get 'load-path 'initial-value)))
+              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))
+              gcs-done))
 
     (provide 'init-func)
   #+end_src
@@ -1194,7 +1177,7 @@
 
 * TODO init-dired.el
 
-* TODO init-dict.el
+* init-dict.el
   #+begin_src emacs-lisp :tangle ./lisp/init-dict.el :mkdirp yes
     ;;; init-dict.el --- Youdao dictionary -*- lexical-binding: t -*-
 
@@ -1351,7 +1334,8 @@
                                           ((nil "Homepage" "Browse homepage" (lambda (&rest _) (browse-url "https://github.com/wang1zhen/solarion-emacs")))
                                            (nil "Restore" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config" "Open custom file" (lambda (&rest _) (find-file (concat user-emacs-directory "solarion.org"))))
-                                           (nil "Update" "Update Packages" (lambda (&rest _) (auto-package-update-now))))))
+                                           (nil "Update" "Update Packages" (lambda (&rest _) (auto-package-update-now)))))
+            dashboard-init-info (solarion-init-time))
       (dashboard-setup-startup-hook))
 
     (provide 'init-dashboard)
