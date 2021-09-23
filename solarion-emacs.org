@@ -12,28 +12,28 @@
 - [[#installation][Installation]]
 - [[#initel][init.el]]
 - [[#init-packageel][init-package.el]]
-- [[#init-basicel][init-basic.el]]
 - [[#init-funcel][init-func.el]]
+- [[#init-basicel][init-basic.el]]
 - [[#init-uiel][init-ui.el]]
 - [[#init-fontsel][init-fonts.el]]
 - [[#init-editel][init-edit.el]]
+- [[#init-generalel][init-general.el]]
 - [[#init-evilel][init-evil.el]]
+- [[#init-hydrael][init-hydra.el]]
+- [[#init-mapel][init-map.el]]
 - [[#init-ivyel][init-ivy.el]]
 - [[#init-companyel][init-company.el]]
 - [[#init-yasnippetel][init-yasnippet.el]]
-- [[#init-ibufferel][init-ibuffer.el]]
-- [[#init-hydrael][init-hydra.el]]
-- [[#init-generalel][init-general.el]]
-- [[#init-mapel][init-map.el]]
 - [[#init-magitel][init-magit.el]]
+- [[#init-ibufferel][init-ibuffer.el]]
 - [[#init-orgel][init-org.el]]
 - [[#init-latexel][init-latex.el]]
-- [[#init-projectileel][init-projectile.el]]
 - [[#init-diredel][init-dired.el]]
-- [[#init-dictel][init-dict.el]]
-- [[#init-perspel][init-persp.el]]
-- [[#init-rimeel][init-rime.el]]
+- [[#init-projectileel][init-projectile.el]]
 - [[#init-dashboardel][init-dashboard.el]]
+- [[#init-perspel][init-persp.el]]
+- [[#init-dictel][init-dict.el]]
+- [[#init-rimeel][init-rime.el]]
 
 * Installation
 
@@ -99,15 +99,16 @@
     (when (display-graphic-p)
       (require 'init-fonts))       ;; 字体检查 言 ♪
     (require 'init-edit)
+
+    ;; Keybindings
+    (require 'init-general)
     (require 'init-evil)
+    (require 'init-hydra)
+    (require 'init-map)
+
     (require 'init-ivy)
     (require 'init-company)
     (require 'init-yasnippet)
-
-    ;; Keybindings
-    (require 'init-hydra)
-    (require 'init-general)
-    (require 'init-map)
 
     (require 'init-magit)
     (require 'init-ibuffer)
@@ -121,6 +122,7 @@
     (require 'init-dashboard)
     (require 'init-persp)
 
+    (require 'init-dict)
     (require 'init-rime)
 
   #+end_src
@@ -181,6 +183,71 @@
     (use-package try)
 
     (provide 'init-package)
+  #+end_src
+
+* init-func.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-func.el :mkdirp yes
+    ;;; init-func.el --- Useful functions are defined here -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (defun indent-buffer ()
+      (interactive)
+      (save-excursion
+        (indent-region (point-min) (point-max) nil)))
+
+    ;; Font
+    (defun font-installed-p (font-name)
+      "Check if font with FONT-NAME is available."
+      (find-font (font-spec :name font-name)))
+
+    ;; Auto tangle babel file
+    (defun org-babel-auto-tangle ()
+      (when (and (eq major-mode 'org-mode)
+                 (string-equal (buffer-name) "solarion-emacs.org")
+                 (y-or-n-p "Tangle?"))
+        (org-babel-tangle)))
+
+    ;; Define split-window-below-and-focus and split-window-right-and-focus
+    (defun evil-window-split-and-focus ()
+      "Split the window vertically and focus the new window."
+      (interactive)
+      (evil-window-split)
+      (windmove-down))
+
+    (defun evil-window-vsplit-and-focus ()
+      "Split the window horizontally and focus the new window."
+      (interactive)
+      (split-window-right)
+      (windmove-right))
+
+    (defun solarion/org-mode-setup ()
+      (auto-fill-mode 0)
+      (visual-line-mode 1))
+
+    ;; ask for the filename before pasting an image
+    ;; filename should end with ".png/.jpg/.svg"
+    (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
+      (interactive "P")
+      (require 'org-download)
+      (let ((file
+             (if (not use-default-filename)
+                 (read-string (format "Filename [%s]: "
+                                      org-download-screenshot-basename)
+                              nil nil org-download-screenshot-basename)
+               nil)))
+        (org-download-clipboard file)))
+
+    ;; benchmark
+    (defun solarion-init-time ()
+      "Showing Emacs initializing time, packages loaded and GC"
+      (format "Emacs loaded %d packages in %.2f ms with %d garbage collections."
+              (- (length load-path) (length (get 'load-path 'initial-value)))
+              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))
+              gcs-done))
+
+    (provide 'init-func)
   #+end_src
 
 * init-basic.el
@@ -336,71 +403,6 @@
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
 
     (provide 'init-basic)
-  #+end_src
-
-* init-func.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-func.el :mkdirp yes
-    ;;; init-func.el --- Useful functions are defined here -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (defun indent-buffer ()
-      (interactive)
-      (save-excursion
-        (indent-region (point-min) (point-max) nil)))
-
-    ;; Font
-    (defun font-installed-p (font-name)
-      "Check if font with FONT-NAME is available."
-      (find-font (font-spec :name font-name)))
-
-    ;; Auto tangle babel file
-    (defun org-babel-auto-tangle ()
-      (when (and (eq major-mode 'org-mode)
-                 (string-equal (buffer-name) "solarion-emacs.org")
-                 (y-or-n-p "Tangle?"))
-        (org-babel-tangle)))
-
-    ;; Define split-window-below-and-focus and split-window-right-and-focus
-    (defun evil-window-split-and-focus ()
-      "Split the window vertically and focus the new window."
-      (interactive)
-      (evil-window-split)
-      (windmove-down))
-
-    (defun evil-window-vsplit-and-focus ()
-      "Split the window horizontally and focus the new window."
-      (interactive)
-      (split-window-right)
-      (windmove-right))
-
-    (defun solarion/org-mode-setup ()
-      (auto-fill-mode 0)
-      (visual-line-mode 1))
-
-    ;; ask for the filename before pasting an image
-    ;; filename should end with ".png/.jpg/.svg"
-    (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
-      (interactive "P")
-      (require 'org-download)
-      (let ((file
-             (if (not use-default-filename)
-                 (read-string (format "Filename [%s]: "
-                                      org-download-screenshot-basename)
-                              nil nil org-download-screenshot-basename)
-               nil)))
-        (org-download-clipboard file)))
-
-    ;; benchmark
-    (defun solarion-init-time ()
-      "Showing Emacs initializing time, packages loaded and GC"
-      (format "Emacs loaded %d packages in %.2f ms with %d garbage collections."
-              (- (length load-path) (length (get 'load-path 'initial-value)))
-              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))
-              gcs-done))
-
-    (provide 'init-func)
   #+end_src
 
 * init-ui.el
@@ -623,6 +625,23 @@
     (provide 'init-edit)
   #+end_src
 
+* init-general.el
+
+  Only prepare the packages here, specific keybindings goes to =init-map.el=.
+  #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
+    ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package general)
+
+    (use-package key-chord
+      :diminish
+      :hook (after-init . key-chord-mode))
+
+    (provide 'init-general)
+  #+end_src
+
 * init-evil.el
 
   Evil is a vim emulator for Emacs. I use Emacs keybindings to move cursor within the insert state, so I disabled insert state bindings. Evil-collection has a lot of good keybindings to enhance the experience with evil.
@@ -671,8 +690,7 @@
     (use-package evil-collection
       :after evil
       :init
-      (evil-collection-init)
-      (evil-collection-magit-setup))
+      (evil-collection-init))
 
     (use-package evil-escape
       :after evil
@@ -696,120 +714,6 @@
     (provide 'init-evil)
   #+end_src
 
-* init-ivy.el
-
-  The Ivy bundle. Amx provides enhancements to ivy and counsel.
-  #+begin_src emacs-lisp :tangle ./lisp/init-ivy.el :mkdirp yes
-    ;;; init-ivy.el --- Initialize ivy configurations -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package ivy
-      :diminish ivy-mode
-      :hook (after-init . ivy-mode)
-      :custom
-      (ivy-use-selectable-prompt 1)
-      (ivy-initial-inputs-alist nil))
-
-    (use-package ivy-rich
-      :diminish ivy-rich-mode
-      :after (ivy counsel)
-      :init (ivy-rich-mode))
-
-    (use-package swiper
-      :bind (("C-s" . swiper)))
-
-    (use-package counsel
-      :diminish counsel-mode
-      :hook (after-init . counsel-mode))
-
-    (use-package amx
-      :ensure t)
-
-    (provide 'init-ivy)
-  #+end_src
-
-* init-company.el
-
-  Company is a text completion framework for Emacs. The name stands for “complete anything”. It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
-  #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
-    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package company
-      :diminish
-      :hook (after-init . global-company-mode)
-      :init
-      (setq company-minimum-prefix-length 3
-            company-idle-delay 0.2
-            company-dabbrev-ignore-case nil
-            company-dabbrev-downcase nil
-            company-require-match nil
-            company-global-modes t
-            company-backends '((company-capf :with company-yasnippet)
-                               (company-dabbrev-code company-keywords company-files)
-                               company-dabbrev)
-            )
-      :config
-      (general-def company-active-map
-        "TAB" #'company-complete-common-or-cycle
-        "<tab>" #'company-complete-common-or-cycle
-        "RET" #'company-complete-selection
-        "<return>" #'company-complete-selection)
-      )
-
-    (provide 'init-company)
-  #+end_src
-
-* init-yasnippet.el
-
-  YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
-  #+begin_src emacs-lisp :tangle ./lisp/init-yasnippet.el :mkdirp yes
-    ;;; init-yasnippet.el --- Configure yasnippet -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package yasnippet
-      :diminish yas-minor-mode
-      :hook
-      (after-init . yas-global-mode))
-
-    (use-package yasnippet-snippets
-      :after yasnippet)
-
-    (provide 'init-yasnippet)
-  #+end_src
-
-* init-ibuffer.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-ibuffer.el :mkdirp yes
-    ;;; init-ibuffer.el --- Initialize ibuffer configurations -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package ibuffer
-      :ensure nil
-      :bind ("C-x C-b" . ibuffer)
-      :hook (ibuffer-mode . (lambda () (ibuffer-switch-to-saved-filter-groups "custom")))
-      :custom
-      (ibuffer-show-empty-filter-groups nil)
-      (ibuffer-saved-filter-groups
-       '(("custom"
-          ("Dired" (mode . dired-mode))
-          ("Org" (mode . org-mode))
-          ("Emacs" (or
-                    (name . "^\\*scratch\\*$")
-                    (name . "^\\*Backtrace\\*$")
-                    (name . "^\\*Messages\\*$")))
-          ("Help" (or
-                   (name . "Help")
-                   (name . "^helpful")))
-          ))))
-
-    (provide 'init-ibuffer)
-  #+end_src
-
 * init-hydra.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-hydra.el :mkdirp yes
@@ -831,23 +735,6 @@
     (provide 'init-hydra)
   #+end_src
 
-* init-general.el
-
-  Only prepare the packages here, specific keybindings goes to =init-map.el=.
-  #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
-    ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package general)
-
-    (use-package key-chord
-      :diminish
-      :hook (after-init . key-chord-mode))
-
-    (provide 'init-general)
-  #+end_src
-
 * init-map.el
 
   Define the majority of keybindings here.
@@ -855,7 +742,6 @@
     ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
 
     ;;; Code:
-    ;; (with-eval-after-load 'general
     ;; misc
     (general-def "<escape>" #'keyboard-escape-quit)
     (general-def [f12] #'indent-buffer)
@@ -997,9 +883,93 @@
       "t"    #'counsel-load-theme
       ;; replaces `finder-by-keyword' b/c not useful
       "p"    nil)
-    ;; )
 
     (provide 'init-map)
+  #+end_src
+
+* init-ivy.el
+
+  The Ivy bundle. Amx provides enhancements to ivy and counsel.
+  #+begin_src emacs-lisp :tangle ./lisp/init-ivy.el :mkdirp yes
+    ;;; init-ivy.el --- Initialize ivy configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package ivy
+      :diminish ivy-mode
+      :hook (after-init . ivy-mode)
+      :custom
+      (ivy-use-selectable-prompt 1)
+      (ivy-initial-inputs-alist nil))
+
+    (use-package ivy-rich
+      :diminish ivy-rich-mode
+      :after (ivy counsel)
+      :init (ivy-rich-mode))
+
+    (use-package swiper
+      :bind (("C-s" . swiper)))
+
+    (use-package counsel
+      :diminish counsel-mode
+      :hook (after-init . counsel-mode))
+
+    (use-package amx
+      :ensure t)
+
+    (provide 'init-ivy)
+  #+end_src
+
+* init-company.el
+
+  Company is a text completion framework for Emacs. The name stands for “complete anything”. It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
+  #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
+    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package company
+      :diminish
+      :hook (after-init . global-company-mode)
+      :init
+      (setq company-minimum-prefix-length 3
+            company-idle-delay 0.2
+            company-dabbrev-ignore-case nil
+            company-dabbrev-downcase nil
+            company-require-match nil
+            company-global-modes t
+            company-backends '((company-capf :with company-yasnippet)
+                               (company-dabbrev-code company-keywords company-files)
+                               company-dabbrev)
+            )
+      :config
+      (general-def company-active-map
+        "TAB" #'company-complete-common-or-cycle
+        "<tab>" #'company-complete-common-or-cycle
+        "RET" #'company-complete-selection
+        "<return>" #'company-complete-selection)
+      )
+
+    (provide 'init-company)
+  #+end_src
+
+* init-yasnippet.el
+
+  YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
+  #+begin_src emacs-lisp :tangle ./lisp/init-yasnippet.el :mkdirp yes
+    ;;; init-yasnippet.el --- Configure yasnippet -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package yasnippet
+      :diminish yas-minor-mode
+      :hook
+      (after-init . yas-global-mode))
+
+    (use-package yasnippet-snippets
+      :after yasnippet)
+
+    (provide 'init-yasnippet)
   #+end_src
 
 * init-magit.el
@@ -1012,13 +982,44 @@
     (use-package magit
       :init
       (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-      :hook (git-commit-mode . evil-insert-state))
+      :hook (git-commit-mode . evil-insert-state)
+      :config
+      (evil-collection-magit-setup))
 
     (use-package git-gutter
       :diminish
       :hook (after-init . global-git-gutter-mode))
 
     (provide 'init-magit)
+  #+end_src
+
+* init-ibuffer.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-ibuffer.el :mkdirp yes
+    ;;; init-ibuffer.el --- Initialize ibuffer configurations -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package ibuffer
+      :ensure nil
+      :bind ("C-x C-b" . ibuffer)
+      :hook (ibuffer-mode . (lambda () (ibuffer-switch-to-saved-filter-groups "custom")))
+      :custom
+      (ibuffer-show-empty-filter-groups nil)
+      (ibuffer-saved-filter-groups
+       '(("custom"
+          ("Dired" (mode . dired-mode))
+          ("Org" (mode . org-mode))
+          ("Emacs" (or
+                    (name . "^\\*scratch\\*$")
+                    (name . "^\\*Backtrace\\*$")
+                    (name . "^\\*Messages\\*$")))
+          ("Help" (or
+                   (name . "Help")
+                   (name . "^helpful")))
+          ))))
+
+    (provide 'init-ibuffer)
   #+end_src
 
 * init-org.el
@@ -1153,33 +1154,6 @@
     (provide 'init-latex)
   #+end_src
 
-* init-projectile.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-projectile.el :mkdirp yes
-    ;;; init-projectile.el --- Projectile configurations -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package projectile
-      :diminish
-      :hook (after-init . projectile-mode)
-      :init
-      (when (file-directory-p solarion-projectile-dir)
-        (setq projectile-project-search-path `(,(file-truename solarion-projectile-dir))))
-      (setq projectile-switch-project-action #'projectile-dired)
-      :config
-      (setq projectile-mode-line-prefix nil
-            projectile-sort-order 'recentf
-            projectile-use-git-grep t))
-
-    (use-package counsel-projectile
-      :diminish
-      :after projectile
-      :hook (after-init . counsel-projectile-mode))
-
-    (provide 'init-projectile)
-  #+end_src
-
 * init-dired.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-dired.el :mkdirp yes
@@ -1227,17 +1201,78 @@
     (provide 'init-dired)
   #+end_src
 
-* init-dict.el
-  #+begin_src emacs-lisp :tangle ./lisp/init-dict.el :mkdirp yes
-    ;;; init-dict.el --- Youdao dictionary -*- lexical-binding: t -*-
+* init-projectile.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-projectile.el :mkdirp yes
+    ;;; init-projectile.el --- Projectile configurations -*- lexical-binding: t -*-
 
     ;;; Code:
 
-    (use-package youdao-dictionary
+    (use-package projectile
+      :diminish
+      :hook (after-init . projectile-mode)
       :init
-      (setq url-automatic-caching t))
+      (when (file-directory-p solarion-projectile-dir)
+        (setq projectile-project-search-path `(,(file-truename solarion-projectile-dir))))
+      (setq projectile-switch-project-action #'projectile-dired)
+      :config
+      (setq projectile-mode-line-prefix nil
+            projectile-sort-order 'recentf
+            projectile-use-git-grep t))
 
-    (provide 'init-dict)
+    (use-package counsel-projectile
+      :diminish
+      :after projectile
+      :hook (after-init . counsel-projectile-mode))
+
+    (provide 'init-projectile)
+  #+end_src
+
+* init-dashboard.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-dashboard.el :mkdirp yes
+    ;;; init-dashboard.el --- Setup for the splash screen (dashboard) -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package dashboard
+      :diminish
+      :init
+      (defun solarion-homepage (&rest _)
+        (interactive)
+        (browse-url "https://github.com/wang1zhen/solarion-emacs"))
+      (defun solarion-edit-config (&rest _)
+        (interactive)
+        (find-file (concat user-emacs-directory "solarion-emacs.org")))
+      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
+            dashboard-banner-logo-title "Solarion Emacs"
+            dashboard-startup-banner 2
+            dashboard-page-separator "\n\f\n"
+            dashboard-center-content t
+            dashboard-show-shortcuts t
+            dashboard-items '((recents . 5)
+                              (bookmarks . 5)
+                              (projects . 3)
+                              (agenda . 5))
+            dashboard-set-init-info t
+            dashboard-set-footer nil
+            dashboard-set-navigator t
+            dashboard-navigator-buttons '(() ;; Empty line
+                                          ;; line 2
+                                          ((nil "Homepage (H)" "Browse homepage" solarion-homepage)
+                                           (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
+                                           (nil "Config (C)" "Open custom file" solarion-edit-config)
+                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now)))))
+            dashboard-init-info (solarion-init-time))
+      (dashboard-setup-startup-hook)
+      :config
+      (general-def 'normal dashboard-mode-map
+        "H" #'solarion-homepage
+        "R" #'restore-previous-session
+        "C" #'solarion-edit-config
+        "U" #'auto-package-update-now))
+
+    (provide 'init-dashboard)
   #+end_src
 
 * init-persp.el
@@ -1354,7 +1389,22 @@
     (provide 'init-persp)
   #+end_src
 
+* init-dict.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-dict.el :mkdirp yes
+    ;;; init-dict.el --- Youdao dictionary -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package youdao-dictionary
+      :init
+      (setq url-automatic-caching t))
+
+    (provide 'init-dict)
+  #+end_src
+
 * init-rime.el
+
   #+begin_src emacs-lisp :tangle ./lisp/init-rime.el :mkdirp yes
     ;;; init-rime.el --- 中文输入法 Emacs Rime -*- lexical-binding: t -*-
 
@@ -1368,51 +1418,4 @@
             rime-user-data-dir (concat user-emacs-directory "rime/")))
 
     (provide 'init-rime)
-  #+end_src
-
-* init-dashboard.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-dashboard.el :mkdirp yes
-    ;;; init-dashboard.el --- Setup for the splash screen (dashboard) -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package dashboard
-      :diminish
-      :init
-      (defun solarion-homepage (&rest _)
-        (interactive)
-        (browse-url "https://github.com/wang1zhen/solarion-emacs"))
-      (defun solarion-edit-config (&rest _)
-        (interactive)
-        (find-file (concat user-emacs-directory "solarion-emacs.org")))
-      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
-            dashboard-banner-logo-title "Solarion Emacs"
-            dashboard-startup-banner 2
-            dashboard-page-separator "\n\f\n"
-            dashboard-center-content t
-            dashboard-show-shortcuts t
-            dashboard-items '((recents . 5)
-                              (bookmarks . 5)
-                              (projects . 3)
-                              (agenda . 5))
-            dashboard-set-init-info t
-            dashboard-set-footer nil
-            dashboard-set-navigator t
-            dashboard-navigator-buttons '(() ;; Empty line
-                                          ;; line 2
-                                          ((nil "Homepage (H)" "Browse homepage" solarion-homepage)
-                                           (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
-                                           (nil "Config (C)" "Open custom file" solarion-edit-config)
-                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now)))))
-            dashboard-init-info (solarion-init-time))
-      (dashboard-setup-startup-hook)
-      :config
-      (general-def 'normal dashboard-mode-map
-        "H" #'solarion-homepage
-        "R" #'restore-previous-session
-        "C" #'solarion-edit-config
-        "U" #'auto-package-update-now))
-
-    (provide 'init-dashboard)
   #+end_src
