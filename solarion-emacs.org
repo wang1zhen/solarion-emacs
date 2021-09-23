@@ -30,12 +30,11 @@
 - [[#init-orgel][init-org.el]]
 - [[#init-latexel][init-latex.el]]
 - [[#init-projectileel][init-projectile.el]]
-- [[#init-dashboardel][init-dashboard.el]]
 - [[#init-diredel][init-dired.el]]
 - [[#init-dictel][init-dict.el]]
 - [[#init-perspel][init-persp.el]]
 - [[#init-rimeel][init-rime.el]]
-- [[#init-dashboardel-1][init-dashboard.el]]
+- [[#init-dashboardel][init-dashboard.el]]
 
 * Installation
 
@@ -119,6 +118,7 @@
     (require 'init-projectile)
 
     (require 'init-dashboard)
+    (require 'init-persp)
 
 
     ;; 还没决定好放到哪里的设置
@@ -867,149 +867,153 @@
     ;;; init-map.el --- Keybindings -*- lexical-binding: t -*-
 
     ;;; Code:
-    (with-eval-after-load 'general
-      (general-def "<escape>" #'keyboard-escape-quit)
-      (general-def [f12] #'indent-buffer)
-      (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
-      (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
+    ;; (with-eval-after-load 'general
+    (general-def "<escape>" #'keyboard-escape-quit)
+    (general-def [f12] #'indent-buffer)
+    (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
+    (general-def 'normal dashboard-mode-map "R" #'restore-previous-session)
+    (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
 
-      (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
+    (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
 
-      (general-create-definer spc-leader-def
-        :states '(normal insert visual emacs)
-        :keymaps 'override
-        :prefix "SPC"
-        :non-normal-prefix (general-chord ",."))
+    (general-create-definer spc-leader-def
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC"
+      :non-normal-prefix (general-chord ",."))
 
-      (general-create-definer local-leader-def
-        :states '(normal insert visual emacs)
-        :keymaps 'override
-        :prefix "SPC m"
-        :non-normal-prefix (general-chord ",,"))
+    (general-create-definer local-leader-def
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC m"
+      :non-normal-prefix (general-chord ",,"))
 
-      ;; Global SPC leader
-      ;; TODO
-      (spc-leader-def
+    ;; Global SPC leader
+    ;; TODO
+    (spc-leader-def
 
-        ;; local-leader
-        "m" '(:ignore t :which-key "<local>")
+      ;; local-leader
+      "m" '(:ignore t :which-key "<local>")
 
-        ;; maps
-        "h" #'(help-command :which-key "Help")
-        "p" #'(projectile-command-map :which-key "Projectile")
+      ;; maps
+      "h" #'(help-command :which-key "Help")
+      "p" #'(projectile-command-map :which-key "Projectile")
 
-        ;; keys
-        "SPC" '(counsel-M-x :which-key "Execute")
-        "a" '(avy-goto-char-2 :which-key "Avy")
-        "g" '(magit-status :which-key "Magit")
-        "u" 'universal-argument
+      ;; keys
+      "SPC" '(counsel-M-x :which-key "Execute")
+      "a" '(avy-goto-char-2 :which-key "Avy")
+      "g" '(magit-status :which-key "Magit")
+      "u" 'universal-argument
 
-        ;; window
-        "w" '(evil-window-map :which-key "Window")
-        "ws" 'evil-window-split-and-focus
-        "wv" 'evil-window-vsplit-and-focus
-        "wr" '(hydra-window-resize/body :which-key "Window Resize")
-        "1" '(winum-select-window-1 :which-key "Switch to window 1")
-        "2" '(winum-select-window-2 :which-key "Switch to window 2")
-        "3" '(winum-select-window-3 :which-key "Switch to window 3")
-        "4" '(winum-select-window-4 :which-key "Switch to window 4")
-        "5" '(winum-select-window-5 :which-key "Switch to window 5")
+      ;; window
+      "w" '(evil-window-map :which-key "Window")
+      "ws" 'evil-window-split-and-focus
+      "wv" 'evil-window-vsplit-and-focus
+      "wr" '(hydra-window-resize/body :which-key "Window Resize")
+      "1" '(winum-select-window-1 :which-key "Switch to window 1")
+      "2" '(winum-select-window-2 :which-key "Switch to window 2")
+      "3" '(winum-select-window-3 :which-key "Switch to window 3")
+      "4" '(winum-select-window-4 :which-key "Switch to window 4")
+      "5" '(winum-select-window-5 :which-key "Switch to window 5")
 
-        ;; buffer
-        "b" '(:ignore t :which-key "Buffer")
-        "bp" '(previous-buffer :which-key "Previous Buffer")
-        "bn" '(next-buffer :which-key "Next Buffer")
-        "bb" '(switch-to-buffer :which-key "Switch Buffer")
-        "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
-        "bd" '(kill-current-buffer :which-key "Kill Buffer")
-        "bi" 'ibuffer
-        "bm" '(bookmark-set :which-key "Set Bookmark")
-        "bM" '(bookmark-delete :which-key "Delete Bookmark")
-        ;; investigate bookmarks
-        "bN" '(evil-buffer-new :which-key "New Empty Buffer")
-        "br" '(revert-buffer :which-key "Revert Buffer")
-        "bs" '(basic-save-buffer :which-key "Save Buffer")
-        "bS" '(evil-write-all :which-key "Save All Buffers")
+      ;; buffer
+      "b" '(:ignore t :which-key "Buffer")
+      "bp" '(previous-buffer :which-key "Previous Buffer")
+      "bn" '(next-buffer :which-key "Next Buffer")
+      "bb" '(switch-to-buffer :which-key "Switch Buffer")
+      "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
+      "bd" '(kill-current-buffer :which-key "Kill Buffer")
+      "bi" 'ibuffer
+      "bm" '(bookmark-set :which-key "Set Bookmark")
+      "bM" '(bookmark-delete :which-key "Delete Bookmark")
+      ;; investigate bookmarks
+      "bN" '(evil-buffer-new :which-key "New Empty Buffer")
+      "br" '(revert-buffer :which-key "Revert Buffer")
+      "bs" '(basic-save-buffer :which-key "Save Buffer")
+      "bS" '(evil-write-all :which-key "Save All Buffers")
 
-        ;; file
-        "f" '(:ignore t :which-key "File")
-        "fd" '(dired-jump :which-key "Dired Jump")
-        "ff" '(find-file :which-key "Find File")
-        "fs" '(save-buffer :which-key "Save File")
-        "fS" '(write-file :which-key "Save File As")
-        "fr" '(counsel-recentf :which-key "Recent Files")
+      ;; file
+      "f" '(:ignore t :which-key "File")
+      "fd" '(dired-jump :which-key "Dired Jump")
+      "ff" '(find-file :which-key "Find File")
+      "fs" '(save-buffer :which-key "Save File")
+      "fS" '(write-file :which-key "Save File As")
+      "fr" '(counsel-recentf :which-key "Recent Files")
 
-        ;; quit
-        "q" '(:ignore t :which-key "Quit")
-        "qf" '(delete-frame :which-key "Delete Frame")
-        "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
+      ;; quit
+      "q" '(:ignore t :which-key "Quit")
+      "qf" '(delete-frame :which-key "Delete Frame")
+      "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
 
-        ;; roam
-        "r" '(:ignore t :which-key "Roam")
+      ;; roam
+      "r" '(:ignore t :which-key "Roam")
 
-        ;; custom
-        "o" '(:ignore t :which-key "Custom Entry")
-        "ot" '(counsel-load-theme :which-key "Choose Theme")
-        "oy" '(youdao-dictionary-search-at-point :which-key "Youdao Dict")
-        )
+      ;; custom
+      "o" '(:ignore t :which-key "Custom Entry")
+      "ot" #'(counsel-load-theme :which-key "Choose Theme")
 
-      ;; Local leader
-      ;; org-mode
-      (local-leader-def org-mode-map
-        "," #'org-switchb
-        "." #'counsel-org-goto
-        "/" #'counsel-org-goto-all
-        "a" '(:ignore t :which-key "Attach")
-        "aa" #'org-attach
-        "ap" #'solarion/org-download-paste-clipboard
-        "e" #'(org-export-dispatch :which-key "Export")
-        "d" '(:ignore t :which-key "Date")
-        "dd" #'org-deadline
-        "ds" #'org-schedule
-        "dt" #'org-time-stamp
-        "dT" #'org-time-stamp-inactive
-        "f" #'org-footnote-action
-        "h" #'org-toggle-heading
-        "i" #'org-toggle-item
-        "r" '(:ignore t :which-key "Roam")
-        ;; TODO
-        "p" '(:ignore t :which-key "Priority")
-        "pd" #'org-priority-down
-        "pp" #'org-priority
-        "pu" #'org-priority-up
-        "R" #'org-refile
-        "t" #'org-todo
-        "x" #'org-toggle-checkbox)
-
-      (general-def help-map
-        ;; new keybinds
-        "'"    #'describe-char
-
-        ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
-        ;; <leader> h prefix. It's already on ? and F1 anyway.
-        "C-h"  nil
-
-        ;; replacement keybinds
-        ;; replaces `info-emacs-manual' b/c it's on C-m now
-        "r"    nil
-
-        "b"   #'describe-bindings
-        "B"   #'general-describe-keybindings
-
-        ;; replaces `apropos-command'
-        "a"    #'apropos
-        "A"    #'apropos-documentation
-        ;; replaces `describe-copying' b/c not useful
-        "C-c"  #'describe-coding-system
-        ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
-        "F"    #'describe-face
-        ;; replaces `view-hello-file' b/c annoying
-        "h"    nil
-        ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
-        "t"    #'counsel-load-theme
-        ;; replaces `finder-by-keyword' b/c not useful
-        "p"    nil)
+      ;; dict
+      "y" #'(youdao-dictionary-search-at-point+ :which-key "Youdao")
       )
+
+    ;; Local leader
+    ;; org-mode
+    (local-leader-def org-mode-map
+      "," #'org-switchb
+      "." #'counsel-org-goto
+      "/" #'counsel-org-goto-all
+      "a" '(:ignore t :which-key "Attach")
+      "aa" #'org-attach
+      "ap" #'solarion/org-download-paste-clipboard
+      "e" #'(org-export-dispatch :which-key "Export")
+      "d" '(:ignore t :which-key "Date")
+      "dd" #'org-deadline
+      "ds" #'org-schedule
+      "dt" #'org-time-stamp
+      "dT" #'org-time-stamp-inactive
+      "f" #'org-footnote-action
+      "h" #'org-toggle-heading
+      "i" #'org-toggle-item
+      "r" '(:ignore t :which-key "Roam")
+      ;; TODO
+      "p" '(:ignore t :which-key "Priority")
+      "pd" #'org-priority-down
+      "pp" #'org-priority
+      "pu" #'org-priority-up
+      "R" #'org-refile
+      "t" #'org-todo
+      "x" #'org-toggle-checkbox)
+
+    (general-def help-map
+      ;; new keybinds
+      "'"    #'describe-char
+
+      ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
+      ;; <leader> h prefix. It's already on ? and F1 anyway.
+      "C-h"  nil
+
+      ;; replacement keybinds
+      ;; replaces `info-emacs-manual' b/c it's on C-m now
+      "r"    nil
+
+      "b"   #'describe-bindings
+      "B"   #'general-describe-keybindings
+
+      ;; replaces `apropos-command'
+      "a"    #'apropos
+      "A"    #'apropos-documentation
+      ;; replaces `describe-copying' b/c not useful
+      "C-c"  #'describe-coding-system
+      ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
+      "F"    #'describe-face
+      ;; replaces `view-hello-file' b/c annoying
+      "h"    nil
+      ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
+      "t"    #'counsel-load-theme
+      ;; replaces `finder-by-keyword' b/c not useful
+      "p"    nil)
+    ;; )
+
     (provide 'init-map)
   #+end_src
 
@@ -1188,19 +1192,131 @@
     (provide 'init-projectile)
   #+end_src
 
-* TODO init-dashboard.el
-
 * TODO init-dired.el
 
 * TODO init-dict.el
+  #+begin_src emacs-lisp :tangle ./lisp/init-dict.el :mkdirp yes
+    ;;; init-dict.el --- Youdao dictionary -*- lexical-binding: t -*-
 
-* TODO init-persp.el
+    ;;; Code:
+
+    (use-package youdao-dictionary
+      :init
+      (setq url-automatic-caching t))
+
+    (provide 'init-dict)
+  #+end_src
+
+* init-persp.el
 
   Restore previous session.
   #+begin_src emacs-lisp :tangle ./lisp/init-persp.el :mkdirp yes
     ;;; init-persp.el --- Configurations for persp-mode -*- lexical-binding: t -*-
 
     ;;; Code:
+
+    (use-package persp-mode
+      :diminish
+      :hook
+      ((after-init . persp-mode)
+       (persp-mode . persp-load-frame)
+       (kill-emacs . persp-save-frame))
+      :init
+      (setq persp-keymap-prefix nil
+            persp-nil-name "default"
+            persp-set-last-persp-for-new-frames nil
+            persp-kill-foreign-buffer-behaviour 'kill
+            persp-auto-resume-time 0)
+      :config
+      ;; Save and load frame parameters (size & position)
+      (defvar persp-frame-file (expand-file-name "persp-frame" persp-save-dir)
+        "File of saving frame parameters.")
+
+      (defun persp-save-frame ()
+        "Save the current frame parameters to file."
+        (interactive)
+        (when (and (display-graphic-p) persp-mode)
+          (condition-case error
+              (with-temp-buffer
+                (erase-buffer)
+                (insert
+                 ";;; -*- mode: emacs-lisp; coding: utf-8-unix -*-\n"
+                 ";;; This is the previous frame parameters.\n"
+                 ";;; Last generated " (current-time-string) ".\n"
+                 "(setq initial-frame-alist\n"
+                 (format "      '((top . %d)\n" (eval (frame-parameter nil 'top)))
+                 (format "        (left . %d)\n" (eval (frame-parameter nil 'left)))
+                 (format "        (width . %d)\n" (eval (frame-parameter nil 'width)))
+                 (format "        (height . %d)\n" (eval (frame-parameter nil 'height)))
+                 (format "        (fullscreen . %s)))\n" (frame-parameter nil 'fullscreen)))
+                (write-file persp-frame-file))
+            (error
+             (warn "persp frame: %s" (error-message-string error))))))
+
+      (defun persp-load-frame ()
+        "Load frame with the previous frame's geometry."
+        (interactive)
+        (when (and (display-graphic-p) persp-mode)
+          (condition-case error
+              (progn
+                (load persp-frame-file)
+
+                ;; Handle multiple monitors gracefully
+                (when (or (>= (eval (frame-parameter nil 'left)) (display-pixel-width))
+                          (>= (eval (frame-parameter nil 'top)) (display-pixel-height)))
+                  (set-frame-parameter nil 'left 0)
+                  (set-frame-parameter nil 'top 0)))
+            (error
+             (warn "persp frame: %s" (error-message-string error))))))
+
+      (defun restore-previous-session ()
+        "Restore the previous session."
+        (interactive)
+        (when (bound-and-true-p persp-mode)
+          (restore-session persp-auto-save-fname)))
+
+      (defun restore-session (fname)
+        "Restore the specified session."
+        (interactive (list (read-file-name "Load perspectives from a file: "
+                                           persp-save-dir)))
+        (when (bound-and-true-p persp-mode)
+          (message "Restoring session...")
+          (quit-window t)
+          (condition-case-unless-debug err
+              (persp-load-state-from-file fname)
+            (error "Error: Unable to restore session -- %s" err))
+          (message "Restoring session...done")))
+      ;; Don't save dead or temporary buffers
+      (add-hook 'persp-filter-save-buffers-functions
+                (lambda (b)
+                  "Ignore dead and unneeded buffers."
+                  (or (not (buffer-live-p b))
+                      (string-prefix-p " *" (buffer-name b)))))
+      (add-hook 'persp-filter-save-buffers-functions
+                (lambda (b)
+                  "Ignore temporary buffers."
+                  (let ((bname (file-name-nondirectory (buffer-name b))))
+                    (or (string-prefix-p ".newsrc" bname)
+                        (string-prefix-p "magit" bname)
+                        (string-prefix-p "COMMIT_EDITMSG" bname)
+                        (string-prefix-p "Pfuture-Callback" bname)
+                        (string-prefix-p "treemacs-persist" bname)
+                        (string-match-p "\\.elc\\|\\.tar\\|\\.gz\\|\\.zip\\'" bname)
+                        (string-match-p "\\.bin\\|\\.so\\|\\.dll\\|\\.exe\\'" bname)))))
+
+      ;; Don't save persp configs in `recentf'
+      (with-eval-after-load 'recentf
+        (push persp-save-dir recentf-exclude))
+
+      ;; Ivy Integration
+      (with-eval-after-load 'ivy
+        (add-to-list 'ivy-ignore-buffers
+                     #'(lambda (b)
+                         (when persp-mode
+                           (let ((persp (get-current-persp)))
+                             (if persp
+                                 (not (persp-contain-buffer-p b persp))
+                               nil)))))))
 
     (provide 'init-persp)
   #+end_src
