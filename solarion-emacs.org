@@ -46,7 +46,7 @@
   *Tangle the org file*
 
   #+begin_src shell
-    emacs -q ~/.emacs.d/solarion-emacs.org
+    emacs -nw -q ~/.emacs.d/solarion-emacs.org
   #+end_src
 
   Press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
