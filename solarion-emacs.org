@@ -39,25 +39,25 @@
 
   *Clone the repository*
 
-  #+begin_src sh
+  #+begin_example shell
     git clone https://github.com/wang1zhen/solarion-emacs ~/.emacs.d
-  #+end_src
+  #+end_example
 
   *Tangle the org file*
 
-  #+begin_src shell
+  #+begin_example shell
     emacs -nw -q ~/.emacs.d/solarion-emacs.org
-  #+end_src
+  #+end_example
 
   Press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
   After =org-babel-tangle= is finished, =C-x C-c= to quit emacs.
 
   *Create alias for running emacs in terminal mode*
 
-  #+begin_src shell
+  #+begin_example shell
     echo 'alias e="emacs -nw"' >> ~/.zshrc
     source ~/.zshrc
-  #+end_src
+  #+end_example
 
   *Launch Emacs and have fun!*
 
@@ -746,6 +746,9 @@
     (general-def "<escape>" #'keyboard-escape-quit)
     (general-def [f12] #'indent-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
+    (general-def 'normal org-mode-map "<return>" #'org-open-at-point)
+    (general-def 'normal org-mode-map "RET" #'org-open-at-point)
+    (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
 
     (general-create-definer spc-leader-def
       :states '(normal insert visual emacs)
@@ -760,7 +763,6 @@
       :non-normal-prefix (general-chord ",,"))
 
     ;; Global SPC leader
-    ;; TODO
     (spc-leader-def
 
       ;; local-leader
@@ -810,6 +812,7 @@
       "fs" '(save-buffer :which-key "Save File")
       "fS" '(write-file :which-key "Save File As")
       "fr" '(counsel-recentf :which-key "Recent Files")
+      "fp" #'(solarion-edit-config :which-key "Edit Config")
 
       ;; quit
       "q" '(:ignore t :which-key "Quit")
@@ -818,6 +821,13 @@
 
       ;; roam
       "r" '(:ignore t :which-key "Roam")
+      "ra" #'org-roam-node-random
+      "rr" #'org-roam-buffer-toggle
+      "rf" #'org-roam-node-find
+      "rg" #'org-roam-graph
+      "ri" #'org-roam-node-insert
+      "rc" #'org-roam-capture
+      "rs" #'org-roam-db-sync
 
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
@@ -833,6 +843,7 @@
       "," #'org-switchb
       "." #'counsel-org-goto
       "/" #'counsel-org-goto-all
+      "b" #'org-mark-ring-goto
       "a" '(:ignore t :which-key "Attach")
       "aa" #'org-attach
       "ap" #'solarion/org-download-paste-clipboard
@@ -846,7 +857,13 @@
       "h" #'org-toggle-heading
       "i" #'org-toggle-item
       "r" '(:ignore t :which-key "Roam")
-      ;; TODO
+      "ra" #'org-roam-node-random
+      "rr" #'org-roam-buffer-toggle
+      "rf" #'org-roam-node-find
+      "rg" #'org-roam-graph
+      "ri" #'org-roam-node-insert
+      "rc" #'org-roam-capture
+      "rs" #'org-roam-db-sync
       "p" '(:ignore t :which-key "Priority")
       "pd" #'org-priority-down
       "pp" #'org-priority
@@ -1102,6 +1119,12 @@
        org-roam-v2-ack t
        org-roam-directory (file-truename "~/org-roam/")
        org-id-locations-file (file-truename "~/org-roam/.orgids"))
+      (add-to-list 'display-buffer-alist
+                   '("\\*org-roam\\*"
+                     (display-buffer-in-direction)
+                     (direction . right)
+                     (window-width . 0.33)
+                     (window-height . fit-window-to-buffer)))
       :config
       (unless (file-exists-p org-roam-directory)
         (make-directory org-roam-directory)))
