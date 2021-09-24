@@ -557,9 +557,6 @@
 
     ;; Jump to things in Emacs tree-style
     (use-package avy
-      :bind (("C-'" . avy-goto-char-2)
-             ;;("M-g f" . avy-goto-line)
-             )
       :hook (after-init . avy-setup-default)
       :config (setq avy-all-windows nil
                     avy-all-windows-alt t
@@ -589,7 +586,8 @@
     (use-package elec-pair
       :ensure nil
       :hook (after-init . electric-pair-mode)
-      :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+      :init
+      (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
     ;; Increase selected region by semantic units
     (use-package expand-region
@@ -748,6 +746,8 @@
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
     (general-def 'normal org-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-mode-map "RET" #'org-open-at-point)
+    (general-def 'normal org-roam-mode-map "<return>" #'org-open-at-point)
+    (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
     (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
 
     (general-create-definer spc-leader-def
