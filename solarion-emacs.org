@@ -224,7 +224,8 @@
 
     (defun solarion/org-mode-setup ()
       (auto-fill-mode 0)
-      (visual-line-mode 1))
+      (visual-line-mode 1)
+      (electric-pair-local-mode -1))
 
     ;; ask for the filename before pasting an image
     ;; filename should end with ".png/.jpg/.svg"
@@ -1147,7 +1148,7 @@
     ;;; Code:
 
     (use-package auctex
-      :config
+      :init
       (setq
        LaTeX-electric-left-right-brace t
        TeX-engine 'xetex
@@ -1164,6 +1165,7 @@
        TeX-save-query nil)
 
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
+      :config
       (TeX-source-correlate-mode))
 
     (use-package auctex-latexmk
