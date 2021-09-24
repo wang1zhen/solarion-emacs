@@ -384,7 +384,6 @@
           uniquify-buffer-name-style 'post-forward-angle-brackets ; Show path if names are same
           adaptive-fill-regexp "[ t]+|[ t]*([0-9]+.|*+)[ t]*"
           adaptive-fill-first-line-regexp "^* *$"
-          sentence-end "\\([。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
           sentence-end-double-space nil)
 
     ;; Use the system clipboard
