@@ -248,6 +248,14 @@
               (* 1e3 (float-time (time-subtract after-init-time before-init-time)))
               gcs-done))
 
+    ;; dashboard
+    (defun solarion-homepage (&rest _)
+      (interactive)
+      (browse-url "https://github.com/wang1zhen/solarion-emacs"))
+    (defun solarion-edit-config (&rest _)
+      (interactive)
+      (find-file (concat user-emacs-directory "solarion-emacs.org")))
+
     (provide 'init-func)
   #+end_src
 
@@ -749,6 +757,13 @@
     (general-def 'normal org-roam-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
     (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
+
+    ;; dashboard
+    (general-def 'normal dashboard-mode-map
+            "H" #'solarion-homepage
+            "R" #'restore-previous-session
+            "C" #'solarion-edit-config
+            "U" #'auto-package-update-now)
 
     (general-create-definer spc-leader-def
       :states '(normal insert visual emacs)
@@ -1262,14 +1277,7 @@
     (use-package dashboard
       :diminish
       :init
-      (defun solarion-homepage (&rest _)
-        (interactive)
-        (browse-url "https://github.com/wang1zhen/solarion-emacs"))
-      (defun solarion-edit-config (&rest _)
-        (interactive)
-        (find-file (concat user-emacs-directory "solarion-emacs.org")))
-      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
-            dashboard-banner-logo-title "Solarion Emacs"
+      (setq dashboard-banner-logo-title "Solarion Emacs"
             dashboard-startup-banner 2
             dashboard-page-separator "\n\f\n"
             dashboard-center-content t
@@ -1289,12 +1297,8 @@
                                            (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now)))))
             dashboard-init-info (solarion-init-time))
       (dashboard-setup-startup-hook)
-      :config
-      (general-def 'normal dashboard-mode-map
-        "H" #'solarion-homepage
-        "R" #'restore-previous-session
-        "C" #'solarion-edit-config
-        "U" #'auto-package-update-now))
+      (when (< (length command-line-args) 2)
+        (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))))
 
     (provide 'init-dashboard)
   #+end_src
