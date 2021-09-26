@@ -847,9 +847,7 @@
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
       "ot" #'(counsel-load-theme :which-key "Choose Theme")
-
-      ;; dict
-      "y" #'(youdao-dictionary-search-at-point+ :which-key "Youdao")
+      "oo" #'(fanyi-dwim :which-key "Dict")
       )
 
     ;; Local leader
@@ -1424,9 +1422,17 @@
 
     ;;; Code:
 
-    (use-package youdao-dictionary
-      :init
-      (setq url-automatic-caching t))
+    (use-package fanyi
+      :custom
+      (fanyi-providers '(;; Longman
+                         fanyi-longman-provider
+                         ;; 海词
+                         fanyi-haici-provider
+                         ;; 有道同义词词典
+                         ;; fanyi-youdao-thesaurus-provider
+                         ;; Etymonline
+                         ;; fanyi-etymon-provider
+                         )))
 
     (provide 'init-dict)
   #+end_src
