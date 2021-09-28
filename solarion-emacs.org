@@ -39,25 +39,25 @@
 
   *Clone the repository*
 
-  #+begin_example shell
+  #+begin_src shell
     git clone https://github.com/wang1zhen/solarion-emacs ~/.emacs.d
-  #+end_example
+  #+end_src
 
   *Tangle the org file*
 
-  #+begin_example shell
+  #+begin_src shell
     emacs -nw -q ~/.emacs.d/solarion-emacs.org
-  #+end_example
+  #+end_src
 
   Press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
   After =org-babel-tangle= is finished, =C-x C-c= to quit emacs.
 
   *Create alias for running emacs in terminal mode*
 
-  #+begin_example shell
+  #+begin_src shell
     echo 'alias e="emacs -nw"' >> ~/.zshrc
     source ~/.zshrc
-  #+end_example
+  #+end_src
 
   *Launch Emacs and have fun!*
 
