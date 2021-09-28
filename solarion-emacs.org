@@ -71,12 +71,12 @@
     (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
     ;; Custom file
-    (setq custom-file (concat user-emacs-directory "custom.el"))
-    (setq custom-example-file (concat user-emacs-directory "custom-example.el"))
-    (when (and (not (file-exists-p custom-file))
-               (file-exists-p custom-example-file))
-      (copy-file custom-example-file custom-file))
-    (load custom-file)
+    ;; (setq custom-file (concat user-emacs-directory "custom.el"))
+    ;; (setq custom-example-file (concat user-emacs-directory "custom-example.el"))
+    ;; (when (and (not (file-exists-p custom-file))
+    ;;            (file-exists-p custom-example-file))
+    ;;   (copy-file custom-example-file custom-file))
+    ;; (load custom-file)
 
     ;; Adjust garbage collection thresholds during startup, and thereafter
 
@@ -266,8 +266,8 @@
 
     ;;; Code:
 
-    (setq user-full-name solarion-full-name
-          user-mail-address solarion-mail-address)
+    (setq user-full-name "wang1zhen"
+          user-mail-address "wang1zhendire@hotmail.com")
 
     ;; Increase how much is read from processes in a single chunk (default is 4kb)
     (setq read-process-output-max #x10000)  ; 64kb
@@ -526,6 +526,13 @@
 
     (require 'cl-lib)
 
+    ;; Configure font-size-factor with respect to system-name
+    (cond
+     ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
+     ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
+     ((equal (system-name) "PC-SH") (setq font-size-factor 3))
+     (t (setq font-size-factor 2)))
+
     ;; Set default font
     (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
                            "FiraCode Nerd Font" "Fira Code"
@@ -538,7 +545,7 @@
     ;; Specify font for all unicode characters
     (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
              when (font-installed-p font)
-             return(set-fontset-font t 'unicode font nil 'prepend))
+             return (set-fontset-font t 'unicode font nil 'prepend))
 
     ;; Specify font for Chinese characters
     (cl-loop for font in '("Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
@@ -1249,6 +1256,7 @@
       :diminish
       :hook (after-init . projectile-mode)
       :init
+      (setq solarion-projectile-dir "~/solarion-emacs")
       (when (file-directory-p solarion-projectile-dir)
         (setq projectile-project-search-path `(,(file-truename solarion-projectile-dir))))
       (setq projectile-switch-project-action #'projectile-dired)
