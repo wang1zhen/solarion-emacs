@@ -635,6 +635,32 @@
 
     (use-package sudo-edit)
 
+    ;; On-the-fly spell checker
+    (use-package flyspell
+      :ensure nil
+      :diminish
+      :if (executable-find "aspell")
+      :hook (((text-mode outline-mode) . flyspell-mode)
+             (prog-mode . flyspell-prog-mode)
+             (LaTeX-mode . flyspell-mode)
+             (flyspell-mode . (lambda ()
+                                (dolist (key '("C-;" "C-," "C-."))
+                                  (unbind-key key flyspell-mode-map)))))
+      :init (setq flyspell-issue-message-flag nil
+                  ispell-program-name "aspell"
+                  ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
+      :config
+      ;; Correcting words with flyspell via Ivy
+      (use-package flyspell-correct-ivy
+        :after ivy
+        :bind (:map flyspell-mode-map
+                    ([remap flyspell-correct-word-before-point] . flyspell-correct-wrapper))
+        :init (setq flyspell-correct-interface #'flyspell-correct-ivy)))
+
+    ;; Framework for mode-specific buffer indexes
+    (use-package imenu
+      :ensure nil)
+
     (provide 'init-edit)
   #+end_src
 
@@ -767,10 +793,10 @@
 
     ;; dashboard
     (general-def 'normal dashboard-mode-map
-            "H" #'solarion-homepage
-            "R" #'restore-previous-session
-            "C" #'solarion-edit-config
-            "U" #'auto-package-update-now)
+      "H" #'solarion-homepage
+      "R" #'restore-previous-session
+      "C" #'solarion-edit-config
+      "U" #'auto-package-update-now)
 
     (general-create-definer spc-leader-def
       :states '(normal insert visual emacs)
@@ -799,6 +825,7 @@
       "a" '(avy-goto-char-2 :which-key "Avy")
       "g" '(magit-status :which-key "Magit")
       "u" 'universal-argument
+      "." #'imenu
 
       ;; window
       "w" '(evil-window-map :which-key "Window")
@@ -861,8 +888,8 @@
     ;; org-mode
     (local-leader-def org-mode-map
       "," #'org-switchb
-      "." #'counsel-org-goto
-      "/" #'counsel-org-goto-all
+      "." #'counsel-org-goto-all
+      ;; "/" #'counsel-org-goto-all
       "b" #'org-mark-ring-goto
       "a" '(:ignore t :which-key "Attach")
       "aa" #'org-attach
