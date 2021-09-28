@@ -463,7 +463,7 @@
 
     (use-package display-line-numbers
       :ensure nil
-      :hook (after-init . global-display-line-numbers-mode)
+      :init (global-display-line-numbers-mode)
       :config
       (dolist (mode '(org-mode-hook
                       term-mode-hook
