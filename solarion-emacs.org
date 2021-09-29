@@ -878,6 +878,13 @@
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
       "rs" #'org-roam-db-sync
+      "ro" '(:ignore t :which-key "Node Properties")
+      "roa" #'org-roam-alias-add
+      "roA" #'org-roam-alias-remove
+      "ror" #'org-roam-ref-add
+      "roR" #'org-roam-ref-remove
+      "rot" #'org-roam-tag-add
+      "roT" #'org-roam-tag-remove
 
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
@@ -912,6 +919,13 @@
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
       "rs" #'org-roam-db-sync
+      "ro" '(:ignore t :which-key "Node Properties")
+      "roa" #'org-roam-alias-add
+      "roA" #'org-roam-alias-remove
+      "ror" #'org-roam-ref-add
+      "roR" #'org-roam-ref-remove
+      "rot" #'org-roam-tag-add
+      "roT" #'org-roam-tag-remove
       "p" '(:ignore t :which-key "Priority")
       "pd" #'org-priority-down
       "pp" #'org-priority
