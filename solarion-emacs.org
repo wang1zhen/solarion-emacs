@@ -55,7 +55,7 @@
   *Create alias for running emacs in terminal mode*
 
   #+begin_src shell
-    echo 'alias e="emacs -nw"' >> ~/.zshrc
+    echo "alias e='emacsclient -nw -c -a \"\"'\nalias ke='emacsclient -e \"(kill-emacs)\"'" >> ~/.zshrc
     source ~/.zshrc
   #+end_src
 
@@ -409,6 +409,10 @@
 
     ;; Auto tangle this file after save (with prompt)
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
+
+    ;; Disable scratch buffer text
+    (setq initial-scratch-message nil)
+    (setq initial-major-mode 'org-mode)
 
     (provide 'init-basic)
   #+end_src
