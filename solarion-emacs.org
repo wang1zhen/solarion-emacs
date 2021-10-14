@@ -55,7 +55,7 @@
   *Create alias for running emacs in terminal mode*
 
   #+begin_src shell
-    echo "alias e='emacsclient -nw -c -a \"\"'\nalias ke='emacsclient -e \"(kill-emacs)\"'" >> ~/.zshrc
+    echo "alias e='emacsclient -nw -c -a \"\"'\nalias ee='emacsclient -c -a \"\"'\nalias ke='emacsclient -e \"(kill-emacs)\"'" >> ~/.zshrc
     source ~/.zshrc
   #+end_src
 
