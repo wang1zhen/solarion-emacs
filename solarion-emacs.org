@@ -490,6 +490,8 @@
           window-divider-default-right-width 1)
     (add-hook 'window-setup-hook #'window-divider-mode)
 
+    (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
     (use-package rainbow-delimiters
       :hook
       (prog-mode . rainbow-delimiters-mode)
