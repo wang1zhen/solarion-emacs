@@ -224,6 +224,7 @@
     (defun solarion/org-mode-setup ()
       (auto-fill-mode 0)
       (visual-line-mode 1)
+      (adaptive-wrap-prefix-mode 1)
       (electric-pair-local-mode -1))
 
     ;; ask for the filename before pasting an image
@@ -375,6 +376,8 @@
       :ensure nil
       :hook (after-init . global-so-long-mode)
       :config (setq so-long-threshold 400))
+
+    (use-package adaptive-wrap)
 
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
