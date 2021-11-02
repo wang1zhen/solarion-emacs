@@ -539,7 +539,7 @@
       (cond
        ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
        ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
-       ((equal (system-name) "PC-SH") (setq font-size-factor 3))
+       ((equal (system-name) "R1700") (setq font-size-factor 3))
        (t (setq font-size-factor 2)))
 
       ;; Set default font
@@ -561,6 +561,7 @@
                when (font-installed-p font)
                return (set-fontset-font t '(#x4e00 . #x9fff) font)))
 
+    (add-hook 'after-init-hook #'solarion-config-font)
     (add-hook 'server-after-make-frame-hook #'solarion-config-font)
 
     (provide 'init-fonts)
