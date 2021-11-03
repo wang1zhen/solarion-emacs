@@ -836,7 +836,6 @@
       ;; keys
       "SPC" '(counsel-M-x :which-key "Execute")
       "a" '(avy-goto-char-2 :which-key "Avy")
-      "g" '(magit-status :which-key "Magit")
       "u" 'universal-argument
       "." #'imenu
 
@@ -897,6 +896,47 @@
       "roR" #'org-roam-ref-remove
       "rot" #'org-roam-tag-add
       "roT" #'org-roam-tag-remove
+
+      ;; git
+      "g" '(:ignore t :which-key "Git")
+      "gR" #'vc-revert
+      "gr" #'git-gutter:revert-hunk
+      "gs" #'git-gutter:stage-hunk
+      "g[" #'git-gutter:previous-hunk
+      "g]" #'git-gutter:next-hunk
+      "g/" #'magit-dispatch
+      "g." #'magit-file-dispatch
+      ;; "g'" #'forge-dispatch
+      "gb" #'magit-branch-checkout
+      "gg" #'magit-status
+      "gG" #'magit-status-here
+      "gD" #'magit-file-delete
+      "gB" #'magit-blame
+      "gC" #'magit-clone
+      "gF" #'magit-fetch
+      "gL" #'magit-log-buffer-file
+      "gS" #'magit-stage-file
+      "gU" #'magit-unstage-file
+      "gf" '(:ignore t :which-key "find")
+      "gff" #'magit-find-file
+      "gfg" #'magit-find-git-config-file
+      "gfc" #'magit-show-commit
+      ;; "gfi" #'forge-visit-issue
+      ;; "gfp" #'forge-visit-pullreq
+      "gl" '(:ignore t :which-key "list")
+      "glr" #'magit-list-repositories
+      "gls" #'magit-list-submodules
+      ;; "gli" #'forge-list-issues
+      ;; "glp" #'forge-list-pullreqs
+      ;; "gln" #'forge-list-notifications
+      "gc" '(:ignore t :which-key "create")
+      "gcr" #'magit-init
+      "gcR" #'magit-clone
+      "gcc" #'magit-commit-create
+      "gcf" #'magit-commit-fixup
+      "gcb" #'magit-branch-and-checkout
+      ;; "gci" #'forge-create-issue
+      ;; "gcp" #'forge-create-pullreq
 
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
