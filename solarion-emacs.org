@@ -229,16 +229,27 @@
 
     ;; ask for the filename before pasting an image
     ;; filename should end with ".png/.jpg/.svg"
+    ;; TODO fix for windows 11
     (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
       (interactive "P")
       (require 'org-download)
       (let ((file
-             (if (not use-default-filename)
+             (unless use-default-filename
                  (read-string (format "Filename [%s]: "
                                       org-download-screenshot-basename)
                               nil nil org-download-screenshot-basename)
-               nil)))
-        (org-download-clipboard file)))
+               )))
+        (solarion/org-download-clipboard-wsl file)))
+
+    (defun solarion/org-download-clipboard-wsl (&optional basename)
+      "fix for org-download-clipboard in wsl"
+      (interactive)
+      (let ((org-download-screenshot-method
+             (if (executable-find "magick.exe")
+                 "magick.exe convert clipboard: %s"
+               (user-error
+                "Please install the \"convert\" program included in ImageMagick"))))
+        (org-download-screenshot basename)))
 
     ;; benchmark
     (defun solarion-init-time ()
