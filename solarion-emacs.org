@@ -452,19 +452,32 @@
     (menu-bar-mode -1) ;; Disable the menu bar
     (tooltip-mode -1) ;; Disable tooltips
     (set-fringe-mode 10) ;; 左右边框
+    (global-hl-line-mode t)
 
     ;; Theme
-    (use-package doom-themes
-      :custom-face
-      (doom-modeline-buffer-file ((t (:inherit (mode-line bold)))))
-      :custom
-      (doom-themes-enable-bold t)
-      (doom-themes-enable-italic t)
+    ;; (use-package doom-themes
+    ;;   :custom-face
+    ;;   (doom-modeline-buffer-file ((t (:inherit (mode-line bold)))))
+    ;;   :custom
+    ;;   (doom-themes-enable-bold t)
+    ;;   (doom-themes-enable-italic t)
+    ;;   :init
+    ;;   (load-theme 'doom-gruvbox t)
+    ;;   :config
+    ;;   (doom-themes-visual-bell-config)
+    ;;   (doom-themes-org-config))
+
+    (use-package modus-themes
       :init
-      (load-theme 'doom-gruvbox t)
-      :config
-      (doom-themes-visual-bell-config)
-      (doom-themes-org-config))
+      (setq modus-themes-italic-constructs t
+            modus-themes-bold-constructs t
+            modus-themes-syntax '(alt-syntax green-strings yellow-comments)
+            modus-themes-links '(neutral-underline background)
+            modus-themes-hl-line '(accented intense)
+            modus-themes-intense-markup t
+            modus-themes-paren-match '(intense)
+            modus-themes-org-blocks 'gray-background)
+      (modus-themes-load-vivendi))
 
     ;; Mode-line
     (use-package doom-modeline
