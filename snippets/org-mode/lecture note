@@ -3,7 +3,7 @@
 # --
 #+TITLE: $1
 #+DATE: $2
-#+AUTHOR: wang1zhen
+#+AUTHOR: By wang1zhen
 #+LATEX_CLASS: article
 #+LATEX_CLASS_OPTIONS: [a4paper,12pt]
 #+LATEX_HEADER: \usepackage[scheme=plain]{ctex}
