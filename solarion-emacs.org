@@ -641,8 +641,7 @@
       (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
     ;; Increase selected region by semantic units
-    (use-package expand-region
-      :bind ("C-c =" . er/expand-region))
+    (use-package expand-region)
 
     ;; Hungry deletion
     ;; (use-package hungry-delete
@@ -862,6 +861,7 @@
       "a" '(avy-goto-char-2 :which-key "Avy")
       "u" 'universal-argument
       "." #'imenu
+      "=" #'er/expand-region
 
       ;; window
       "w" '(evil-window-map :which-key "Window")
