@@ -409,10 +409,11 @@
           sentence-end-double-space nil)
 
     ;; Use the system clipboard
-    (setq x-select-enable-clipboard t)
+    (setq select-enable-clipboard t)
+    ;; TODO need fix for WSLg
     ;; Xclip is needed (with X410 or VcXsrv on windows)
-    (use-package xclip
-      :hook (after-init . xclip-mode))
+    ;; (use-package xclip
+    ;;   :hook (after-init . xclip-mode))
 
     ;; Always focus the help window
     (setq help-window-select t)
