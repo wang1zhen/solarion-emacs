@@ -1224,6 +1224,7 @@
          (python . t)))
       :config
       (setq
+       org-highlight-latex-and-related '(native script entities)
        org-directory "~/org"
        org-ellipsis "\t▾"
        org-tags-column -80
