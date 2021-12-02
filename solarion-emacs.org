@@ -266,7 +266,7 @@
         (rename-file (concat "/mnt/c/Users/Public/" file-name) file-path-wsl)
         (insert (concat "#+ATTR_LATEX: :width \\linewidth\n"))
         (org-indent-line)
-        (insert (concat "[[file:" file-path-wsl "]] "))))
+        (insert (concat "[[file:" file-path-wsl "]]"))))
 
     ;; benchmark
     (defun solarion-init-time ()
@@ -485,6 +485,7 @@
     ;;   (doom-themes-visual-bell-config)
     ;;   (doom-themes-org-config))
 
+    ;; TODO will be built-in in emacs 28
     (use-package modus-themes
       :init
       (setq modus-themes-italic-constructs t
@@ -1179,7 +1180,7 @@
     (use-package ibuffer
       :ensure nil
       :bind ("C-x C-b" . ibuffer)
-      :hook (ibuffer-mode . (lambda () (ibuffer-switch-to-saved-filter-groups "custom")))
+      :hook (ibuffer-mode . (lambda () (ibuffer-auto-mode 1) (ibuffer-switch-to-saved-filter-groups "custom")))
       :custom
       (ibuffer-show-empty-filter-groups nil)
       (ibuffer-saved-filter-groups
