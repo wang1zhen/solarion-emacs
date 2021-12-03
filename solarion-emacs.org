@@ -1217,12 +1217,14 @@
       (add-to-list 'org-structure-template-alist '("py" . "src python"))
       (add-to-list 'org-structure-template-alist '("la" . "src latex"))
       (add-to-list 'org-structure-template-alist '("conf" . "src conf-unix"))
+      (add-to-list 'org-structure-template-alist '("m" . "src matlab"))
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
          (shell . t)
          (latex . t)
-         (python . t)))
+         (python . t)
+         (matlab . t)))
       :config
       (setq
        org-highlight-latex-and-related '(native script entities)
@@ -1297,6 +1299,9 @@
     (use-package org-fragtog
       :diminish
       :hook (org-mode . org-fragtog-mode))
+
+    (use-package matlab-mode
+      :diminish)
 
     (provide 'init-org)
   #+end_src
