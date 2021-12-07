@@ -1603,7 +1603,10 @@
       (setq default-input-method "rime"
             rime-show-candidate 'popup
             rime-popup-style 'vertical
-            rime-user-data-dir (concat user-emacs-directory "rime/")))
+            rime-user-data-dir (concat user-emacs-directory "rime/"))
+      :config
+      (general-unbind "<S-delete>")
+      (add-to-list 'rime-translate-keybindings "S-<delete>"))
 
     (provide 'init-rime)
   #+end_src
