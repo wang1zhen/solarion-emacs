@@ -512,7 +512,9 @@
 
     (use-package display-line-numbers
       :ensure nil
-      :init (global-display-line-numbers-mode)
+      :init
+      (global-display-line-numbers-mode 1)
+      (setq display-line-numbers-width-start t)
       :config
       (dolist (mode '(org-mode-hook
                       term-mode-hook
