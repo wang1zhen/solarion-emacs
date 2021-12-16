@@ -1112,7 +1112,7 @@
       :hook (after-init . global-company-mode)
       :init
       (setq company-minimum-prefix-length 1
-            company-idle-delay 0.2
+            company-idle-delay 0
             company-dabbrev-ignore-case nil
             company-dabbrev-downcase nil
             company-require-match nil
