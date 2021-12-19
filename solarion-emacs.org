@@ -848,6 +848,8 @@
     (general-def "C-x u" #'undo)
     (general-def "C-x r" #'redo)
 
+    (general-unbind "M-`")	;; reserved for tmux
+
     ;; dashboard
     (general-def 'normal dashboard-mode-map
       "H" #'solarion-homepage
