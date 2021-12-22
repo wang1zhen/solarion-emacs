@@ -5,6 +5,8 @@
 
 * Solarion Emacs
 
+  [[https://996.icu][https://img.shields.io/badge/link-996.icu-red.svg]]
+
   Solarion Emacs aims to enhance the Emacs experience, mainly in Terminal mode. The whole README file is a symlink to =solarion-emacs.org=, and with =org babel=, this file could be tangled into different emacs-lisp files under =$HOME/.emacs.d/=.
 
 * Table of Contents                                                        :TOC:
