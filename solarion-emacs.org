@@ -1230,6 +1230,7 @@
           ("Help" (or
                    (name . "Help")
                    (name . "^helpful")))
+          ("Magit" (name . "^magit"))
           ))))
 
     (provide 'init-ibuffer)
