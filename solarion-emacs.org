@@ -593,6 +593,12 @@
     (use-package winum
       :hook (after-init . winum-mode))
 
+    (use-package keycast
+      :after doom-modeline
+      :init
+      (add-to-list 'global-mode-string '("" mode-line-keycast))
+      (keycast-mode))
+
     (provide 'init-ui)
   #+end_src
 
