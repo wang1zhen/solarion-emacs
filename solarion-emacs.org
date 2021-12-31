@@ -1132,7 +1132,8 @@
       :hook (after-init . counsel-mode))
 
     (use-package amx
-      :ensure t)
+      :init
+      (setq amx-history-length 10))
 
     (provide 'init-ivy)
   #+end_src
