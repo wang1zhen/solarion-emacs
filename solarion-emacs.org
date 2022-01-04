@@ -1272,7 +1272,6 @@
 
     (use-package org
       :ensure nil
-      :bind
       :hook
       (org-mode . solarion/org-mode-setup)
       (org-capture-mode . evil-insert-state)
@@ -1291,8 +1290,8 @@
          (latex . t)
          (python . t)
          (matlab . t)))
-      :config
       (setq
+       org-startup-numerated t	;; Start org-mode numbered
        org-highlight-latex-and-related '(native script entities)
        org-directory "~/org"
        org-ellipsis "\t▾"
