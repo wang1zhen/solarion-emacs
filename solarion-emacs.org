@@ -1286,6 +1286,7 @@
          (matlab . t)))
       (setq
        org-startup-numerated t	;; Start org-mode numbered
+       org-adapt-indentation t	;; add indentation for newlines
        org-highlight-latex-and-related '(native script entities)
        org-directory "~/org"
        org-ellipsis "\t▾"
