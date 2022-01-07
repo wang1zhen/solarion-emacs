@@ -817,13 +817,6 @@
       :init
       (evil-collection-init))
 
-    (use-package evil-escape
-      :after evil
-      :init
-      (setq-default evil-escape-key-sequence "jk")
-      (setq-default evil-escape-delay 0.1)
-      (evil-escape-mode))
-
     (unless (display-graphic-p)
       (use-package evil-terminal-cursor-changer
         :after evil
@@ -869,6 +862,7 @@
     ;;; Code:
     ;; misc
     (general-def "<escape>" #'keyboard-escape-quit)
+    (general-define-key (general-chord "jk") (general-key "C-g"))
     (general-def [f12] #'indent-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
     (general-def 'normal org-mode-map "<return>" #'org-open-at-point)
