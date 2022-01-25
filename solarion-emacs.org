@@ -1285,13 +1285,15 @@
       (add-to-list 'org-structure-template-alist '("la" . "src latex"))
       (add-to-list 'org-structure-template-alist '("conf" . "src conf-unix"))
       (add-to-list 'org-structure-template-alist '("m" . "src matlab"))
+      (add-to-list 'org-structure-template-alist '("gp" . "src gnuplot"))
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
          (shell . t)
          (latex . t)
          (python . t)
-         (matlab . t)))
+         (matlab . t)
+         (gnuplot . t)))
       (setq
        org-startup-numerated t	;; Start org-mode numbered
        org-adapt-indentation t	;; add indentation for newlines
@@ -1379,8 +1381,15 @@
       :diminish
       :hook (org-mode . org-fragtog-mode))
 
+    ;; matlab mode, currently only for org mode, could be separated
     (use-package matlab-mode
       :diminish)
+
+    ;; gnuplot mode, currently only for org mode, could be separated
+    (use-package gnuplot
+      :diminish
+      :init
+      (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode)))
 
     (use-package org-roam-ui
       :hook (after-init . org-roam-ui-mode)
