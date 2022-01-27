@@ -599,7 +599,7 @@
     (use-package keycast
       :after doom-modeline
       :init
-      (add-to-list 'global-mode-string '("" mode-line-keycast))
+      (add-to-list 'global-mode-string '("" keycast-mode-line))
       (keycast-mode))
 
     (provide 'init-ui)
