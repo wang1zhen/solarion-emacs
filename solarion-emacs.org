@@ -160,7 +160,6 @@
     ;; Should set before loading `use-package'
     (eval-and-compile
       (setq use-package-always-ensure t)
-      (setq use-package-always-defer t)
       (setq use-package-expand-minimally t)
       (setq use-package-enable-imenu-support t))
 
@@ -435,7 +434,8 @@
       :hook (after-init . global-so-long-mode)
       :config (setq so-long-threshold 400))
 
-    (use-package adaptive-wrap)
+    (use-package adaptive-wrap
+      :commands adaptive-wrap-prefix-mode)
 
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
@@ -526,6 +526,7 @@
             modus-themes-intense-markup t
             modus-themes-paren-match '(intense)
             modus-themes-org-blocks 'gray-background)
+      :config
       (modus-themes-load-vivendi))
 
     ;; Mode-line
@@ -582,12 +583,13 @@
       (setq which-key-idle-delay 0.2
             which-key-sort-order 'which-key-key-order-alpha))
 
-    (use-package command-log-mode)
+    (use-package command-log-mode
+      :commands command-log-mode)
 
     (use-package helpful
-      :custom
-      (counsel-describe-function-function #'helpful-callable)
-      (counsel-describe-variable-function #'helpful-variable)
+      :init
+      (setq counsel-describe-function-function #'helpful-callable
+            counsel-describe-variable-function #'helpful-variable)
       :bind
       ([remap describe-function] . counsel-describe-function)
       ([remap describe-variable] . counsel-describe-variable)
@@ -675,12 +677,10 @@
       :diminish beginend-global-mode
       :hook (after-init . beginend-global-mode))
 
-    ;; Evil-nerd-commenter
-
     ;; A comprehensive visual interface to diff & patch
     (use-package ediff
       :ensure nil
-      :hook(;; show org ediffs unfolded
+      :hook (;; show org ediffs unfolded
             (ediff-prepare-buffer . outline-show-all)
             ;; restore window layout when done
             ;; (ediff-quit . winner-undo)
@@ -698,7 +698,8 @@
       (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
     ;; Increase selected region by semantic units
-    (use-package expand-region)
+    (use-package expand-region
+      :commands er/expand-region)
 
     ;; Hungry deletion
     (use-package hungry-delete
@@ -720,7 +721,8 @@
       :hook ((prog-mode . subword-mode)
              (minibuffer-setup . subword-mode)))
 
-    (use-package sudo-edit)
+    (use-package sudo-edit
+      :commands (sudo-edit-find-file sudo-edit-current-file))
 
     ;; On-the-fly spell checker
     (use-package flyspell
@@ -739,10 +741,11 @@
       :config
       ;; Correcting words with flyspell via Ivy
       (use-package flyspell-correct-ivy
-        :after ivy
-        :bind (:map flyspell-mode-map
+        :bind
+        (:map flyspell-mode-map
                     ([remap flyspell-correct-word-before-point] . flyspell-correct-wrapper))
-        :init (setq flyspell-correct-interface #'flyspell-correct-ivy)))
+        :init
+        (setq flyspell-correct-interface #'flyspell-correct-ivy)))
 
     ;; Framework for mode-specific buffer indexes
     (use-package imenu
@@ -833,6 +836,7 @@
       :after evil
       :init (global-evil-surround-mode))
 
+    ;; Evil-nerd-commenter
     (use-package evil-nerd-commenter
       :after evil)
 
@@ -1200,7 +1204,7 @@
 
     (use-package magit
       :init
-      (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+      (setq magit-display-buffer-function #'magit-display-buffer-traditional)
       :hook (git-commit-mode . evil-insert-state)
       :config
       (evil-collection-magit-setup))
@@ -1334,7 +1338,8 @@
        org-superstar-prettify-item-bullets nil))
 
     (use-package org-download
-      :init
+      :defer t
+      :config
       (org-download-enable)
       (setq
        org-download-method 'directory
@@ -1382,13 +1387,19 @@
       :hook (org-mode . org-fragtog-mode))
 
     ;; matlab mode, currently only for org mode, could be separated
-    (use-package matlab-mode
-      :diminish)
+    ;; the package name is matlab, yet it provides `matlab'
+    (use-package matlab
+      :ensure matlab-mode
+      :diminish
+      :config
+      (add-to-list 'auto-mode-alist '("\\.m\\'" . matlab-mode))
+      (setq matlab-indent-function t)
+      (setq matlab-shell-command "matlab"))
 
     ;; gnuplot mode, currently only for org mode, could be separated
     (use-package gnuplot
       :diminish
-      :init
+      :config
       (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode)))
 
     (use-package org-roam-ui
@@ -1409,8 +1420,11 @@
 
     ;;; Code:
 
-    (use-package auctex
-      :init
+    ;; package name is auctex, yet it provides `tex'
+    (use-package tex
+      :ensure auctex
+      :defer t
+      :config
       (setq
        LaTeX-electric-left-right-brace t
        TeX-engine 'xetex
@@ -1426,12 +1440,11 @@
        ;; just save, dont ask me before each compilation
        TeX-save-query nil)
 
-      (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
-      :config
+      (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
       (TeX-source-correlate-mode))
 
     (use-package auctex-latexmk
-      :init
+      :config
       (setq auctex-latexmk-inherit-TeX-PDF-mode t)
       (auctex-latexmk-setup)
       :hook
@@ -1462,12 +1475,14 @@
             dired-recursive-copies 'always))
 
     (use-package dired-rsync
+      :after dired
       :config
       (general-def dired-mode-map "C-c C-r" #'dired-rsync))
 
     ;; Colourful dired
     (use-package diredfl
-      :init (diredfl-global-mode 1))
+      :after dired
+      :config (diredfl-global-mode 1))
 
     (use-package dired-single
       :after dired
@@ -1527,7 +1542,7 @@
       :init
       (setq dashboard-banner-logo-title "Solarion Emacs"
             dashboard-startup-banner 2
-            dashboard-page-separator "\n\f\n"
+            dashboard-page-separator "\n\n"
             dashboard-center-content t
             dashboard-show-shortcuts t
             dashboard-items '((recents . 5)
@@ -1673,6 +1688,7 @@
     ;;; Code:
 
     (use-package fanyi
+      :commands fanyi-dwim
       :custom
       (fanyi-providers '(;; Longman
                          fanyi-longman-provider
