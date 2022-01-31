@@ -881,6 +881,7 @@
     (general-def 'normal org-roam-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
     (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
+    (general-def "C-c ." #'org-time-stamp)
 
     (general-def [remap undo] #'undo-fu-only-undo)
     (general-def [remap redo] #'undo-fu-only-redo)
