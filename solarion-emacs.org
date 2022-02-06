@@ -356,6 +356,7 @@
       :init
       (setq exec-path-from-shell-variables '("PATH" "MANPATH")
             exec-path-from-shell-arguments '("-l"))
+      :config
       (exec-path-from-shell-initialize))
 
     ;; Start server
@@ -1149,7 +1150,9 @@
 
     (use-package company
       :diminish
-      :hook (after-init . global-company-mode)
+      :hook
+      (after-init . global-company-mode)
+      (eshell-mode . (lambda () (company-mode 0)))
       :init
       (setq company-minimum-prefix-length 1
             company-idle-delay 0
