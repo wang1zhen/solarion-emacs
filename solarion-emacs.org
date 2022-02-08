@@ -676,10 +676,10 @@
     (use-package ediff
       :ensure nil
       :hook (;; show org ediffs unfolded
-            (ediff-prepare-buffer . outline-show-all)
-            ;; restore window layout when done
-            ;; (ediff-quit . winner-undo)
-            )
+             (ediff-prepare-buffer . outline-show-all)
+             ;; restore window layout when done
+             ;; (ediff-quit . winner-undo)
+             )
       :config
       (setq ediff-window-setup-function 'ediff-setup-windows-plain
             ediff-split-window-function 'split-window-vertically
@@ -738,7 +738,7 @@
       (use-package flyspell-correct-ivy
         :bind
         (:map flyspell-mode-map
-                    ([remap flyspell-correct-word-before-point] . flyspell-correct-wrapper))
+              ([remap flyspell-correct-word-before-point] . flyspell-correct-wrapper))
         :init
         (setq flyspell-correct-interface #'flyspell-correct-ivy)))
 
@@ -1207,9 +1207,11 @@
       :config
       (evil-collection-magit-setup))
 
-    (use-package git-gutter
-      :diminish
-      :hook (after-init . global-git-gutter-mode))
+    ;; git-gutter会导致TUI下右侧window影响到左侧window显示的内容
+    ;; 暂时需要去除此package
+    ;; (use-package git-gutter
+    ;;   :diminish
+    ;;   :hook (after-init . global-git-gutter-mode))
 
     (provide 'init-magit)
   #+end_src
