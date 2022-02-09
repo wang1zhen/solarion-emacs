@@ -3,5 +3,5 @@
 # key: beq
 # --
 \begin{equation}
-$0
-\end{equation}
+    $0
+  \end{equation}

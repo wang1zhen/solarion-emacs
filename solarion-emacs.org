@@ -1187,7 +1187,10 @@
     (use-package yasnippet
       :diminish yas-minor-mode
       :hook
-      (after-init . yas-global-mode))
+      (after-init . yas-global-mode)
+      :config
+      (setq yas-indent-line t
+            yas-also-indent-empty-lines t))
 
     (use-package yasnippet-snippets
       :after yasnippet)
