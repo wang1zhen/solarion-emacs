@@ -878,7 +878,6 @@
     (general-def 'normal org-roam-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
     (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
-    (general-def "C-c ." #'org-time-stamp)
 
     (general-def [remap undo] #'undo-fu-only-undo)
     (general-def [remap redo] #'undo-fu-only-redo)
@@ -1209,7 +1208,8 @@
 
     (use-package magit
       :init
-      (setq magit-display-buffer-function #'magit-display-buffer-traditional)
+      (setq magit-display-buffer-function #'magit-display-buffer-traditional
+            git-commit-major-mode 'org-mode)
       :hook (git-commit-mode . evil-insert-state)
       :config
       (evil-collection-magit-setup))
