@@ -515,7 +515,7 @@
     ;; TODO will be built-in in emacs 28
     (use-package modus-themes
       :init
-      (setq modus-themes-italic-constructs t
+      (setq modus-themes-italic-constructs (display-graphic-p)	;; italic is not cool in terminal mode
             modus-themes-bold-constructs t
             modus-themes-syntax '(alt-syntax green-strings yellow-comments)
             modus-themes-links '(neutral-underline background)
@@ -1279,7 +1279,7 @@
       (setq clean-buffer-list-kill-regexps '("^.*$"))
 
       (defvar solarion-clean-buffer-list-kill-never-buffer-names
-        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*")
+        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*")
         "buffer names not to kill")
       (dolist (buf solarion-clean-buffer-list-kill-never-buffer-names)
         (add-to-list 'clean-buffer-list-kill-never-buffer-names buf))
