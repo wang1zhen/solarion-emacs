@@ -28,6 +28,7 @@
 - [[#init-yasnippetel][init-yasnippet.el]]
 - [[#init-magitel][init-magit.el]]
 - [[#init-ibufferel][init-ibuffer.el]]
+- [[#init-midnightel][init-midnight.el]]
 - [[#init-trampel][init-tramp.el]]
 - [[#init-orgel][init-org.el]]
 - [[#init-latexel][init-latex.el]]
@@ -108,6 +109,7 @@
 
     (require 'init-magit)
     (require 'init-ibuffer)
+    (require 'init-midnight)
 
     (require 'init-tramp)
 
@@ -1249,6 +1251,46 @@
           ))))
 
     (provide 'init-ibuffer)
+  #+end_src
+
+* init-midnight.el
+
+  Clean inactive buffers.
+  #+begin_src emacs-lisp :tangle ./lisp/init-midnight.el :mkdirp yes
+    ;;; init-midnight.el --- Configurations for midnight -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    ;; use `clean-buffer-list' from `midngiht.el'
+    (use-package midnight
+      :config
+      ;;kill buffers if they were last disabled more than this seconds ago
+      (setq clean-buffer-list-delay-special (* 3 60 60))
+
+      (defvar clean-buffer-list-timer nil
+        "Stores clean-buffer-list timer if there is one. You can disable clean-buffer-list by (cancel-timer clean-buffer-list-timer).")
+
+      ;; run clean-buffer-list every 30 minites
+      (setq clean-buffer-list-timer (run-at-time t 1800 'clean-buffer-list))
+
+      ;; kill everything, clean-buffer-list is very intelligent at not killing
+      ;; unsaved buffer.
+      ;; 满足条件且超过`clean-buffer-list-delay-special'的buffer才会被清除
+      (setq clean-buffer-list-kill-regexps '("^.*$"))
+
+      (defvar solarion-clean-buffer-list-kill-never-buffer-names
+        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*")
+        "buffer names not to kill")
+      (dolist (buf solarion-clean-buffer-list-kill-never-buffer-names)
+        (add-to-list 'clean-buffer-list-kill-never-buffer-names buf))
+
+      (defvar solarion-clean-buffer-list-kill-never-regexps
+        nil
+        "regexps not to kill")
+      (dolist (buf solarion-clean-buffer-list-kill-never-regexps)
+        (add-to-list 'clean-buffer-list-kill-never-regexps buf)))
+
+    (provide 'init-midnight)
   #+end_src
 
 * init-tramp.el
