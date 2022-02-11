@@ -1588,7 +1588,7 @@
       :diminish
       :init
       (setq dashboard-banner-logo-title "Solarion Emacs"
-            dashboard-startup-banner 2
+            dashboard-startup-banner (concat user-emacs-directory "banner.txt")
             dashboard-page-separator "\n\n"
             dashboard-center-content t
             dashboard-show-shortcuts t
