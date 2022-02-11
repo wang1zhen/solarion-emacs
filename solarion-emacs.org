@@ -935,7 +935,7 @@
       "4" '(winum-select-window-4 :which-key "Switch to window 4")
       "5" '(winum-select-window-5 :which-key "Switch to window 5")
 
-      ;; buffer
+      ;; buffer & bookmark
       "b" '(:ignore t :which-key "Buffer/Bookmark")
       "bp" '(previous-buffer :which-key "Previous Buffer")
       "bn" '(next-buffer :which-key "Next Buffer")
@@ -946,7 +946,7 @@
       "bm" '(bookmark-set :which-key "Set Bookmark")
       "bM" '(bookmark-delete :which-key "Delete Bookmark")
       "bj" '(counsel-bookmark :which-key "Jump to Bookmark")
-      ;; investigate bookmarks
+      "bl" '(list-bookmarks :which-key "Bookmarks List")
       "bN" '(evil-buffer-new :which-key "New Empty Buffer")
       "br" '(revert-buffer :which-key "Revert Buffer")
       "bs" '(basic-save-buffer :which-key "Save Buffer")
