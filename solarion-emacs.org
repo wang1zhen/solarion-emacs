@@ -520,7 +520,7 @@
             modus-themes-syntax '(alt-syntax green-strings yellow-comments)
             modus-themes-links '(neutral-underline background)
             modus-themes-hl-line '(accented intense)
-            modus-themes-intense-markup t
+            modus-themes-markup '(intense background)
             modus-themes-paren-match '(intense)
             modus-themes-org-blocks 'gray-background)
       :config
