@@ -12,6 +12,7 @@
 * Table of Contents                                                        :TOC:
 - [[#solarion-emacs][Solarion Emacs]]
 - [[#installation][Installation]]
+- [[#early-initel][early-init.el]]
 - [[#initel][init.el]]
 - [[#init-packageel][init-package.el]]
 - [[#init-funcel][init-func.el]]
@@ -64,6 +65,31 @@
   #+end_src
 
   *Launch Emacs and have fun!*
+
+* early-init.el
+
+  #+begin_src emacs-lisp :tangle ./early-init.el
+    ;;; early-init.el --- early-init.el is run before package and UI initialization happens -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    ;; Defer garbage collection further back in the startup process
+    (setq gc-cons-threshold most-positive-fixnum
+          gc-cons-percentage 0.5)
+
+    ;; Package initialize occurs automatically, before `user-init-file' is
+    ;; loaded, but after `early-init-file'. We handle package
+    ;; initialization, so we must prevent Emacs from doing it early!
+    (setq package-enable-at-startup nil)
+
+    ;; Inhibit resizing frame
+    (setq frame-inhibit-implied-resize t)
+
+    ;; Faster to disable these here (before they've been initialized)
+    (push '(menu-bar-lines . 0) default-frame-alist)
+    (push '(tool-bar-lines . 0) default-frame-alist)
+    (push '(vertical-scroll-bars) default-frame-alist)
+  #+end_src
 
 * init.el
 
@@ -271,10 +297,9 @@
     ;; benchmark
     (defun solarion-init-time ()
       "Showing Emacs initializing time, packages loaded and GC"
-      (format "Emacs loaded %d packages in %.2f ms with %d garbage collections."
+      (format "Emacs loaded %d packages in %.2f ms."
               (- (length load-path) (length (get 'load-path 'initial-value)))
-              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))
-              gcs-done))
+              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))))
 
     ;; dashboard
     (defun solarion-homepage (&rest _)
@@ -492,9 +517,6 @@
     (setq-default cursor-in-non-selected-windows nil)
     (setq highlight-nonselected-windows nil)
 
-    (scroll-bar-mode -1) ;; Disable visible scrollbar
-    (tool-bar-mode -1) ;; Disable the toolbar
-    (menu-bar-mode -1) ;; Disable the menu bar
     (tooltip-mode -1) ;; Disable tooltips
     (set-fringe-mode 10) ;; 左右边框
     (global-hl-line-mode t)
@@ -588,7 +610,7 @@
       ([remap describe-function] . counsel-describe-function)
       ([remap describe-variable] . counsel-describe-variable)
       ([remap describe-key] . helpful-key)
-      :config
+      :init
       (setq counsel-describe-function-function #'helpful-callable
             counsel-describe-variable-function #'helpful-variable
             counsel-describe-symbol-function #'helpful-symbol))
