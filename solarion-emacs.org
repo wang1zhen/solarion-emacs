@@ -584,22 +584,22 @@
       :commands command-log-mode)
 
     (use-package helpful
-      :init
-      (setq counsel-describe-function-function #'helpful-callable
-            counsel-describe-variable-function #'helpful-variable)
       :bind
       ([remap describe-function] . counsel-describe-function)
       ([remap describe-variable] . counsel-describe-variable)
-      ([remap describe-key] . helpful-key))
+      ([remap describe-key] . helpful-key)
+      :config
+      (setq counsel-describe-function-function #'helpful-callable
+            counsel-describe-variable-function #'helpful-variable
+            counsel-describe-symbol-function #'helpful-symbol))
 
     (use-package winum
       :hook (after-init . winum-mode))
 
     (use-package keycast
       :after doom-modeline
-      :init
-      (add-to-list 'global-mode-string '("" keycast-mode-line))
       :config
+      (add-to-list 'global-mode-string '("" keycast-mode-line))
       (keycast-mode))
 
     (provide 'init-ui)
