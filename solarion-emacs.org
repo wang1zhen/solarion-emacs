@@ -1158,6 +1158,16 @@
       :diminish counsel-mode
       :hook (after-init . counsel-mode))
 
+    (use-package prescient
+      :after counsel
+      :config
+      (prescient-persist-mode 1))
+
+    (use-package ivy-prescient
+      :after prescient
+      :config
+      (ivy-prescient-mode 1))
+
     (use-package amx
       :init
       (setq amx-history-length 10))
