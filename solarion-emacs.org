@@ -1138,10 +1138,8 @@
       :diminish ivy-mode
       :hook (after-init . ivy-mode)
       :init
-      (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-      :custom
-      (ivy-use-selectable-prompt 1)
-      (ivy-initial-inputs-alist nil))
+      (setq ivy-use-selectable-prompt 1
+            ivy-initial-inputs-alist nil))
 
     (use-package ivy-rich
       :diminish ivy-rich-mode
