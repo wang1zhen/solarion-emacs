@@ -44,22 +44,19 @@
 
   *Clone the repository*
 
-  #+begin_src shell
+  #+begin_src shell :tangle no
     git clone https://github.com/wang1zhen/solarion-emacs ~/.emacs.d
   #+end_src
 
   *Tangle the org file*
 
-  #+begin_src shell
-    emacs -nw -q ~/.emacs.d/solarion-emacs.org
+  #+begin_src shell :tangle no
+    emacs --batch --eval "(progn (require 'org) (let ((org-confirm-babel-evaluate nil)) (org-babel-tangle-file \"~/.emacs.d/solarion-emacs.org\")))"
   #+end_src
-
-  Press =C-c C-v t= or =M-x org-babel-tangle= to tangle the org file into =init.el=.
-  After =org-babel-tangle= is finished, =C-x C-c= to quit emacs.
 
   *Create alias for running emacs in terminal mode*
 
-  #+begin_src shell
+  #+begin_src shell :tangle no
     echo "alias e='emacsclient -nw -c -a \"\"'\nalias ee='emacsclient -c -a \"\"'\nalias ke='emacsclient -e \"(kill-emacs)\"'" >> ~/.zshrc
     source ~/.zshrc
   #+end_src
