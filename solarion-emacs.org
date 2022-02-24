@@ -515,8 +515,11 @@
     (setq highlight-nonselected-windows nil)
 
     (tooltip-mode -1) ;; Disable tooltips
-    (set-fringe-mode 10) ;; 左右边框
+    (set-fringe-mode 10) ;; 左右边框 仅对GUI生效
     (global-hl-line-mode t)
+
+    (setq-default left-margin-width 2
+                  right-margin-width 2)	;; 左右边框 TUI下生效
 
     ;; Theme
     ;; (use-package doom-themes
