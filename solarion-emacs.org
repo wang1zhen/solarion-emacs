@@ -998,7 +998,8 @@
       "rg" #'org-roam-graph
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
-      "rs" #'org-roam-db-sync
+      "rs" #'solarion/org-roam-rg
+      "rS" #'org-roam-db-sync
       "ro" '(:ignore t :which-key "Node Properties")
       "roa" #'org-roam-alias-add
       "roA" #'org-roam-alias-remove
@@ -1081,7 +1082,8 @@
       "rg" #'org-roam-graph
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
-      "rs" #'org-roam-db-sync
+      "rs" #'solarion/org-roam-rg
+      "rS" #'org-roam-db-sync
       "ro" '(:ignore t :which-key "Node Properties")
       "roa" #'org-roam-alias-add
       "roA" #'org-roam-alias-remove
@@ -1154,7 +1156,9 @@
 
     (use-package counsel
       :diminish counsel-mode
-      :hook (after-init . counsel-mode))
+      :hook (after-init . counsel-mode)
+      :config
+      (setq counsel-rg-base-command '("rg" "--max-columns" "500" "--with-filename" "--no-heading" "--line-number" "--color" "never" "--ignore-case" "%s")))
 
     (use-package prescient
       :after counsel
@@ -1454,8 +1458,12 @@
               ("r" "Research Note" plain
                (file "~/org-roam/Templates/ResearchNoteTemplate.org")
                :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %u\n")
-               :unnarrowed t))
-            ))
+               :unnarrowed t)))
+      (defun solarion/org-roam-rg ()
+        "Search org-roam directory using counsel-rg."
+        (interactive)
+        (let ((counsel-rg-base-command '("rg" "--max-columns" "500" "--with-filename" "--no-heading" "--line-number" "--color" "never" "--ignore-case" "--type" "org" "%s")))
+          (counsel-rg nil org-roam-directory))))
 
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
