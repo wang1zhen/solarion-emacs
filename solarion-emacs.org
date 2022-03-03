@@ -687,6 +687,11 @@
             auto-revert-interval 1)
       (global-auto-revert-mode))
 
+    ;; replace the emacs default auto-save
+    (use-package super-save
+      :config
+      (super-save-mode t))
+
     ;; Jump to things in Emacs tree-style
     (use-package avy
       :hook (after-init . avy-setup-default)
