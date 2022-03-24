@@ -1232,7 +1232,7 @@
       :hook
       (after-init . yas-global-mode)
       :config
-      (setq yas-indent-line t
+      (setq yas-indent-line 'fixed
             yas-also-indent-empty-lines t))
 
     (use-package yasnippet-snippets
