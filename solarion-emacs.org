@@ -227,8 +227,7 @@
     ;; Auto tangle babel file
     (defun org-babel-auto-tangle ()
       (when (and (eq major-mode 'org-mode)
-                 (string-equal (buffer-name) "solarion-emacs.org")
-                 (y-or-n-p "Tangle?"))
+                 (string-equal (buffer-name) "solarion-emacs.org"))
         (org-babel-tangle)))
 
     ;; Define split-window-below-and-focus and split-window-right-and-focus
@@ -639,31 +638,32 @@
     (require 'cl-lib)
 
     (defun solarion-config-font ()
-      ;; Configure font-size-factor with respect to system-name
-      (cond
-       ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
-       ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
-       ((equal (system-name) "R1700") (setq font-size-factor 3))
-       (t (setq font-size-factor 2)))
+      (when (display-graphic-p)
+        ;; Configure font-size-factor with respect to system-name
+        (cond
+         ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
+         ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
+         ((equal (system-name) "R1700") (setq font-size-factor 3))
+         (t (setq font-size-factor 2)))
 
-      ;; Set default font
-      (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
-                             "FiraCode Nerd Font" "Fira Code"
-                             "Hack" "Source Code Pro" "Consolas")
-               when (font-installed-p font)
-               return (set-face-attribute 'default nil
-                                          :font font
-                                          :height (* font-size-factor 60)))
+        ;; Set default font
+        (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
+                               "FiraCode Nerd Font" "Fira Code"
+                               "Hack" "Source Code Pro" "Consolas")
+                 when (font-installed-p font)
+                 return (set-face-attribute 'default nil
+                                            :font font
+                                            :height (* font-size-factor 60)))
 
-      ;; Specify font for all unicode characters
-      (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
-               when (font-installed-p font)
-               return (set-fontset-font t 'unicode font nil 'prepend))
+        ;; Specify font for all unicode characters
+        (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+                 when (font-installed-p font)
+                 return (set-fontset-font t 'unicode font nil 'prepend))
 
-      ;; Specify font for Chinese characters
-      (cl-loop for font in '("Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
-               when (font-installed-p font)
-               return (set-fontset-font t '(#x4e00 . #x9fff) font)))
+        ;; Specify font for Chinese characters
+        (cl-loop for font in '("霞鹜文楷" "Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
+                 when (font-installed-p font)
+                 return (set-fontset-font t '(#x4e00 . #x9fff) (font-spec :family font :weight 'bold)))))
 
     (add-hook 'after-init-hook #'solarion-config-font)
     (add-hook 'server-after-make-frame-hook #'solarion-config-font)
@@ -1634,14 +1634,14 @@
       :diminish
       :init
       (setq dashboard-banner-logo-title "Solarion Emacs"
-            dashboard-startup-banner (concat user-emacs-directory "banner.txt")
+            dashboard-startup-banner "~/.emacs.d/logo.png"
+            dashboard-image-banner-max-height 400
             dashboard-page-separator "\n\n"
             dashboard-center-content t
             dashboard-show-shortcuts t
             dashboard-items '((recents . 5)
                               (bookmarks . 5)
-                              (projects . 3)
-                              (agenda . 5))
+                              (projects . 3))
             dashboard-set-init-info t
             dashboard-set-footer nil
             dashboard-set-navigator t
@@ -1806,8 +1806,9 @@
     (use-package rime
       :init
       (setq default-input-method "rime"
-            rime-show-candidate 'popup
+            rime-show-candidate 'posframe
             rime-popup-style 'vertical
+            rime-posframe-style 'vertical
             rime-user-data-dir (concat user-emacs-directory "rime/"))
       :config
       (general-unbind "<S-delete>")
