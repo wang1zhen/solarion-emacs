@@ -1410,7 +1410,7 @@
        ;; maketitle command
        org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
-      (general-def org-mode-map "C-RET" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
+      (general-def org-mode-map "C-<return>" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
       (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
       )
 
