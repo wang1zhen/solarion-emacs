@@ -785,6 +785,9 @@
       (global-pangu-spacing-mode 1)
       (setq pangu-spacing-real-insert-separtor t))
 
+    ;; occur
+    (add-hook 'occur-hook (lambda () (switch-to-buffer-other-window "*Occur*")))
+
     (provide 'init-edit)
   #+end_src
 
@@ -1058,7 +1061,8 @@
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
       "ot" #'(counsel-load-theme :which-key "Choose Theme")
-      "oo" #'(fanyi-dwim :which-key "Dict")
+      "oo" #'occur
+      "of" #'(fanyi-dwim :which-key "Dict")
       )
 
     ;; Local leader
