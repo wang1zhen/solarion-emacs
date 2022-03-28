@@ -639,14 +639,18 @@
 
     (require 'cl-lib)
 
+    (defcustom solarion-font-size-factor
+      3
+      "A factor for fonts to determine the actual font size in GUI.\nMultiplied by 60.")
+
     (defun solarion-config-font ()
       (when (display-graphic-p)
         ;; Configure font-size-factor with respect to system-name
-        (cond
-         ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
-         ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
-         ((equal (system-name) "R1700") (setq font-size-factor 3))
-         (t (setq font-size-factor 2)))
+        ;; (cond
+        ;;  ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
+        ;;  ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
+        ;;  ((equal (system-name) "R1700") (setq font-size-factor 3))
+        ;;  (t (setq font-size-factor 2)))
 
         ;; Set default font
         (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
@@ -655,7 +659,7 @@
                  when (font-installed-p font)
                  return (set-face-attribute 'default nil
                                             :font font
-                                            :height (* font-size-factor 60)))
+                                            :height (* solarion-font-size-factor 60)))
 
         ;; Specify font for all unicode characters
         (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
