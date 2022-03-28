@@ -551,6 +551,8 @@
     ;; Mode-line
     (use-package doom-modeline
       :diminish doom-modeline-mode
+      :config
+      (setq doom-modeline-modal-icon nil)
       :hook (after-init . doom-modeline-mode))
 
     ;; Icons
