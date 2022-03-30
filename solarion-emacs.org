@@ -1398,6 +1398,8 @@
          (matlab . t)
          (gnuplot . t)))
       (setq
+       org-startup-with-inline-images t
+       org-startup-with-latex-preview t
        org-startup-numerated t	;; Start org-mode numbered
        org-adapt-indentation t	;; add indentation for newlines
        org-highlight-latex-and-related '(native script entities)
@@ -1419,9 +1421,16 @@
        org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\setcounter{page}{1}\n\\pagestyle{plain}\n\n"
        ;; maketitle command
        org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
+      ;; size of the preview latex fragments
+      (plist-put org-format-latex-options :scale solarion-font-size-factor)
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
       (general-def org-mode-map "C-<return>" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
       (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
+      ;; org latex packages
+      (setq org-latex-packages-alist
+            '(("" "siunitx" t)
+              ("" "mathrsfs" t)))
+      (setq org-image-actual-width 400)
       )
 
     (use-package ox-gfm
