@@ -544,7 +544,7 @@
             modus-themes-hl-line '(intense)
             modus-themes-markup '(intense background)
             modus-themes-paren-match '(intense)
-            modus-themes-org-blocks 'gray-background)
+            modus-themes-org-blocks nil)
       :config
       (modus-themes-load-vivendi))
 
