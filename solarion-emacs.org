@@ -24,7 +24,7 @@
 - [[#init-evilel][init-evil.el]]
 - [[#init-hydrael][init-hydra.el]]
 - [[#init-mapel][init-map.el]]
-- [[#init-ivyel][init-ivy.el]]
+- [[#init-verticoel][init-vertico.el]]
 - [[#init-companyel][init-company.el]]
 - [[#init-yasnippetel][init-yasnippet.el]]
 - [[#init-magitel][init-magit.el]]
@@ -126,7 +126,7 @@
     (require 'init-hydra)
     (require 'init-map)
 
-    (require 'init-ivy)
+    (require 'init-vertico)
     (require 'init-company)
     (require 'init-yasnippet)
 
@@ -609,13 +609,9 @@
 
     (use-package helpful
       :bind
-      ([remap describe-function] . counsel-describe-function)
-      ([remap describe-variable] . counsel-describe-variable)
-      ([remap describe-key] . helpful-key)
-      :init
-      (setq counsel-describe-function-function #'helpful-callable
-            counsel-describe-variable-function #'helpful-variable
-            counsel-describe-symbol-function #'helpful-symbol))
+      ([remap describe-function] . helpful-callable)
+      ([remap describe-variable] . helpful-variable)
+      ([remap describe-key] . helpful-key))
 
     (use-package winum
       :hook (after-init . winum-mode))
@@ -662,7 +658,7 @@
                                             :height (* solarion-font-size-factor 60)))
 
         ;; Specify font for all unicode characters
-        (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+        (cl-loop for font in '("Symbola")
                  when (font-installed-p font)
                  return (set-fontset-font t 'unicode font nil 'prepend))
 
@@ -772,17 +768,13 @@
                   ispell-program-name "aspell"
                   ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
       :config
-      ;; Correcting words with flyspell via Ivy
-      (use-package flyspell-correct-ivy
-        :bind
-        (:map flyspell-mode-map
-              ([remap flyspell-correct-word-before-point] . flyspell-correct-wrapper))
-        :init
-        (setq flyspell-correct-interface #'flyspell-correct-ivy)))
+      )
 
     ;; Framework for mode-specific buffer indexes
     (use-package imenu
-      :ensure nil)
+      :ensure nil
+      :init
+      (setq imenu-auto-rescan t))
 
     ;; 中英文间自动加入空格
     (use-package pangu-spacing
@@ -957,10 +949,10 @@
       "p" #'(projectile-command-map :which-key "Projectile")
 
       ;; keys
-      "SPC" '(counsel-M-x :which-key "Execute")
+      "SPC" '(execute-extended-command :which-key "Execute")
       "a" '(avy-goto-char-timer :which-key "Avy")
       "u" 'universal-argument
-      "." #'imenu
+      "." #'consult-imenu
       "=" #'er/expand-region
 
       ;; window
@@ -978,13 +970,13 @@
       "b" '(:ignore t :which-key "Buffer/Bookmark")
       "bp" '(previous-buffer :which-key "Previous Buffer")
       "bn" '(next-buffer :which-key "Next Buffer")
-      "bb" '(switch-to-buffer :which-key "Switch Buffer")
+      "bb" '(consult-buffer :which-key "Switch Buffer")
       "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
       "bd" '(kill-current-buffer :which-key "Kill Buffer")
       "bi" 'ibuffer
       "bm" '(bookmark-set :which-key "Set Bookmark")
       "bM" '(bookmark-delete :which-key "Delete Bookmark")
-      "bj" '(counsel-bookmark :which-key "Jump to Bookmark")
+      "bj" '(consult-bookmark :which-key "Jump to Bookmark")
       "bl" '(list-bookmarks :which-key "Bookmarks List")
       "bN" '(evil-buffer-new :which-key "New Empty Buffer")
       "br" '(revert-buffer :which-key "Revert Buffer")
@@ -997,7 +989,7 @@
       "ff" '(find-file :which-key "Find File")
       "fs" '(save-buffer :which-key "Save File")
       "fS" '(write-file :which-key "Save File As")
-      "fr" '(counsel-recentf :which-key "Recent Files")
+      "fr" '(consult-recent-file :which-key "Recent Files")
       "fp" #'(solarion-edit-config :which-key "Edit Config")
 
       ;; quit
@@ -1066,7 +1058,7 @@
 
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
-      "ot" #'(counsel-load-theme :which-key "Choose Theme")
+      "ot" #'(consult-theme :which-key "Choose Theme")
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
       )
@@ -1075,8 +1067,7 @@
     ;; org-mode
     (local-leader-def org-mode-map
       "," #'org-switchb
-      "." #'counsel-org-goto-all
-      ;; "/" #'counsel-org-goto-all
+      "." #'consult-org-heading
       "b" #'org-mark-ring-goto
       "a" '(:ignore t :which-key "Attach")
       "aa" #'org-attach
@@ -1140,57 +1131,81 @@
       ;; replaces `view-hello-file' b/c annoying
       "h"    nil
       ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
-      "t"    #'counsel-load-theme
+      "t"    #'consult-theme
       ;; replaces `finder-by-keyword' b/c not useful
       "p"    nil)
 
     (provide 'init-map)
   #+end_src
 
-* init-ivy.el
+* init-vertico.el
 
-  The Ivy bundle. Amx provides enhancements to ivy and counsel.
-  #+begin_src emacs-lisp :tangle ./lisp/init-ivy.el :mkdirp yes
-    ;;; init-ivy.el --- Initialize ivy configurations -*- lexical-binding: t -*-
+  The bundle of vertico, consult, orderless, marginalia and embark
+  #+begin_src emacs-lisp :tangle ./lisp/init-vertico.el :mkdirp yes
+    ;;; init-vertico.el --- Initialize the vertico bundle -*- lexical-binding: t -*-
 
     ;;; Code:
 
-    (use-package ivy
-      :diminish ivy-mode
-      :hook (after-init . ivy-mode)
+    (use-package vertico
       :init
-      (setq ivy-use-selectable-prompt 1
-            ivy-initial-inputs-alist nil))
+      (vertico-mode)
 
-    (use-package ivy-rich
-      :diminish ivy-rich-mode
-      :after (ivy counsel)
-      :init (ivy-rich-mode))
+      (setq vertico-scroll-margin 2)
 
-    (use-package swiper
-      :bind (("C-s" . swiper)))
+      ;; Show 10 candidates
+      (setq vertico-count 10)
 
-    (use-package counsel
-      :diminish counsel-mode
-      :hook (after-init . counsel-mode)
-      :config
-      (setq counsel-rg-base-command '("rg" "--max-columns" "500" "--with-filename" "--no-heading" "--line-number" "--color" "never" "--ignore-case" "%s")))
+      ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+      (setq vertico-cycle t)
+      )
 
-    (use-package prescient
-      :after counsel
-      :config
-      (prescient-persist-mode 1))
-
-    (use-package ivy-prescient
-      :after prescient
-      :config
-      (ivy-prescient-mode 1))
-
-    (use-package amx
+    (use-package orderless
       :init
-      (setq amx-history-length 10))
+      ;; Configure a custom style dispatcher (see the Consult wiki)
+      ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+      ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+      (setq completion-styles '(orderless)
+            completion-category-defaults nil
+            completion-category-overrides '((file (styles partial-completion)))))
 
-    (provide 'init-ivy)
+    ;; Persist history over Emacs restarts. Vertico sorts by history position.
+    (use-package savehist
+      :init
+      (savehist-mode))
+
+    ;; Enable richer annotations using the Marginalia package
+    (use-package marginalia
+      ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+      ;; The :init configuration is always executed (Not lazy!)
+      :init
+
+      ;; Must be in the :init section of use-package such that the mode gets
+      ;; enabled right away. Note that this forces loading the package.
+      (marginalia-mode))
+
+    (use-package consult
+      :bind
+      ("C-s" . consult-line)
+      ([remap yank-pop] . consult-yank-pop)
+      )
+
+    (use-package embark
+      :bind
+      ("C-." . embark-act)
+      ("M-." . embark-dwim)
+      ;; Optionally replace the key help with a completing-read interface
+      :init
+      (setq prefix-help-command #'embark-prefix-help-command))
+
+    (use-package embark-consult
+      :after (embark consult)
+      :demand t ; only necessary if you have the hook below
+      ;; if you want to have consult previews as you move around an
+      ;; auto-updating embark collect buffer
+      :hook
+      (embark-collect-mode . consult-preview-at-point-mode))
+
+    (provide 'init-vertico)
   #+end_src
 
 * init-company.el
@@ -1484,11 +1499,12 @@
                (file "~/org-roam/Templates/ResearchNoteTemplate.org")
                :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %u\n")
                :unnarrowed t)))
-      (defun solarion/org-roam-rg ()
-        "Search org-roam directory using counsel-rg."
+      (defun solarion/org-roam-rg-search ()
+        "Search org-roam directory using consult-ripgrep. With live-preview."
         (interactive)
-        (let ((counsel-rg-base-command '("rg" "--max-columns" "500" "--with-filename" "--no-heading" "--line-number" "--color" "never" "--ignore-case" "--type" "org" "%s")))
-          (counsel-rg nil org-roam-directory))))
+        (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
+          (consult-ripgrep org-roam-directory)))
+      )
 
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
@@ -1634,11 +1650,6 @@
             projectile-sort-order 'recentf
             projectile-use-git-grep t))
 
-    (use-package counsel-projectile
-      :diminish
-      :after projectile
-      :hook (after-init . counsel-projectile-mode))
-
     (provide 'init-projectile)
   #+end_src
 
@@ -1778,16 +1789,7 @@
       ;; Don't save persp configs in `recentf'
       (with-eval-after-load 'recentf
         (push persp-save-dir recentf-exclude))
-
-      ;; Ivy Integration
-      (with-eval-after-load 'ivy
-        (add-to-list 'ivy-ignore-buffers
-                     #'(lambda (b)
-                         (when persp-mode
-                           (let ((persp (get-current-persp)))
-                             (if persp
-                                 (not (persp-contain-buffer-p b persp))
-                               nil)))))))
+      )
 
     (provide 'init-persp)
   #+end_src
