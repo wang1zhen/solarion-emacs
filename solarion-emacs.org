@@ -537,14 +537,15 @@
     ;; TODO will be built-in in emacs 28
     (use-package modus-themes
       :init
-      (setq modus-themes-italic-constructs (display-graphic-p)	;; italic is not cool in terminal mode
+      (setq modus-themes-italic-constructs t
             modus-themes-bold-constructs t
             modus-themes-syntax '(alt-syntax green-strings yellow-comments)
             modus-themes-links '(neutral-underline background)
             modus-themes-hl-line '(intense)
-            modus-themes-markup '(intense background)
+            modus-themes-markup '(italic bold intense background)
             modus-themes-paren-match '(intense)
             modus-themes-org-blocks nil)
+      (setq modus-themes-completions '((selection . (intense))))
       :config
       (modus-themes-load-vivendi))
 
