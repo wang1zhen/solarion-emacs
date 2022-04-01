@@ -554,6 +554,9 @@
       :diminish doom-modeline-mode
       :config
       (setq doom-modeline-modal-icon nil)
+      ;; Must use mono font here
+      (set-face-attribute 'mode-line nil :font "CaskaydiaCove Nerd Font Mono" :height 140)
+      (set-face-attribute 'mode-line-inactive nil :font "CaskaydiaCove Nerd Font Mono" :height 140)
       :hook (after-init . doom-modeline-mode))
 
     ;; Icons
@@ -617,11 +620,27 @@
     (use-package winum
       :hook (after-init . winum-mode))
 
+    ;; (use-package keycast
+    ;; :after doom-modeline
+    ;; :config
+    ;; (add-to-list 'global-mode-string '("" keycast-mode-line " "))
+    ;; (keycast-mode))
+
     (use-package keycast
       :after doom-modeline
+      :commands keycast-mode
       :config
-      (add-to-list 'global-mode-string '("" keycast-mode-line))
-      (keycast-mode))
+      (define-minor-mode keycast-mode
+        "Show current command and its key binding in the mode line."
+        :global t
+        (if keycast-mode
+            (progn
+              (add-hook 'pre-command-hook 'keycast--update t)
+              (add-to-list 'global-mode-string '("" keycast-mode-line " ")))
+          (remove-hook 'pre-command-hook 'keycast--update)
+          (setq global-mode-string (remove '("" keycast-mode-line " ") global-mode-string))))
+      (keycast-mode)
+      )
 
     (provide 'init-ui)
   #+end_src
