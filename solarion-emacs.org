@@ -385,7 +385,9 @@
     ;; Start server
     (use-package server
       :ensure nil
-      :hook (after-init . server-mode))
+      :config
+      (unless (server-running-p)
+        (server-mode)))
 
     ;; Go to the last place when previously visited the file
     (use-package saveplace
