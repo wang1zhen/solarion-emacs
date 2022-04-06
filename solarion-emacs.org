@@ -1182,6 +1182,12 @@
 
       ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
       (setq vertico-cycle t)
+
+      ;; vertico-directory
+      (general-def vertico-map "\r" #'vertico-directory-enter)
+      (general-def vertico-map "\d" #'vertico-directory-delete-char)
+      (general-def vertico-map "C-\d" #'vertico-directory-delete-word)
+      (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
       )
 
     (use-package orderless
