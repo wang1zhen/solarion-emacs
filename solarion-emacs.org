@@ -39,6 +39,7 @@
 - [[#init-perspel][init-persp.el]]
 - [[#init-dictel][init-dict.el]]
 - [[#init-rimeel][init-rime.el]]
+- [[#init-wslel][init-wsl.el]]
 
 * Installation
 
@@ -151,6 +152,9 @@
     (require 'init-dict)
     (require 'init-rime)
 
+    ;; WSL specific setting
+    (when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
+      (require 'init-wsl))
   #+end_src
 
 * init-package.el
@@ -465,7 +469,7 @@
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
     (setq-default major-mode 'emacs-lisp-mode
-                  tab-width 4
+                  tab-width 8
                   indent-tabs-mode nil)     ; Permanently indent with spaces, never with TABs
 
     (setq visible-bell t
@@ -1884,4 +1888,23 @@
       (add-to-list 'rime-translate-keybindings "S-<delete>"))
 
     (provide 'init-rime)
+  #+end_src
+
+* init-wsl.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-wsl.el :mkdirp yes
+    ;;; init-wsl.el --- wsl-specific setup -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    ;; teach Emacs how to open links with your default browser
+    (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+          (cmd-args '("/c" "start")))
+      (when (file-exists-p cmd-exe)
+        (setq browse-url-generic-program  cmd-exe
+              browse-url-generic-args     cmd-args
+              browse-url-browser-function 'browse-url-generic
+              search-web-default-browser 'browse-url-generic)))
+
+    (provide 'init-wsl)
   #+end_src
