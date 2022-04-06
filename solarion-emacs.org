@@ -107,6 +107,9 @@
       (add-hook 'emacs-startup-hook
                 (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
+    ;; Always load newest byte code
+    (setq load-prefer-newer t)
+
     ;; Packages
     (require 'init-package)
 
@@ -399,11 +402,10 @@
 
     (use-package recentf
       :ensure nil
-      :bind (("C-x C-r" . recentf-open-files))
       :hook (after-init . recentf-mode)
       :init
-      (setq recentf-max-saved-items 300
-            recentf-max-menu-items 5
+      (setq recentf-max-saved-items 500
+            recentf-max-menu-items 15
             recentf-exclude
             '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
               "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
@@ -509,7 +511,9 @@
     ;;; Code:
 
     ;; Title
-    (setq frame-title-format '("Solarion Emacs - %b")
+    (setq frame-title-format '("Solarion Emacs - " (:eval (if (buffer-file-name)
+                                                              (abbreviate-file-name (buffer-file-name))
+                                                            "%b")))
           icon-title-format frame-title-format)
 
     ;; Optimization
@@ -716,6 +720,7 @@
 
     ;; replace the emacs default auto-save
     (use-package super-save
+      :diminish
       :config
       (super-save-mode t))
 
@@ -810,6 +815,18 @@
 
     ;; occur
     (add-hook 'occur-hook (lambda () (switch-to-buffer-other-window "*Occur*")))
+
+    ;; smartparens
+    (use-package smartparens
+      :diminish
+      :config
+      (require 'smartparens-config)
+      (setq sp-cancel-autoskip-on-backward-movement nil)
+      (add-hook 'org-mode-hook #'smartparens-mode)
+      (add-hook 'LaTeX-mode-hook #'smartparens-mode)
+      (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+      (general-def 'insert smartparens-mode-map "C-c SPC" #'sp-up-sexp)
+      (general-def 'insert smartparens-mode-map "C-c TAB" #'sp-forward-sexp))
 
     (provide 'init-edit)
   #+end_src
