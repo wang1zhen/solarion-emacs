@@ -185,6 +185,9 @@
     (eval-when-compile
       (require 'use-package))
 
+    ;; Native compile, requires Emacs 28+
+    (setq package-native-compile t)
+
     ;; Required by `use-package'
     (use-package diminish)
     (use-package bind-key)
