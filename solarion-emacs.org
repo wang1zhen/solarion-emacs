@@ -1027,7 +1027,7 @@
       "rg" #'org-roam-graph
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
-      "rs" #'solarion/org-roam-rg
+      "rs" #'solarion/org-roam-rg-search
       "rS" #'org-roam-db-sync
       "ro" '(:ignore t :which-key "Node Properties")
       "roa" #'org-roam-alias-add
@@ -1111,7 +1111,7 @@
       "rg" #'org-roam-graph
       "ri" #'org-roam-node-insert
       "rc" #'org-roam-capture
-      "rs" #'solarion/org-roam-rg
+      "rs" #'solarion/org-roam-rg-search
       "rS" #'org-roam-db-sync
       "ro" '(:ignore t :which-key "Node Properties")
       "roa" #'org-roam-alias-add
