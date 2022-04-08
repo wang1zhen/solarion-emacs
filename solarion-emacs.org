@@ -257,7 +257,8 @@
       (auto-fill-mode 0)
       (visual-line-mode 1)
       (adaptive-wrap-prefix-mode 1)
-      (electric-pair-local-mode -1))
+      ;; (electric-pair-local-mode -1)
+      )
 
     ;; ask for the filename before pasting an image
     ;; filename should end with ".png/.jpg/.svg"
@@ -754,11 +755,11 @@
             ediff-merge-split-window-function 'split-window-vertically))
 
     ;; Automatic parenthesis pairing
-    (use-package elec-pair
-      :ensure nil
-      :hook (after-init . electric-pair-mode)
-      :init
-      (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+    ;; (use-package elec-pair
+    ;;   :ensure nil
+    ;;   :hook (after-init . electric-pair-mode)
+    ;;   :init
+    ;;   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
     ;; Increase selected region by semantic units
     (use-package expand-region
@@ -828,9 +829,7 @@
       (setq sp-cancel-autoskip-on-backward-movement nil)
       (add-hook 'org-mode-hook #'smartparens-mode)
       (add-hook 'LaTeX-mode-hook #'smartparens-mode)
-      (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
-      (general-def 'insert smartparens-mode-map "C-c SPC" #'sp-up-sexp)
-      (general-def 'insert smartparens-mode-map "C-c TAB" #'sp-forward-sexp))
+      (add-hook 'emacs-lisp-mode-hook #'smartparens-mode))
 
     (provide 'init-edit)
   #+end_src
@@ -962,6 +961,9 @@
     (general-def "C-r" #'redo)
     (general-def "C-x u" #'undo)
     (general-def "C-x r" #'redo)
+
+    (general-def 'insert smartparens-mode-map "C-c SPC" #'sp-up-sexp)
+    (general-def 'insert smartparens-mode-map "C-c TAB" #'sp-forward-sexp)
 
     (general-unbind "M-`")	;; reserved for tmux
 
