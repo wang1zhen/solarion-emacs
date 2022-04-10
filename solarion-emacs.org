@@ -1866,7 +1866,8 @@
             rime-show-candidate 'posframe
             rime-popup-style 'vertical
             rime-posframe-style 'vertical
-            rime-user-data-dir (concat user-emacs-directory "rime/"))
+            rime-user-data-dir (concat user-emacs-directory "rime/")
+            rime-posframe-properties '(:internal-border-width 2))
       :config
       (general-unbind "<S-delete>")
       (add-to-list 'rime-translate-keybindings "S-<delete>"))
