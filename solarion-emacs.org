@@ -930,6 +930,7 @@
     (general-def "<escape>" #'keyboard-escape-quit)
     (general-define-key (general-chord "jk") (general-key "C-g"))
     (general-def [f12] #'indent-buffer)
+    (general-def [f5] #'revert-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
     (general-def 'normal org-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-mode-map "RET" #'org-open-at-point)
