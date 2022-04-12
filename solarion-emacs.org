@@ -775,17 +775,17 @@
       :ensure nil
       :diminish
       :if (executable-find "aspell")
-      :hook (((text-mode outline-mode) . flyspell-mode)
-             (prog-mode . flyspell-prog-mode)
-             (LaTeX-mode . flyspell-mode)
-             (flyspell-mode . (lambda ()
-                                (dolist (key '("C-;" "C-," "C-."))
-                                  (unbind-key key flyspell-mode-map)))))
-      :init (setq flyspell-issue-message-flag nil
-                  ispell-program-name "aspell"
-                  ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
-      :config
-      )
+      :hook
+      (((text-mode outline-mode) . flyspell-mode)
+       (prog-mode . flyspell-prog-mode)
+       (LaTeX-mode . flyspell-mode)
+       (flyspell-mode . (lambda ()
+                          (dolist (key '("C-;" "C-," "C-."))
+                            (unbind-key key flyspell-mode-map)))))
+      :init
+      (setq flyspell-issue-message-flag nil
+            ispell-program-name "aspell"
+            ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
 
     ;; Framework for mode-specific buffer indexes
     (use-package imenu
@@ -871,7 +871,8 @@
         "C-n" #'next-line
         "C-p" #'previous-line)
       (general-def 'insert
-        "C-u" #'evil-undo)
+        "C-u" #'evil-undo
+        "C-r" #'evil-redo)
 
       (general-def evil-window-map
         "c" nil
@@ -882,10 +883,9 @@
       :init
       (evil-collection-init))
 
-    (unless (display-graphic-p)
-      (use-package evil-terminal-cursor-changer
-        :after evil
-        :init (etcc-on)))
+    (use-package evil-terminal-cursor-changer
+      :after evil
+      :init (etcc-on))
 
     (use-package evil-surround
       :after evil
@@ -927,23 +927,18 @@
 
     ;;; Code:
     ;; misc
-    (general-def "<escape>" #'keyboard-escape-quit)
     (general-define-key (general-chord "jk") (general-key "C-g"))
     (general-def [f12] #'indent-buffer)
     (general-def [f5] #'revert-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
-    (general-def 'normal org-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-mode-map "RET" #'org-open-at-point)
-    (general-def 'normal org-roam-mode-map "<return>" #'org-open-at-point)
     (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
-    (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
+    (general-def [remap org-return] #'(lambda () (org-return electric-indent-mode)))
 
-    (general-def [remap undo] #'undo-fu-only-undo)
-    (general-def [remap redo] #'undo-fu-only-redo)
-    (general-def "C-/" #'undo)
-    (general-def "C-r" #'redo)
-    (general-def "C-x u" #'undo)
-    (general-def "C-x r" #'redo)
+    (general-def "C-/" #'undo-fu-only-undo)
+    (general-def "C-r" #'undo-fu-only-redo)
+    (general-def "C-x u" #'undo-fu-only-undo)
+    (general-def "C-x r" #'undo-fu-only-redo)
 
     (general-def 'insert smartparens-mode-map "C-c SPC" #'sp-up-sexp)
     (general-def 'insert smartparens-mode-map "C-c TAB" #'sp-forward-sexp)
@@ -1274,9 +1269,7 @@
             company-show-numbers 'left)
       (general-def company-active-map
         "TAB" #'company-complete-common-or-cycle
-        "<tab>" #'company-complete-common-or-cycle
-        "RET" #'company-complete-selection
-        "<return>" #'company-complete-selection))
+        "RET" #'company-complete-selection))
 
     (provide 'init-company)
   #+end_src
@@ -1476,8 +1469,7 @@
       ;; size of the preview latex fragments
       (plist-put org-format-latex-options :scale solarion-font-size-factor)
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
-      (general-def org-mode-map "C-<return>" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
-      (general-def org-mode-map "C-j" #'org-meta-return) ;; This is for Ctrl+Enter in terminal mode
+      (general-def org-mode-map "C-RET" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
       ;; org latex packages
       (setq org-latex-packages-alist
             '(("" "siunitx" t)
@@ -1870,8 +1862,8 @@
             rime-user-data-dir (concat user-emacs-directory "rime/")
             rime-posframe-properties '(:internal-border-width 2))
       :config
-      (general-unbind "<S-delete>")
-      (add-to-list 'rime-translate-keybindings "S-<delete>"))
+      (general-unbind "S-DEL")
+      (add-to-list 'rime-translate-keybindings "S-DEL"))
 
     (provide 'init-rime)
   #+end_src
