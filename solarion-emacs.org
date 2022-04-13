@@ -1582,10 +1582,15 @@
 
     ;;; Code:
 
-    ;; package name is auctex, yet it provides `tex'
-    (use-package tex
+    ;; Note that it *must* be 'use-package latex', if 'auctex' is used instead,
+    ;; 'auctex.el' is never called later, and the :config section is not set.
+    ;; Many (most?) people use 'use-package tex', which is fine and probably
+    ;; more "correct", but then care would have to be taken with variables which
+    ;; are not defined in 'tex.el' (starting with "TeX-"), but in 'latex.el'
+    ;; (starting with "LaTeX-"). As 'latex.el' requires 'tex.el', simply setting
+    ;; 'use-package latex' catches all in one go.
+    (use-package latex
       :ensure auctex
-      :defer t
       :config
       (setq
        LaTeX-electric-left-right-brace t
@@ -1605,12 +1610,11 @@
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
       (TeX-source-correlate-mode))
 
-    (use-package auctex-latexmk
-      :config
-      (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-      (auctex-latexmk-setup)
-      :hook
-      (LaTeX-mode . (lambda () (setq TeX-command-default "LatexMk"))))
+    ;; (use-package auctex-latexmk
+    ;;   :config
+    ;;   (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+    ;;   (auctex-latexmk-setup)
+    ;;   (setq-default TeX-command-default "LatexMk"))
 
     (provide 'init-latex)
   #+end_src
