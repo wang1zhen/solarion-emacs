@@ -469,6 +469,23 @@
     (use-package adaptive-wrap
       :commands adaptive-wrap-prefix-mode)
 
+    (use-package keyfreq
+      :init
+      (setq keyfreq-file "~/.emacs.d/.keyfreq")
+      (setq keyfreq-file-lock "~/.emacs.d/.keyfreq.lock")
+      (keyfreq-mode 1)
+      (keyfreq-autosave-mode 1)
+      :config
+      (setq keyfreq-excluded-commands
+          '(self-insert-command
+            forward-char
+            backward-char
+            previous-line
+            next-line))
+      (setq keyfreq-excluded-regexp
+            '("\\`evil-.*\\'"
+              "\\`vertico-.*\\'")))
+
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
     (setq-default major-mode 'emacs-lisp-mode
