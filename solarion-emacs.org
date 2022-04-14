@@ -607,7 +607,8 @@
       :ensure nil
       :init
       (setq display-line-numbers-width-start t)
-      (setq-default display-line-numbers t)
+      (setq display-line-numbers-current-absolute t)
+      (setq-default display-line-numbers 'visual)
       :config
       (dolist (mode '(org-mode-hook
                       term-mode-hook
