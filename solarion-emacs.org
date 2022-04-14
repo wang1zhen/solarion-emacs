@@ -1202,7 +1202,7 @@
       ;;       orderless-component-separator #'orderless-escapable-split-on-space)
       (setq completion-styles '(basic orderless)
             completion-category-defaults nil
-            completion-category-overrides '((file (styles partial-completion)))))
+            completion-category-overrides '((file (styles basic partial-completion)))))
 
     ;; Persist history over Emacs restarts. Vertico sorts by history position.
     (use-package savehist
