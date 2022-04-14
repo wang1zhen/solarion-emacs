@@ -1222,11 +1222,6 @@
             completion-category-defaults nil
             completion-category-overrides '((file (styles basic partial-completion)))))
 
-    ;; Persist history over Emacs restarts. Vertico sorts by history position.
-    (use-package savehist
-      :init
-      (savehist-mode))
-
     ;; Enable richer annotations using the Marginalia package
     (use-package marginalia
       ;; Either bind `marginalia-cycle` globally or only in the minibuffer
