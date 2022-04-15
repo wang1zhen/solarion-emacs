@@ -608,12 +608,18 @@
       :init
       (setq display-line-numbers-width-start t)
       (setq display-line-numbers-current-absolute t)
-      (setq-default display-line-numbers 'visual)
       :config
-      (dolist (mode '(org-mode-hook
-                      term-mode-hook
-                      eshell-mode-hook))
-        (add-hook mode (lambda () (display-line-numbers-mode 0)))))
+      (dolist (mode '(c-mode-common-hook
+                      c-mode-hook
+                      emacs-lisp-mode-hook
+                      lisp-interaction-mode-hook
+                      lisp-mode-hook
+                      sh-mode-hook
+                      python-mode-hook
+                      html-mode-hook
+                      rust-mode-hook
+                      conf-mode-hook))
+        (add-hook mode (lambda () (setq display-line-numbers 'visual)))))
 
     ;; Display ugly ^L page breaks as tidy horizontal lines
     (use-package page-break-lines
