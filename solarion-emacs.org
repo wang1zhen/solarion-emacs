@@ -956,7 +956,7 @@
     ;;; Code:
     ;; misc
     (general-define-key (general-chord "jk") (general-key "C-g"))
-    (general-def [f12] #'indent-buffer)
+    (general-def [f10] #'indent-buffer) ;; f12 reserved for yakuake
     (general-def [f5] #'revert-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
     (general-def 'normal org-mode-map "RET" #'org-open-at-point)
