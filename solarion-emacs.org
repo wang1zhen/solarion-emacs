@@ -1492,7 +1492,8 @@
       ;; size of the preview latex fragments
       (plist-put org-format-latex-options :scale solarion-font-size-factor)
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
-      (general-def org-mode-map "C-RET" #'org-meta-return) ;; This is for Ctrl+Enter in GUI mode
+      (general-def org-mode-map "C-RET" #'org-meta-return)
+      (general-def org-mode-map "C-<return>" #'org-meta-return)
       ;; org latex packages
       (setq org-latex-packages-alist
             '(("" "siunitx" t)
