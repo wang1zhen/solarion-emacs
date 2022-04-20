@@ -1913,5 +1913,8 @@
               browse-url-browser-function 'browse-url-generic
               search-web-default-browser 'browse-url-generic)))
 
+    (general-def "C-S-c" #'wsl-copy-region-to-clipboard)
+    (general-def "C-S-v" #'wsl-paste-from-clipboard)
+
     (provide 'init-wsl)
   #+end_src
