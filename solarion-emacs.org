@@ -18,6 +18,7 @@
 - [[#init-funcel][init-func.el]]
 - [[#init-basicel][init-basic.el]]
 - [[#init-uiel][init-ui.el]]
+- [[#init-scrollel][init-scroll.el]]
 - [[#init-fontsel][init-fonts.el]]
 - [[#init-editel][init-edit.el]]
 - [[#init-generalel][init-general.el]]
@@ -121,6 +122,7 @@
     (require 'init-basic)
 
     (require 'init-ui)
+    (require 'init-scroll)
     (require 'init-fonts)       ;; 字体检查 言 ♪
     (require 'init-edit)
 
@@ -660,6 +662,89 @@
     (use-package posframe)
 
     (provide 'init-ui)
+  #+end_src
+
+* init-scroll.el
+
+  Use iscroll for image scrolling and pixel-scroll-precision-mode for smooth scrolling (available since emacs 29)
+  #+begin_src emacs-lisp :tangle ./lisp/init-scroll.el :mkdirp yes
+    ;;; init-scroll.el --- Better scrolling effects. -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package iscroll
+      :after evil
+      :hook (after-init . iscroll-mode)
+      :config
+      (evil-define-motion iscroll-evil-next-line (count)
+        "Move the cursor COUNT lines down."
+        :type line
+        (let (line-move-visual)
+          (iscroll-evil-line-move (or count 1))))
+
+      (evil-define-motion iscroll-evil-previous-line (count)
+        "Move the cursor COUNT lines up."
+        :type line
+        (let (line-move-visual)
+          (iscroll-evil-line-move (- (or count 1)))))
+
+      (evil-define-motion iscroll-evil-next-visual-line (count)
+        "Move the cursor COUNT screen lines down."
+        :type exclusive
+        (let ((line-move-visual t))
+          (iscroll-evil-line-move (or count 1))))
+
+      (evil-define-motion iscroll-evil-previous-visual-line (count)
+        "Move the cursor COUNT screen lines up."
+        :type exclusive
+        (let ((line-move-visual t))
+          (iscroll-evil-line-move (- (or count 1)))))
+
+      (defun iscroll-evil-line-move (count &optional noerror)
+        "A wrapper for line motions which conserves the column.
+    Signals an error at buffer boundaries unless NOERROR is non-nil."
+        (cond
+         (noerror
+          (condition-case nil
+              (evil-line-move count)
+            (error nil)))
+         (t
+          (evil-signal-without-movement
+            (setq this-command (if (>= count 0)
+                                   #'iscroll-next-line
+                                 #'iscroll-previous-line))
+            (let ((opoint (point)))
+              (condition-case err
+                  (with-no-warnings
+                    (funcall this-command (abs count)))
+                ((beginning-of-buffer end-of-buffer)
+                 (let ((col (or goal-column
+                                (if (consp temporary-goal-column)
+                                    (car temporary-goal-column)
+                                  temporary-goal-column))))
+                   (if line-move-visual
+                       (vertical-motion (cons col 0))
+                     (line-move-finish col opoint (< count 0)))
+                   ;; Maybe we should just `ding'?
+                   (signal (car err) (cdr err))))))))))
+
+      (define-advice iscroll-mode (:after (&optional arg) solarion)
+        "Add evil keybinings for iscroll."
+        (if iscroll-mode
+            (progn
+              (global-set-key [remap evil-next-line] #'iscroll-evil-next-line)
+              (global-set-key [remap evil-previous-line] #'iscroll-evil-previous-line)
+              (global-set-key [remap evil-next-visual-line] #'iscroll-evil-next-visual-line)
+              (global-set-key [remap evil-previous-visual-line] #'iscroll-evil-previous-visual-line))
+          (global-set-key [remap evil-next-line] nil)
+          (global-set-key [remap evil-previous-line] nil)
+          (global-set-key [remap evil-next-visual-line] nil)
+          (global-set-key [remap evil-previous-visual-line] nil))))
+
+    (when (fboundp 'pixel-scroll-precision-mode)
+      (pixel-scroll-precision-mode))
+
+    (provide 'init-scroll)
   #+end_src
 
 * init-fonts.el
