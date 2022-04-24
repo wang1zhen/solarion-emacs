@@ -303,13 +303,6 @@
         (org-indent-line)
         (insert (concat "[[file:" file-path-wsl "]]"))))
 
-    ;; benchmark
-    (defun solarion-init-time ()
-      "Showing Emacs initializing time, packages loaded and GC"
-      (format "Emacs loaded %d packages in %.2f ms."
-              (- (length load-path) (length (get 'load-path 'initial-value)))
-              (* 1e3 (float-time (time-subtract after-init-time before-init-time)))))
-
     ;; dashboard
     (defun solarion-homepage (&rest _)
       (interactive)
@@ -1721,7 +1714,14 @@
     (use-package dashboard
       :diminish
       :init
-      (setq dashboard-banner-logo-title "Solarion Emacs"
+      (defun solarion-init-time ()
+        "Showing Emacs initializing time, packages loaded and GC"
+        (format "Loaded %d packages in %.2f ms."
+                (- (length load-path) (length (get 'load-path 'initial-value)))
+                (* 1e3 (float-time (time-subtract after-init-time before-init-time)))))
+      (setq dashboard-init-info (solarion-init-time))
+
+      (setq dashboard-banner-logo-title (concat "Emacs " emacs-version)
             dashboard-startup-banner "~/.emacs.d/logo.png"
             dashboard-image-banner-max-height 400
             dashboard-page-separator "\n\n"
@@ -1733,13 +1733,10 @@
             dashboard-set-init-info t
             dashboard-set-footer nil
             dashboard-set-navigator t
-            dashboard-navigator-buttons '(() ;; Empty line
-                                          ;; line 2
-                                          ((nil "Homepage (H)" "Browse homepage" solarion-homepage)
+            dashboard-navigator-buttons '(((nil "Homepage (H)" "Browse homepage" solarion-homepage)
                                            (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config (C)" "Open custom file" solarion-edit-config)
-                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now)))))
-            dashboard-init-info (solarion-init-time))
+                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now))))))
       (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
         (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))))
