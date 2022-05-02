@@ -473,13 +473,15 @@
       :config
       (setq keyfreq-excluded-commands
             '(self-insert-command
+              org-self-insert-command
               forward-char
               backward-char
               previous-line
               next-line))
       (setq keyfreq-excluded-regexp
             '("\\`evil-.*\\'"
-              "\\`vertico-.*\\'")))
+              "\\`vertico-.*\\'"
+              "\\`iscroll-.*\\'")))
 
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
