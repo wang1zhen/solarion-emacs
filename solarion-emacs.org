@@ -39,6 +39,7 @@
 - [[#init-dashboardel][init-dashboard.el]]
 - [[#init-perspel][init-persp.el]]
 - [[#init-dictel][init-dict.el]]
+- [[#init-powerthesaurusel][init-powerthesaurus.el]]
 - [[#init-rimeel][init-rime.el]]
 - [[#init-wslel][init-wsl.el]]
 
@@ -1207,6 +1208,7 @@
       "ot" #'(consult-theme :which-key "Choose Theme")
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
+      "op" #'(powerthesaurus-lookup-dwim :which-key "Powerthesaurus")
       )
 
     ;; Local leader
@@ -1969,6 +1971,18 @@
                          )))
 
     (provide 'init-dict)
+  #+end_src
+
+* init-powerthesaurus.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-powerthesaurus.el :mkdirp yes
+    ;;; init-dict.el --- Replace words or sentences with synonyms, antonyms -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package powerthesaurus)
+
+    (provide 'init-powerthesaurus)
   #+end_src
 
 * init-rime.el
