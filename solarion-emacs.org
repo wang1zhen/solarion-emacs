@@ -533,9 +533,13 @@
     ;;; Code:
 
     ;; Title
-    (setq frame-title-format '("Solarion Emacs - " (:eval (if (buffer-file-name)
-                                                              (abbreviate-file-name (buffer-file-name))
-                                                            "%b")))
+    (setq frame-title-format '((:eval (if (buffer-file-name)
+                                          (abbreviate-file-name (buffer-file-name))
+                                        "%b"))
+                               "    "
+                               user-login-name
+                               "@"
+                               system-name)
           icon-title-format frame-title-format)
 
     ;; Optimization
