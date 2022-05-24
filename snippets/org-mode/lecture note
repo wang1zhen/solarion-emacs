@@ -13,7 +13,6 @@
 #+LATEX_HEADER: \usepackage{mathrsfs}
 #+LATEX_COMPILER: xelatex
 #+OPTIONS: toc:2
-#+STARTUP: latexpreview
 #+STARTUP: overview
 #+STARTUP: inlineimages
 

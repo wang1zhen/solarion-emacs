@@ -394,9 +394,7 @@
     ;; Start server
     (use-package server
       :ensure nil
-      :config
-      (unless (server-running-p)
-        (server-mode)))
+      :hook (after-init . server-mode))
 
     ;; Go to the last place when previously visited the file
     (use-package saveplace
@@ -1588,7 +1586,7 @@
        ;; maketitle command
        org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       ;; size of the preview latex fragments
-      (plist-put org-format-latex-options :scale solarion-font-size-factor)
+      (plist-put org-format-latex-options :scale (/ solarion-font-size-factor 1.5))
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
       (general-def org-mode-map "C-RET" #'org-meta-return)
       (general-def org-mode-map "C-<return>" #'org-meta-return)
