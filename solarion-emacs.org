@@ -1703,6 +1703,8 @@
   #+begin_src emacs-lisp :tangle ./lisp/init-latex.el :mkdirp yes
     ;;; init-latex.el --- Initialize LaTeX settings -*- lexical-binding: t -*-
 
+    ;; GhostScript is needed for previewing latex fragments
+
     ;;; Code:
 
     ;; Note that it *must* be 'use-package latex', if 'auctex' is used instead,
@@ -1717,7 +1719,6 @@
       :config
       (setq
        LaTeX-electric-left-right-brace t
-       TeX-engine 'xetex
        TeX-parse-self t ;; parse onload
        TeX-auto-save t ;; parse on save
        ;; use hidden dirs for auctex files
@@ -1730,14 +1731,27 @@
        ;; just save, dont ask me before each compilation
        TeX-save-query nil)
 
-      (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
+      (TeX-engine-set 'xetex)
+
+      (setq preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
+
+      ;; (setq preview-scale-function 1.5)
+
+      (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
       (TeX-source-correlate-mode))
 
+    ;; current version of auctex-latexmk is buggy,
+    ;; using a self-modified version
     ;; (use-package auctex-latexmk
     ;;   :config
     ;;   (setq auctex-latexmk-inherit-TeX-PDF-mode t)
     ;;   (auctex-latexmk-setup)
     ;;   (setq-default TeX-command-default "LatexMk"))
+
+    (require 'auctex-latexmk (concat user-emacs-directory "auctex-latexmk.el"))
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+    (auctex-latexmk-setup)
+    (add-hook 'LaTeX-mode-hook #'(lambda () (setq TeX-command-default "LatexMk")))
 
     (provide 'init-latex)
   #+end_src
