@@ -1315,6 +1315,13 @@
       (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
       )
 
+    (use-package pinyinlib
+      :after orderless
+      :config
+      (defun completion--regex-pinyin (str)
+        (orderless-regexp (pinyinlib-build-regexp-string str)))
+      (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+
     (use-package orderless
       :init
       ;; Configure a custom style dispatcher (see the Consult wiki)
