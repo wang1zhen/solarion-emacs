@@ -153,6 +153,7 @@
     (require 'init-persp)
 
     (require 'init-dict)
+    (require 'init-powerthesaurus)
     (require 'init-rime)
 
     ;; WSL specific setting
