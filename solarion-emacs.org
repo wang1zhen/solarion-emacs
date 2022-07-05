@@ -797,15 +797,35 @@
                                             :font font
                                             :height (* solarion-font-size-factor 60)))
 
-        ;; Specify font for all unicode characters
-        (cl-loop for font in '("Symbola")
-                 when (font-installed-p font)
-                 return (set-fontset-font t 'unicode font nil 'prepend))
-
         ;; Specify font for Chinese characters
         (cl-loop for font in '("霞鹜文楷" "Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
                  when (font-installed-p font)
                  return (set-fontset-font t '(#x4e00 . #x9fff) (font-spec :family font :weight 'bold)))))
+
+    ;; fonts required: DejaVu Sans, DejaVu Sans Mono, Quivira,
+    ;; Symbola, Noto Sans, Noto Sans Symbols
+    (use-package unicode-fonts
+      :config
+      (unicode-fonts-setup))
+
+    (use-package ligature
+      :load-path user-emacs-directory
+      :config
+      (ligature-set-ligatures 't '("www" "ff" "fi" "ffi"))
+      (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                           ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                           "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                           "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                           "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                           "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                           "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                           "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                           ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                           "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                           "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                           "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                           "\\\\" "://"))
+      (global-ligature-mode t))
 
     (add-hook 'after-init-hook #'solarion-config-font)
     (add-hook 'server-after-make-frame-hook #'solarion-config-font)
