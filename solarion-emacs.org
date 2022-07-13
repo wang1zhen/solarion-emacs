@@ -7,7 +7,7 @@
 
   [[https://996.icu][https://img.shields.io/badge/link-996.icu-red.svg]]
 
-  Here is my personal configuration file for Emacs. The whole README file is a symlink to =solarion-emacs.org=, and with =org babel=, this file could be tangled into separate emacs-lisp files under =$HOME/.emacs.d/=.
+  Here is my personal configuration file for Emacs. The whole README file is a symlink to =solarion-emacs.org=, and with =org babel=, this file could be tangled into separate emacs-lisp files under =$HOME/.emacs.d/lisp/=.
 
 * Table of Contents                                                        :TOC:
 - [[#solarion-emacs][Solarion Emacs]]
@@ -55,13 +55,6 @@
 
   #+begin_src shell :tangle no
     emacs --batch --eval "(progn (require 'org) (let ((org-confirm-babel-evaluate nil)) (org-babel-tangle-file \"~/.emacs.d/solarion-emacs.org\")))"
-  #+end_src
-
-  *Create alias for running emacs in terminal mode*
-
-  #+begin_src shell :tangle no
-    echo "alias e='emacsclient -nw -c -a \"\"'\nalias ee='emacsclient -c -a \"\"'\nalias ke='emacsclient -e \"(kill-emacs)\"'" >> ~/.zshrc
-    source ~/.zshrc
   #+end_src
 
   *Launch Emacs and have fun!*
@@ -539,24 +532,6 @@
     (setq split-height-threshold nil
           split-width-threshold 160)
 
-    ;; 与git-gutter类似，会导致TUI下右侧window影响到左侧window显示的内容
-    ;; (setq-default left-margin-width 2
-    ;;               right-margin-width 2)	;; 左右边框 TUI下生效
-
-    ;; Theme
-    ;; (use-package doom-themes
-    ;;   :custom-face
-    ;;   (doom-modeline-buffer-file ((t (:inherit (mode-line bold)))))
-    ;;   :custom
-    ;;   (doom-themes-enable-bold t)
-    ;;   (doom-themes-enable-italic t)
-    ;;   :init
-    ;;   (load-theme 'doom-gruvbox t)
-    ;;   :config
-    ;;   (doom-themes-visual-bell-config)
-    ;;   (doom-themes-org-config))
-
-    ;; TODO will be built-in in emacs 28
     (use-package modus-themes
       :init
       (setq modus-themes-italic-constructs t
@@ -584,7 +559,6 @@
     ;; Icons
     ;; NOTE: Must run `M-x all-the-icons-install-fonts', and install fonts manually on Windows
     (use-package all-the-icons
-      :if (display-graphic-p)
       :init (unless (font-installed-p "all-the-icons")
               (all-the-icons-install-fonts t)))
 
@@ -766,11 +740,10 @@
     (defun solarion-config-font ()
       (when (display-graphic-p)
         ;; Configure font-size-factor with respect to system-name
-        ;; (cond
-        ;;  ((equal (system-name) "Pro14-wang1zhen") (setq font-size-factor 3))
-        ;;  ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
-        ;;  ((equal (system-name) "R1700") (setq font-size-factor 3))
-        ;;  (t (setq font-size-factor 2)))
+        (cond
+         ((equal (system-name) "DESKTOP-R1700") (setq font-size-factor 3))
+         ((equal (system-name) "Arch-X230") (setq font-size-factor 3))
+         (t (setq font-size-factor 2)))
 
         ;; Set default font
         (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
@@ -1339,7 +1312,6 @@
       ;; Either bind `marginalia-cycle` globally or only in the minibuffer
       ;; The :init configuration is always executed (Not lazy!)
       :init
-
       ;; Must be in the :init section of use-package such that the mode gets
       ;; enabled right away. Note that this forces loading the package.
       (marginalia-mode))
@@ -1347,8 +1319,7 @@
     (use-package consult
       :bind
       ("C-s" . consult-line)
-      ([remap yank-pop] . consult-yank-pop)
-      )
+      ([remap yank-pop] . consult-yank-pop))
 
     (use-package embark
       :bind
@@ -1360,7 +1331,8 @@
 
     (use-package embark-consult
       :after (embark consult)
-      :demand t ; only necessary if you have the hook below
+      :demand t
+      ;; only necessary if you have the hook below
       ;; if you want to have consult previews as you move around an
       ;; auto-updating embark collect buffer
       :hook
@@ -1440,11 +1412,9 @@
       :config
       (evil-collection-magit-setup))
 
-    ;; git-gutter会导致TUI下右侧window影响到左侧window显示的内容
-    ;; 暂时需要去除此package
-    ;; (use-package git-gutter
-    ;;   :diminish
-    ;;   :hook (after-init . global-git-gutter-mode))
+    (use-package git-gutter
+      :diminish
+      :hook (after-init . global-git-gutter-mode))
 
     (provide 'init-magit)
   #+end_src
