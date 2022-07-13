@@ -176,7 +176,7 @@
           (goto-char (point-max))
           (eval-print-last-sexp)))
       (setq straight-use-package-by-default t)
-      (setq straight-vc-git-default-protocol 'ssh)
+      (setq straight-vc-git-default-protocol 'https)
       (setq straight-vc-git-default-clone-depth 3)
       (load bootstrap-file nil 'nomessage))
 
