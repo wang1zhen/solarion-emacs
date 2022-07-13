@@ -14,7 +14,7 @@
 - [[#installation][Installation]]
 - [[#early-initel][early-init.el]]
 - [[#initel][init.el]]
-- [[#init-packageel][init-package.el]]
+- [[#init-straightel][init-straight.el]]
 - [[#init-funcel][init-func.el]]
 - [[#init-basicel][init-basic.el]]
 - [[#init-uiel][init-ui.el]]
@@ -89,6 +89,9 @@
     (push '(menu-bar-lines . 0) default-frame-alist)
     (push '(tool-bar-lines . 0) default-frame-alist)
     (push '(vertical-scroll-bars) default-frame-alist)
+
+    ;; Suppress the 'Package cl is deprecated' warning
+    (setq byte-compile-warnings '(not obsolete))
   #+end_src
 
 * init.el
@@ -114,7 +117,7 @@
     (setq load-prefer-newer t)
 
     ;; Packages
-    (require 'init-package)
+    (require 'init-straight)
 
     ;; Useful functions defined
     (require 'init-func)
@@ -161,40 +164,36 @@
       (require 'init-wsl))
   #+end_src
 
-* init-package.el
+* init-straight.el
 
-  #+begin_src emacs-lisp :tangle ./lisp/init-package.el :mkdirp yes
-    ;;; init-package.el --- Initialize package configurations -*- lexical-binding: t -*-
+  #+begin_src emacs-lisp :tangle ./lisp/init-straight.el :mkdirp yes
+    ;;; init-straight.el --- Initialize package configurations -*- lexical-binding: t -*-
 
     ;;; Code:
 
-    ;; Uncomment for mirrors in China
-    ;; (setq package-archives '(("elpa" . "https://elpa.emacs-china.org/gnu/")
-    ;;           ("melpa" . "https://elpa.emacs-china.org/melpa/")
-    ;;                          ("org" . "https://elpa.emacs-china.org/org/")))
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (setq straight-use-package-by-default t)
+      (setq straight-vc-git-default-protocol 'ssh)
+      (setq straight-vc-git-default-clone-depth 3)
+      (load bootstrap-file nil 'nomessage))
 
-    (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                             ("gnu" . "https://elpa.gnu.org/packages/")
-                             ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-
-    ;; Initialize packages
-    (unless (bound-and-true-p package--initialized) ; To avoid warnings in 27
-      (setq package-enable-at-startup nil)          ; To prevent initializing twice
-      (package-initialize))
-
-    ;; Setup `use-package'
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
+    ;; Install use-package with straight
+    (straight-use-package 'use-package)
 
     ;; Should set before loading `use-package'
-    (eval-and-compile
-      (setq use-package-always-ensure t)
-      (setq use-package-expand-minimally t)
-      (setq use-package-enable-imenu-support t))
-
-    (eval-when-compile
-      (require 'use-package))
+    (setq use-package-expand-minimally t)
+    (setq use-package-enable-imenu-support t)
+    (require 'use-package)
 
     ;; Native compile, requires Emacs 28+
     (setq package-native-compile t)
@@ -205,22 +204,7 @@
     (use-package diminish)
     (use-package bind-key)
 
-    ;; Update GPG keyring for GNU ELPA
-    (use-package gnu-elpa-keyring-update)
-
-    ;; Auto update packages
-    (use-package auto-package-update
-      :init
-      (setq auto-package-update-delete-old-versions t
-            auto-package-update-hide-results t
-            auto-package-update-interval 7
-            auto-package-update-prompt-before-update t)
-      (defalias 'upgrade-packages #'auto-package-update-now)
-      :hook (after-init . auto-package-update-maybe))
-
-    (use-package try)
-
-    (provide 'init-package)
+    (provide 'init-straight)
   #+end_src
 
 * init-func.el
@@ -394,16 +378,16 @@
 
     ;; Start server
     (use-package server
-      :ensure nil
+      :straight nil
       :hook (after-init . server-mode))
 
     ;; Go to the last place when previously visited the file
     (use-package saveplace
-      :ensure nil
+      :straight nil
       :hook (after-init . save-place-mode))
 
     (use-package recentf
-      :ensure nil
+      :straight nil
       :hook (after-init . recentf-mode)
       :init
       (setq recentf-max-saved-items 500
@@ -419,7 +403,7 @@
       (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
 
     (use-package savehist
-      :ensure nil
+      :straight nil
       :hook (after-init . savehist-mode)
       :init
       (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
@@ -432,7 +416,7 @@
             savehist-autosave-interval 300))
 
     (use-package simple
-      :ensure nil
+      :straight nil
       :hook ((after-init . size-indication-mode)
              (text-mode . visual-line-mode)
              ((prog-mode org-mode markdown-mode conf-mode) . enable-trailing-whitespace))
@@ -452,12 +436,12 @@
         (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
 
     (use-package time
-      :ensure nil
+      :straight nil
       :init (setq display-time-24hr-format t
                   display-time-day-and-date t))
 
     (use-package so-long
-      :ensure nil
+      :straight nil
       :hook (after-init . global-so-long-mode)
       :config (setq so-long-threshold 400))
 
@@ -605,7 +589,7 @@
               (all-the-icons-install-fonts t)))
 
     (use-package display-line-numbers
-      :ensure nil
+      :straight nil
       :init
       (setq display-line-numbers-width-start t)
       (setq display-line-numbers-current-absolute t)
@@ -809,7 +793,7 @@
       (unicode-fonts-setup))
 
     (use-package ligature
-      :load-path user-emacs-directory
+      :straight '(ligature :type git :host github :repo "mickeynp/ligature.el")
       :config
       (ligature-set-ligatures 't '("www" "ff" "fi" "ffi"))
       (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
@@ -842,7 +826,7 @@
 
     ;; Automatically reload files was modified by external program
     (use-package autorevert
-      :ensure nil
+      :straight nil
       :diminish
       :init
       (setq global-auto-revert-non-file-buffers t
@@ -869,7 +853,7 @@
 
     ;; A comprehensive visual interface to diff & patch
     (use-package ediff
-      :ensure nil
+      :straight nil
       :hook (;; show org ediffs unfolded
              (ediff-prepare-buffer . outline-show-all)
              ;; restore window layout when done
@@ -879,13 +863,6 @@
       (setq ediff-window-setup-function 'ediff-setup-windows-plain
             ediff-split-window-function 'split-window-vertically
             ediff-merge-split-window-function 'split-window-vertically))
-
-    ;; Automatic parenthesis pairing
-    ;; (use-package elec-pair
-    ;;   :ensure nil
-    ;;   :hook (after-init . electric-pair-mode)
-    ;;   :init
-    ;;   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
     ;; Increase selected region by semantic units
     (use-package expand-region
@@ -906,7 +883,7 @@
 
     ;; Handling capitalized subwords in a nomenclature
     (use-package subword
-      :ensure nil
+      :straight nil
       :diminish
       :hook ((prog-mode . subword-mode)
              (minibuffer-setup . subword-mode)))
@@ -916,7 +893,7 @@
 
     ;; On-the-fly spell checker
     (use-package flyspell
-      :ensure nil
+      :straight nil
       :diminish
       :if (executable-find "aspell")
       :hook
@@ -933,7 +910,7 @@
 
     ;; Framework for mode-specific buffer indexes
     (use-package imenu
-      :ensure nil
+      :straight nil
       :init
       (setq imenu-auto-rescan t))
 
@@ -1094,7 +1071,7 @@
       "H" #'solarion-homepage
       "R" #'restore-previous-session
       "C" #'solarion-edit-config
-      "U" #'auto-package-update-now)
+      "U" #'straight-pull-all)
 
     (general-create-definer spc-leader-def
       :states '(normal insert visual emacs)
@@ -1318,6 +1295,7 @@
     ;;; Code:
 
     (use-package vertico
+      :straight (vertico :files (:defaults "extensions/*"))
       :init
       (vertico-mode)
 
@@ -1327,14 +1305,18 @@
       (setq vertico-count 10)
 
       ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-      (setq vertico-cycle t)
+      (setq vertico-cycle t))
 
-      ;; vertico-directory
-      (general-def vertico-map "\r" #'vertico-directory-enter)
-      (general-def vertico-map "\d" #'vertico-directory-delete-char)
-      (general-def vertico-map "C-\d" #'vertico-directory-delete-word)
-      (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-      )
+    (use-package vertico-directory
+      :after vertico
+      :straight nil
+      ;; More convenient directory navigation commands
+      :bind (:map vertico-map
+                  ("RET" . vertico-directory-enter)
+                  ("DEL" . vertico-directory-delete-char)
+                  ("C-DEL" . vertico-directory-delete-word))
+      ;; Tidy shadowed file names
+      :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
     (use-package pinyinlib
       :after orderless
@@ -1475,7 +1457,7 @@
     ;;; Code:
 
     (use-package ibuffer
-      :ensure nil
+      :straight nil
       :bind ("C-x C-b" . ibuffer)
       :hook (ibuffer-mode . (lambda () (ibuffer-auto-mode 1) (ibuffer-switch-to-saved-filter-groups "custom")))
       :custom
@@ -1568,7 +1550,7 @@
     ;;; Code:
 
     (use-package org
-      :ensure nil
+      :straight (:type built-in)
       :hook
       (org-mode . solarion/org-mode-setup)
       (org-capture-mode . evil-insert-state)
@@ -1695,7 +1677,7 @@
     ;; matlab mode, currently only for org mode, could be separated
     ;; the package name is matlab, yet it provides `matlab'
     (use-package matlab
-      :ensure matlab-mode
+      :straight matlab-mode
       :diminish
       :config
       (add-to-list 'auto-mode-alist '("\\.m\\'" . matlab-mode))
@@ -1736,7 +1718,7 @@
     ;; (starting with "LaTeX-"). As 'latex.el' requires 'tex.el', simply setting
     ;; 'use-package latex' catches all in one go.
     (use-package latex
-      :ensure auctex
+      :straight auctex
       :config
       (setq
        LaTeX-electric-left-right-brace t
@@ -1761,18 +1743,13 @@
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
       (TeX-source-correlate-mode))
 
-    ;; current version of auctex-latexmk is buggy,
-    ;; using a self-modified version
-    ;; (use-package auctex-latexmk
-    ;;   :config
-    ;;   (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-    ;;   (auctex-latexmk-setup)
-    ;;   (setq-default TeX-command-default "LatexMk"))
-
-    (require 'auctex-latexmk (concat user-emacs-directory "auctex-latexmk.el"))
-    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-    (auctex-latexmk-setup)
-    (add-hook 'LaTeX-mode-hook #'(lambda () (setq TeX-command-default "LatexMk")))
+    (use-package auctex-latexmk
+      :straight '(auctex-latexmk :type git :host github :fork "wang1zhen/auctex-latexmk")
+      :hook (LaTeX-mode . (lambda ()
+                            (setq TeX-command-default "LatexMk")))
+      :config
+      (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+      (auctex-latexmk-setup))
 
     (provide 'init-latex)
   #+end_src
@@ -1785,7 +1762,7 @@
     ;;; Code:
 
     (use-package dired
-      :ensure nil
+      :straight nil
       :commands (dired dired-jump)
       :config
       (general-def 'normal dired-mode-map
@@ -1881,7 +1858,7 @@
             dashboard-navigator-buttons '(((nil "Homepage (H)" "Browse homepage" solarion-homepage)
                                            (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config (C)" "Open custom file" solarion-edit-config)
-                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (auto-package-update-now))))))
+                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
       (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
         (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))))
