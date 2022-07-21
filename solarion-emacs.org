@@ -1019,8 +1019,6 @@
     (general-def [f10] #'indent-buffer) ;; f12 reserved for yakuake
     (general-def [f5] #'revert-buffer)
     (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
-    (general-def 'normal org-mode-map "RET" #'org-open-at-point)
-    (general-def 'normal org-roam-mode-map "RET" #'org-open-at-point)
     (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
 
     (general-def "C-/" #'undo-fu-only-undo)
