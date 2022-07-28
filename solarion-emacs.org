@@ -26,7 +26,7 @@
 - [[#init-hydrael][init-hydra.el]]
 - [[#init-mapel][init-map.el]]
 - [[#init-verticoel][init-vertico.el]]
-- [[#init-companyel][init-company.el]]
+- [[#init-corfuel][init-corfu.el]]
 - [[#init-yasnippetel][init-yasnippet.el]]
 - [[#init-magitel][init-magit.el]]
 - [[#init-ibufferel][init-ibuffer.el]]
@@ -130,7 +130,7 @@
     (require 'init-map)
 
     (require 'init-vertico)
-    (require 'init-company)
+    (require 'init-corfu)
     (require 'init-yasnippet)
 
     (require 'init-magit)
@@ -1333,38 +1333,50 @@
     (provide 'init-vertico)
   #+end_src
 
-* init-company.el
+* init-corfu.el
 
-  Company is a text completion framework for Emacs. The name stands for “complete anything”. It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
-  #+begin_src emacs-lisp :tangle ./lisp/init-company.el :mkdirp yes
-    ;;; init-company.el --- COMplete ANYthing -*- lexical-binding: t -*-
+  Corfu enhances completion at point with a small completion popup. The current candidates are shown in a popup below or above the point. Corfu is the minimalistic completion-in-region counterpart of the Vertico minibuffer UI.
+  #+begin_src emacs-lisp :tangle ./lisp/init-corfu.el :mkdirp yes
+    ;;; init-corfu.el --- Completion Overlay Region FUnction -*- lexical-binding: t -*-
 
     ;;; Code:
 
-    (use-package company
-      :diminish
-      :hook
-      (after-init . global-company-mode)
-      (eshell-mode . (lambda () (company-mode 0)))
-      :config
-      (setq company-minimum-prefix-length 1
-            company-idle-delay 0
-            company-dabbrev-ignore-case nil
-            company-dabbrev-downcase nil
-            company-require-match nil
-            company-global-modes t
-            company-selection-wrap-around t
-            company-tooltip-limit 7
-            company-tooltip-offset-display 'scrollbar
-            company-backends '((company-capf company-yasnippet)
-                               (company-dabbrev-code company-keywords company-files)
-                               company-dabbrev)
-            company-show-numbers 'left)
-      (general-def company-active-map
-        "TAB" #'company-complete-common-or-cycle
-        "RET" #'company-complete-selection))
+    (use-package corfu
+      :straight (corfu :files (:defaults "extensions/*"))
+      :init
+      ;; built-in configurations
+      (setq completion-cycle-threshold 5)
+      ;; Enable indentation+completion using the TAB key.
+      (setq tab-always-indent 'complete)
+      ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+      ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+      (setq read-extended-command-predicate #'command-completion-default-include-p)
 
-    (provide 'init-company)
+      ;; corfu settings
+      (setq corfu-cycle t)
+      (setq corfu-auto t)
+      (setq corfu-auto-prefix 2)
+      (setq corfu-auto-delay 0)
+      (setq corfu-count 7)
+      (setq corfu-preselect-first nil) ;; tab for complete common
+      (global-corfu-mode)
+      (general-def 'insert corfu-map "C-g" 'corfu-quit)
+
+      ;; corfu quick
+      (setq corfu-quick1 "asdf")
+      (setq corfu-quick2 "jkl")
+      (general-def corfu-map "`" #'corfu-quick-complete)
+      )
+
+    ;; (use-package corfu-doc
+    ;;   :after corfu
+    ;;   :hook (corfu-mode . corfu-doc-mode)
+    ;;   :bind (:map corfu-map
+    ;;               ("M-p" . corfu-doc-scroll-down)
+    ;;               ("M-n" . corfu-doc-scroll-up)
+    ;;               ("M-d" . corfu-doc-toggle)))
+
+    (provide 'init-corfu)
   #+end_src
 
 * init-yasnippet.el
