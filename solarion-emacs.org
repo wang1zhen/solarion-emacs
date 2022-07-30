@@ -1552,30 +1552,29 @@
          (python . t)
          (matlab . t)
          (gnuplot . t)))
-      (setq
-       org-startup-with-inline-images t
-       org-startup-with-latex-preview t
-       org-startup-numerated t	;; Start org-mode numbered
-       org-adapt-indentation t	;; add indentation for newlines
-       org-highlight-latex-and-related '(native script entities)
-       org-directory "~/org"
-       org-ellipsis "\t▾"
-       org-tags-column -80
-       org-log-done 'time
-       org-hide-emphasis-markers nil ;; Show bold and italic verbosely
-       org-link-descriptive nil ;; Show links verbosely
-       org-hide-leading-stars t
-       ;; export settings
-       org-export-with-tags nil
-       org-latex-image-default-width "\\linewidth"
-       ;; latex hyperref configs
-       org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n colorlinks=true,\n linkcolor=black\n}\n"
-       org-export-with-toc 3
-       ;; set table of contents level
-       org-export-with-toc 3
-       org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\setcounter{page}{1}\n\\pagestyle{plain}\n\n"
-       ;; maketitle command
-       org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
+      (setq org-startup-with-inline-images t)
+      (setq org-startup-with-latex-preview t)
+      (setq org-startup-numerated t);; Start org-mode numbered
+      (setq org-adapt-indentation t);; add indentation for newlines
+      (setq org-highlight-latex-and-related '(native script entities))
+      (setq org-directory "~/org")
+      (setq org-ellipsis "\t▾")
+      (setq org-tags-column -80)
+      (setq org-log-done 'time)
+      (setq org-hide-emphasis-markers nil);; Show bold and italic verbosely
+      (setq org-link-descriptive nil);; Show links verbosely
+      (setq org-hide-leading-stars t)
+      ;; export settings
+      (setq org-export-with-tags nil)
+      (setq org-latex-image-default-width "\\linewidth")
+      ;; latex settings
+      (setq org-latex-compiler "xelatex")
+      (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n colorlinks=true,\n linkcolor=black\n}\n")
+      ;; set table of contents level
+      (setq org-export-with-toc 3)
+      (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\setcounter{page}{1}\n\\pagestyle{plain}\n\n")
+      ;; maketitle command
+      (setq org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       ;; size of the preview latex fragments
       (plist-put org-format-latex-options :scale (/ solarion-font-size-factor 1.5))
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
@@ -1583,8 +1582,9 @@
       (general-def org-mode-map "C-<return>" #'org-meta-return)
       ;; org latex packages
       (setq org-latex-packages-alist
-            '(("" "siunitx" t)
-              ("" "mathrsfs" t)))
+            '(("" "siunitx")
+              ("" "mathrsfs")
+              ("scheme=plain" "ctex")))
       (setq org-image-actual-width 400)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
       )
