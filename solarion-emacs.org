@@ -17,12 +17,11 @@
 - [[#init-straightel][init-straight.el]]
 - [[#init-funcel][init-func.el]]
 - [[#init-basicel][init-basic.el]]
+- [[#init-generalel][init-general.el]]
 - [[#init-uiel][init-ui.el]]
 - [[#init-scrollel][init-scroll.el]]
 - [[#init-fontsel][init-fonts.el]]
 - [[#init-editel][init-edit.el]]
-- [[#init-generalel][init-general.el]]
-- [[#init-evilel][init-evil.el]]
 - [[#init-hydrael][init-hydra.el]]
 - [[#init-mapel][init-map.el]]
 - [[#init-verticoel][init-vertico.el]]
@@ -117,6 +116,7 @@
 
     ;; Preferences
     (require 'init-basic)
+    (require 'init-general)
 
     (require 'init-ui)
     (require 'init-scroll)
@@ -124,8 +124,6 @@
     (require 'init-edit)
 
     ;; Keybindings
-    (require 'init-general)
-    (require 'init-evil)
     (require 'init-hydra)
     (require 'init-map)
 
@@ -224,13 +222,13 @@
         (org-babel-tangle)))
 
     ;; Define split-window-below-and-focus and split-window-right-and-focus
-    (defun evil-window-split-and-focus ()
+    (defun split-window-below-and-focus ()
       "Split the window vertically and focus the new window."
       (interactive)
-      (evil-window-split)
+      (split-window-below)
       (windmove-down))
 
-    (defun evil-window-vsplit-and-focus ()
+    (defun split-window-right-and-focus ()
       "Split the window horizontally and focus the new window."
       (interactive)
       (split-window-right)
@@ -291,6 +289,14 @@
     (defun solarion-edit-config (&rest _)
       (interactive)
       (find-file (concat user-emacs-directory "solarion-emacs.org")))
+
+    ;; buffer
+    (defun solarion-new-buffer nil
+      (interactive)
+      (let ((buffer (generate-new-buffer "*new*")))
+        (set-window-buffer nil buffer)
+        (with-current-buffer buffer
+          (funcall (default-value 'major-mode)))))
 
     (provide 'init-func)
   #+end_src
@@ -425,8 +431,7 @@
               previous-line
               next-line))
       (setq keyfreq-excluded-regexp
-            '("\\`evil-.*\\'"
-              "\\`vertico-.*\\'"
+            '("\\`vertico-.*\\'"
               "\\`iscroll-.*\\'")))
 
     ;; Misc
@@ -460,7 +465,7 @@
     ;; Enable mouse in terminal mode
     (xterm-mouse-mode)
 
-    ;; Auto tangle this file after save (with prompt)
+    ;; Auto tangle this file after save (without prompt)
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
 
     ;; Disable scratch buffer text
@@ -468,6 +473,24 @@
     (setq initial-major-mode 'org-mode)
 
     (provide 'init-basic)
+  #+end_src
+
+* init-general.el
+
+  Only prepare the packages here, specific keybindings goes to =init-map.el=.
+  #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
+    ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package key-chord
+      :diminish
+      :init
+      (key-chord-mode))
+
+    (use-package general)
+
+    (provide 'init-general)
   #+end_src
 
 * init-ui.el
@@ -615,74 +638,17 @@
 
     ;;; Code:
 
+    ;; (setq scroll-preserve-screen-position t)
+
     (use-package iscroll
-      :after evil
-      :hook (org-mode . iscroll-mode)
-      :config
-      (evil-define-motion iscroll-evil-next-line (count)
-        "Move the cursor COUNT lines down."
-        :type line
-        (let (line-move-visual)
-          (iscroll-evil-line-move (or count 1))))
+      :init
+      ;; (setq iscroll-preserve-screen-position t)
+      :hook (org-mode . iscroll-mode))
 
-      (evil-define-motion iscroll-evil-previous-line (count)
-        "Move the cursor COUNT lines up."
-        :type line
-        (let (line-move-visual)
-          (iscroll-evil-line-move (- (or count 1)))))
-
-      (evil-define-motion iscroll-evil-next-visual-line (count)
-        "Move the cursor COUNT screen lines down."
-        :type exclusive
-        (let ((line-move-visual t))
-          (iscroll-evil-line-move (or count 1))))
-
-      (evil-define-motion iscroll-evil-previous-visual-line (count)
-        "Move the cursor COUNT screen lines up."
-        :type exclusive
-        (let ((line-move-visual t))
-          (iscroll-evil-line-move (- (or count 1)))))
-
-      (defun iscroll-evil-line-move (count &optional noerror)
-        "A wrapper for line motions which conserves the column.
-    Signals an error at buffer boundaries unless NOERROR is non-nil."
-        (cond
-         (noerror
-          (condition-case nil
-              (evil-line-move count)
-            (error nil)))
-         (t
-          (evil-signal-without-movement
-            (setq this-command (if (>= count 0)
-                                   #'iscroll-next-line
-                                 #'iscroll-previous-line))
-            (let ((opoint (point)))
-              (condition-case err
-                  (with-no-warnings
-                    (funcall this-command (abs count)))
-                ((beginning-of-buffer end-of-buffer)
-                 (let ((col (or goal-column
-                                (if (consp temporary-goal-column)
-                                    (car temporary-goal-column)
-                                  temporary-goal-column))))
-                   (if line-move-visual
-                       (vertical-motion (cons col 0))
-                     (line-move-finish col opoint (< count 0)))
-                   ;; Maybe we should just `ding'?
-                   (signal (car err) (cdr err))))))))))
-
-      (define-advice iscroll-mode (:after (&optional arg) solarion)
-        "Add evil keybinings for iscroll."
-        (if iscroll-mode
-            (progn
-              (global-set-key [remap evil-next-line] #'iscroll-evil-next-line)
-              (global-set-key [remap evil-previous-line] #'iscroll-evil-previous-line)
-              (global-set-key [remap evil-next-visual-line] #'iscroll-evil-next-visual-line)
-              (global-set-key [remap evil-previous-visual-line] #'iscroll-evil-previous-visual-line))
-          (global-set-key [remap evil-next-line] nil)
-          (global-set-key [remap evil-previous-line] nil)
-          (global-set-key [remap evil-next-visual-line] nil)
-          (global-set-key [remap evil-previous-visual-line] nil))))
+    (use-package golden-ratio-scroll-screen
+      :bind
+      ([remap scroll-up-command] . golden-ratio-scroll-screen-up)
+      ([remap scroll-down-command] . golden-ratio-scroll-screen-down))
 
     (when (fboundp 'pixel-scroll-precision-mode)
       (pixel-scroll-precision-mode))
@@ -818,10 +784,18 @@
                   hungry-delete-chars-to-skip " 	\f"))
 
     ;; Move to the beginning/end of line or code
-    (use-package mwim)
+    (use-package mwim
+      :config
+      (general-def [remap beginning-of-line] #'mwim-beginning-of-code-or-line)
+      (general-def [remap end-of-line] #'mwim-end-of-code-or-line))
 
     ;; Undo-fu
-    (use-package undo-fu)
+    (use-package undo-fu
+      :config
+      (general-def "C-/" #'undo-fu-only-undo)
+      (general-def "C-r" #'undo-fu-only-redo)
+      (general-def "C-x u" #'undo-fu-only-undo)
+      (general-def "C-x r" #'undo-fu-only-redo))
 
     ;; Handling capitalized subwords in a nomenclature
     (use-package subword
@@ -879,88 +853,6 @@
     (provide 'init-edit)
   #+end_src
 
-* init-general.el
-
-  Only prepare the packages here, specific keybindings goes to =init-map.el=.
-  #+begin_src emacs-lisp :tangle ./lisp/init-general.el :mkdirp yes
-    ;;; init-general.el --- Initialize general -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package general)
-
-    (use-package key-chord
-      :diminish
-      :hook (after-init . key-chord-mode))
-
-    (provide 'init-general)
-  #+end_src
-
-* init-evil.el
-
-  Evil is a vim emulator for Emacs. I use Emacs keybindings to move cursor within the insert state, so I disabled insert state bindings. Evil-collection has a lot of good keybindings to enhance the experience with evil.
-  #+begin_src emacs-lisp :tangle ./lisp/init-evil.el :mkdirp yes
-    ;;; init-evil.el --- Initialize evil settings -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package evil
-      :init
-      (setq
-       evil-want-integration t
-       evil-want-keybinding nil
-       evil-want-C-u-scroll t
-       evil-want-C-i-jump nil
-       evil-disable-insert-state-bindings t
-       evil-undo-system 'undo-fu)
-      :hook (after-init . evil-mode)
-      :config
-      (evil-set-initial-state 'snippet-mode 'insert)
-      (general-def 'insert "C-g" #'evil-normal-state)
-
-      ;; Visual line motions
-      (general-def 'motion
-        "j" #'evil-next-visual-line
-        "k" #'evil-previous-visual-line)
-
-      ;; Emacs flavour moving
-      (general-def '(motion normal visual insert)
-        "C-a" #'mwim-beginning-of-code-or-line
-        "C-e" #'mwim-end-of-code-or-line)
-      (general-def '(motion normal visual)
-        "C-f" #'forward-char
-        "C-b" #'backward-char)
-      (general-def '(motion normal visual)
-        "C-n" #'next-line
-        "C-p" #'previous-line)
-      (general-def 'insert
-        "C-u" #'evil-undo
-        "C-r" #'evil-redo)
-
-      (general-def evil-window-map
-        "c" nil
-        "d" #'evil-window-delete))
-
-    (use-package evil-collection
-      :after evil
-      :init
-      (evil-collection-init))
-
-    (use-package evil-terminal-cursor-changer
-      :after evil
-      :init (etcc-on))
-
-    (use-package evil-surround
-      :after evil
-      :init (global-evil-surround-mode))
-
-    ;; Evil-nerd-commenter
-    (use-package evil-nerd-commenter
-      :after evil)
-
-    (provide 'init-evil)
-  #+end_src
-
 * init-hydra.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-hydra.el :mkdirp yes
@@ -972,10 +864,10 @@
       :config
       (defhydra hydra-window-resize (:timeout 4)
         "Resize window"
-        ("j" evil-window-increase-height "Increase height")
-        ("k" evil-window-decrease-height "Decrease height")
-        ("h" evil-window-decrease-width "Decrease width")
-        ("l" evil-window-increase-width "Increase width")
+        ("j" enlarge-window "Increase height")
+        ("k" shrink-window "Decrease height")
+        ("h" shrink-window-horizontally "Decrease width")
+        ("l" enlarge-window-horizontally "Increase width")
         ("SPC" balance-windows "Balance windows")
         ("q" nil "quit" :exit t)))
 
@@ -990,99 +882,84 @@
 
     ;;; Code:
     ;; misc
-    (general-define-key (general-chord "jk") (general-key "C-g"))
     (general-def [f10] #'indent-buffer) ;; f12 reserved for yakuake
     (general-def [f5] #'revert-buffer)
-    (general-define-key (general-chord ";'") #'evilnc-comment-or-uncomment-lines)
-    (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
-
-    (general-def "C-/" #'undo-fu-only-undo)
-    (general-def "C-r" #'undo-fu-only-redo)
-    (general-def "C-x u" #'undo-fu-only-undo)
-    (general-def "C-x r" #'undo-fu-only-redo)
-
-    (general-def 'insert smartparens-mode-map "C-c SPC" #'sp-up-sexp)
-    (general-def 'insert smartparens-mode-map "C-c TAB" #'sp-forward-sexp)
+    (general-def ";" (general-key-dispatch 'self-insert-command
+                    :timeout 0.25
+                    "'" #'comment-line))
+    (general-def "j" (general-key-dispatch 'self-insert-command
+                    :timeout 0.25
+                    "k" (general-key "C-g")))
 
     (general-unbind "M-`")	;; reserved for tmux
 
     ;; dashboard
-    (general-def 'normal dashboard-mode-map
+    (general-def dashboard-mode-map
       "H" #'solarion-homepage
       "R" #'restore-previous-session
       "C" #'solarion-edit-config
       "U" #'straight-pull-all)
 
-    (general-create-definer spc-leader-def
-      :states '(normal insert visual emacs)
+    (general-create-definer global-leader-def
       :keymaps 'override
-      :prefix "SPC"
-      :non-normal-prefix (general-chord ",."))
+      :prefix "C-c")
 
     (general-create-definer local-leader-def
-      :states '(normal insert visual emacs)
       :keymaps 'override
-      :prefix "SPC m"
-      :non-normal-prefix (general-chord ",,"))
+      :prefix "C-c m")
 
-    ;; Global SPC leader
-    (spc-leader-def
-
-      ;; local-leader
-      "m" '(:ignore t :which-key "<local>")
+    ;; Global leader
+    (global-leader-def
 
       ;; maps
       "h" #'(help-command :which-key "Help")
       "p" #'(projectile-command-map :which-key "Projectile")
 
       ;; keys
-      "SPC" '(execute-extended-command :which-key "Execute")
-      "a" '(avy-goto-char-timer :which-key "Avy")
-      "u" 'universal-argument
+      "a" #'(avy-goto-char-timer :which-key "Avy")
       "." #'consult-imenu
       "=" #'er/expand-region
 
       ;; window
-      "w" '(evil-window-map :which-key "Window")
-      "ws" 'evil-window-split-and-focus
-      "wv" 'evil-window-vsplit-and-focus
-      "wr" '(hydra-window-resize/body :which-key "Window Resize")
-      "1" '(winum-select-window-1 :which-key "Switch to window 1")
-      "2" '(winum-select-window-2 :which-key "Switch to window 2")
-      "3" '(winum-select-window-3 :which-key "Switch to window 3")
-      "4" '(winum-select-window-4 :which-key "Switch to window 4")
-      "5" '(winum-select-window-5 :which-key "Switch to window 5")
+      "w" '(:ignore t :which-key "Window")
+      "ws" #'split-window-below-and-focus
+      "wv" #'split-window-right-and-focus
+      "wd" #'(delete-window :which-key "Delete window")
+      "wr" #'(hydra-window-resize/body :which-key "Window Resize")
+      "1" #'(winum-select-window-1 :which-key "Switch to window 1")
+      "2" #'(winum-select-window-2 :which-key "Switch to window 2")
+      "3" #'(winum-select-window-3 :which-key "Switch to window 3")
+      "4" #'(winum-select-window-4 :which-key "Switch to window 4")
+      "5" #'(winum-select-window-5 :which-key "Switch to window 5")
 
       ;; buffer & bookmark
       "b" '(:ignore t :which-key "Buffer/Bookmark")
-      "bp" '(previous-buffer :which-key "Previous Buffer")
-      "bn" '(next-buffer :which-key "Next Buffer")
-      "bb" '(consult-buffer :which-key "Switch Buffer")
-      "bc" '(clone-indirect-buffer :which-key "Clone Buffer")
-      "bd" '(kill-current-buffer :which-key "Kill Buffer")
-      "bi" 'ibuffer
-      "bm" '(bookmark-set :which-key "Set Bookmark")
-      "bM" '(bookmark-delete :which-key "Delete Bookmark")
-      "bj" '(consult-bookmark :which-key "Jump to Bookmark")
-      "bl" '(list-bookmarks :which-key "Bookmarks List")
-      "bN" '(evil-buffer-new :which-key "New Empty Buffer")
-      "br" '(revert-buffer :which-key "Revert Buffer")
-      "bs" '(basic-save-buffer :which-key "Save Buffer")
-      "bS" '(evil-write-all :which-key "Save All Buffers")
+      "bp" #'(previous-buffer :which-key "Previous Buffer")
+      "bn" #'(next-buffer :which-key "Next Buffer")
+      "bb" #'(consult-buffer :which-key "Switch Buffer")
+      "bc" #'(clone-indirect-buffer :which-key "Clone Buffer")
+      "bd" #'(kill-current-buffer :which-key "Kill Buffer")
+      "bi" #'ibuffer
+      "bm" #'(bookmark-set :which-key "Set Bookmark")
+      "bM" #'(bookmark-delete :which-key "Delete Bookmark")
+      "bj" #'(consult-bookmark :which-key "Jump to Bookmark")
+      "bl" #'(list-bookmarks :which-key "Bookmarks List")
+      "bN" #'(solarion-new-buffer :which-key "New Empty Buffer")
+      "br" #'(revert-buffer :which-key "Revert Buffer")
 
       ;; file
       "f" '(:ignore t :which-key "File")
-      "fd" '(dired-jump :which-key "Dired Jump")
-      "ff" '(find-file :which-key "Find File")
-      "fs" '(save-buffer :which-key "Save File")
-      "fS" '(write-file :which-key "Save File As")
-      "fr" '(consult-recent-file :which-key "Recent Files")
+      "fd" #'(dired-jump :which-key "Dired Jump")
+      "ff" #'(find-file :which-key "Find File")
+      "fs" #'(save-buffer :which-key "Save File")
+      "fS" #'(write-file :which-key "Save File As")
+      "fr" #'(consult-recent-file :which-key "Recent Files")
       "fp" #'(solarion-edit-config :which-key "Edit Config")
 
       ;; quit
       "q" '(:ignore t :which-key "Quit")
-      "qf" '(delete-frame :which-key "Delete Frame")
-      "qq" '(save-buffers-kill-terminal :which-key "Quit Emacs")
+      "qf" #'(delete-frame :which-key "Delete Frame")
+      "qq" #'(save-buffers-kill-terminal :which-key "Quit Emacs")
 
       ;; roam
       "r" '(:ignore t :which-key "Roam")
@@ -1335,7 +1212,6 @@
       (setq corfu-count 7)
       (setq corfu-preselect-first nil) ;; tab for complete common
       (global-corfu-mode)
-      (general-def 'insert corfu-map "C-g" 'corfu-quit)
 
       ;; corfu quick
       (setq corfu-quick1 "asdf")
@@ -1393,10 +1269,7 @@
     (use-package magit
       :init
       (setq magit-display-buffer-function #'magit-display-buffer-traditional
-            git-commit-major-mode 'org-mode)
-      :hook (git-commit-mode . evil-insert-state)
-      :config
-      (evil-collection-magit-setup))
+            git-commit-major-mode 'org-mode))
 
     (use-package git-gutter
       :diminish
@@ -1414,7 +1287,6 @@
 
     (use-package ibuffer
       :straight nil
-      :bind ("C-x C-b" . ibuffer)
       :hook (ibuffer-mode . (lambda () (ibuffer-auto-mode 1) (ibuffer-switch-to-saved-filter-groups "custom")))
       :custom
       (ibuffer-show-empty-filter-groups nil)
@@ -1509,7 +1381,6 @@
       :straight (:type built-in)
       :hook
       (org-mode . solarion/org-mode-setup)
-      (org-capture-mode . evil-insert-state)
       :config
       (add-to-list 'org-modules 'org-tempo)
       (add-to-list 'org-src-lang-modes '("conf-unix" . conf-unix))
@@ -1562,6 +1433,7 @@
               ("scheme=plain" "ctex")))
       (setq org-image-actual-width 400)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
+      (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
       )
 
     (use-package ox-gfm
@@ -1721,10 +1593,6 @@
       :straight nil
       :commands (dired dired-jump)
       :config
-      (general-def 'normal dired-mode-map
-        " " nil
-        "h" 'dired-up-directory
-        "l" 'dired-find-file)
       (general-def dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
       (setq dired-listing-switches "-alh --group-directories-first"
             dired-dwim-target t
@@ -1753,8 +1621,7 @@
       :after dired
       :hook (dired-mode . dired-hide-dotfiles-mode)
       :config
-      (general-def 'normal dired-mode-map
-        "H" 'dired-hide-dotfiles-mode))
+      (general-def dired-mode-map "H" 'dired-hide-dotfiles-mode))
 
     (provide 'init-dired)
   #+end_src
