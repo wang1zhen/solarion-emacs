@@ -36,6 +36,7 @@
 - [[#init-diredel][init-dired.el]]
 - [[#init-projectileel][init-projectile.el]]
 - [[#init-dashboardel][init-dashboard.el]]
+- [[#init-vtermel][init-vterm.el]]
 - [[#init-perspel][init-persp.el]]
 - [[#init-dictel][init-dict.el]]
 - [[#init-powerthesaurusel][init-powerthesaurus.el]]
@@ -144,6 +145,7 @@
     (require 'init-projectile)
 
     (require 'init-dashboard)
+    (require 'init-vterm)
     (require 'init-persp)
 
     (require 'init-dict)
@@ -1687,6 +1689,30 @@
         (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))))
 
     (provide 'init-dashboard)
+  #+end_src
+
+* init-vterm.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-vterm.el :mkdirp yes
+    ;;; init-vterm.el --- Emacs libvterm integration -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (when (and module-file-suffix           ;; dynamic module
+               (executable-find "cmake")
+               (executable-find "libtool")  ;; install libtool-bin
+               (executable-find "make"))
+      (use-package vterm
+        :init (setq vterm-always-compile-module t))
+      (use-package vterm-toggle
+        :bind
+        ([f2] . vterm-toggle)
+        ([C-f2] . vterm-toggle-cd)
+        (:map vterm-mode-map
+              ("C-<return>" . vterm-toggle-insert-cd)
+              ([f2] . vterm-toggle))))
+
+      (provide 'init-vterm)
   #+end_src
 
 * init-persp.el
