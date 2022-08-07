@@ -918,8 +918,8 @@
       "p" #'(projectile-command-map :which-key "Projectile")
 
       ;; keys
-      "a" #'(avy-goto-char-timer :which-key "Avy")
-      "." #'consult-imenu
+      "a" #'(avy-goto-line :which-key "Avy")
+      "C-." #'consult-imenu  ;; "C-c ." for org-time-stamp
       "=" #'er/expand-region
 
       ;; window
