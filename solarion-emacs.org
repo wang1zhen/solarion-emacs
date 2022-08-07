@@ -1165,6 +1165,7 @@
     (use-package consult
       :bind
       ("C-s" . consult-line)
+      ([remap switch-to-buffer] . consult-buffer)
       ([remap yank-pop] . consult-yank-pop))
 
     (use-package embark
