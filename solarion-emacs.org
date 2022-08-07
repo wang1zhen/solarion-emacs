@@ -600,8 +600,11 @@
       :diminish which-key-mode
       :hook (after-init . which-key-mode)
       :init
-      (setq which-key-idle-delay 0.2
-            which-key-sort-order 'which-key-key-order-alpha))
+      (setq which-key-idle-delay 0.2)
+      (setq which-key-sort-order 'which-key-key-order-alpha)
+      (setq which-key-prefix-prefix "")
+      :config
+      (set-face-attribute 'which-key-group-description-face nil :weight 'bold))
 
     (use-package command-log-mode
       :commands command-log-mode)
