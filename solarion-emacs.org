@@ -1339,7 +1339,7 @@
       (setq clean-buffer-list-kill-regexps '("^.*$"))
 
       (defvar solarion-clean-buffer-list-kill-never-buffer-names
-        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*")
+        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*" "*vterm*")
         "buffer names not to kill")
       (dolist (buf solarion-clean-buffer-list-kill-never-buffer-names)
         (add-to-list 'clean-buffer-list-kill-never-buffer-names buf))
