@@ -645,6 +645,15 @@
 
     (use-package posframe)
 
+    ;; minimap is only enabled in prog-mode
+    (use-package minimap
+      :init
+      (setq minimap-width-fraction 0.10
+            minimap-minimum-width 10
+            minimap-window-location 'right)
+      (setq minimap-major-modes '(prog-mode text-mode))
+      :hook (after-init . minimap-mode))
+
     (provide 'init-ui)
   #+end_src
 
@@ -1337,6 +1346,7 @@
 
     ;; use `clean-buffer-list' from `midngiht.el'
     (use-package midnight
+      :after (dashboard vterm minimap)
       :config
       ;;kill buffers if they were last disabled more than this seconds ago
       (setq clean-buffer-list-delay-special (* 3 60 60))
@@ -1353,7 +1363,7 @@
       (setq clean-buffer-list-kill-regexps '("^.*$"))
 
       (defvar solarion-clean-buffer-list-kill-never-buffer-names
-        '("*dashboard*" "*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*" "*vterm*")
+        `("*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*" ,dashboard-buffer-name ,vterm-buffer-name ,minimap-buffer-name)
         "buffer names not to kill")
       (dolist (buf solarion-clean-buffer-list-kill-never-buffer-names)
         (add-to-list 'clean-buffer-list-kill-never-buffer-names buf))
