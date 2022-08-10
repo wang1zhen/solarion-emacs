@@ -645,19 +645,21 @@
 
     (use-package posframe)
 
+    ;; minimap is useless and makes keycast not shown
     ;; (use-package minimap
     ;;   :init
     ;;   (setq minimap-width-fraction 0.10
     ;;         minimap-minimum-width 10
     ;;         minimap-window-location 'right)
     ;;   (setq minimap-major-modes '(prog-mode text-mode))
-    ;;   (defun minimap--disable-fringe-indicator nil
+    ;;   (defun minimap--customize nil
     ;;     (with-current-buffer minimap-buffer-name
     ;;       (setq-local fringe-indicator-alist (append '((continuation nil nil)) fringe-indicator-alist))
+    ;;       (setq-local window-size-fixed 'width)
     ;;       (set-window-fringes (minimap-get-window) 1 1 nil)))
     ;;   :hook (after-init . minimap-mode)
     ;;   :config
-    ;;   (advice-add #'minimap-new-minimap :after #'minimap--disable-fringe-indicator))
+    ;;   (advice-add #'minimap-new-minimap :after #'minimap--customize))
 
     (provide 'init-ui)
   #+end_src
