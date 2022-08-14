@@ -1730,7 +1730,8 @@
                                            (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
       (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
-        (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))))
+        (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
+      (add-hook 'dashboard-mode-hook #'dashboard-jump-to-recents))
 
     (provide 'init-dashboard)
   #+end_src
