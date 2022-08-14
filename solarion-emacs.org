@@ -521,19 +521,23 @@
     (setq split-height-threshold nil
           split-width-threshold 120)
 
-    (use-package modus-themes
-      :init
-      (setq modus-themes-italic-constructs t
-            modus-themes-bold-constructs t
-            modus-themes-syntax '(alt-syntax green-strings yellow-comments)
-            modus-themes-links '(neutral-underline background)
-            modus-themes-hl-line '(intense)
-            modus-themes-markup '(italic bold intense background)
-            modus-themes-paren-match '(intense)
-            modus-themes-org-blocks nil)
-      (setq modus-themes-completions '((selection . (intense))))
-      :config
-      (modus-themes-load-vivendi))
+    ;; (use-package modus-themes
+    ;;   :init
+    ;;   (setq modus-themes-italic-constructs t
+    ;;         modus-themes-bold-constructs t
+    ;;         modus-themes-syntax '(alt-syntax green-strings yellow-comments)
+    ;;         modus-themes-links '(neutral-underline background)
+    ;;         modus-themes-hl-line '(intense)
+    ;;         modus-themes-markup '(italic bold intense background)
+    ;;         modus-themes-paren-match '(intense)
+    ;;         modus-themes-org-blocks nil)
+    ;;   (setq modus-themes-completions '((selection . (intense))))
+    ;;   :config
+    ;;   (modus-themes-load-vivendi))
+
+    (use-package ef-themes
+      :straight '(ef-themes :type git :host github :repo "protesilaos/ef-themes")
+      :init (ef-themes-select 'ef-summer))
 
     ;; Mode-line
     (use-package doom-modeline
