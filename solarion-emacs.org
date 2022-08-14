@@ -243,46 +243,22 @@
       ;; (electric-pair-local-mode -1)
       )
 
-    ;; ask for the filename before pasting an image
+    ;; Ask for the filename before pasting an image
     ;; filename should end with ".png/.jpg/.svg"
-    ;; TODO fix for windows 11
-    (defun solarion/org-download-paste-clipboard (&optional use-default-filename)
-      (interactive "P")
-      (require 'org-download)
-      (let ((file
-             (unless use-default-filename
-               (read-string (format "Filename [%s]: "
-                                    org-download-screenshot-basename)
-                            nil nil org-download-screenshot-basename)
-               )))
-        (solarion/org-download-clipboard-wsl file)))
-
-    ;; TODO on win11 it doesn't work inside windows dirs
-    (defun solarion/org-download-clipboard-wsl (&optional basename)
-      "fix for org-download-clipboard in wsl"
-      (interactive)
-      (let ((org-download-screenshot-method
-             (if (executable-find "magick.exe")
-                 "magick.exe convert clipboard: %s"
-               (user-error
-                "Please install the \"convert\" program included in ImageMagick"))))
-        (org-download-screenshot basename)))
-
-    ;; Temporary fix
-    (defun my-yank-image-from-win-clipboard-through-powershell ()
-      "to simplify the logic, use c:/Users/Public as temporary directoy, and move it into current directoy"
+    (defun solarion/org-download-paste-clipboard-wsl ()
+      "to simplify the logic, use c:/Users/Public as temporary directory, and move it into current directory"
       (interactive)
       (let* ((powershell (executable-find "powershell.exe"))
-             (file-name (format-time-string "screenshot_%Y%m%d_%H%M%S.png"))
-             ;; (file-path-powershell (concat "c:/Users/\$env:USERNAME/" file-name))
+             (file-base-name (format-time-string "image-%Y%m%d_%H%M%S.png"))
+             (file-name (read-string (format "Filename [%s]: " file-base-name) nil nil file-base-name))
              (file-path-wsl (concat "./image/" file-name)))
-        ;; (shell-command (concat powershell " -command \"(Get-Clipboard -Format Image).Save(\\\"C:/Users/\\$env:USERNAME/" file-name "\\\")\""))
         (shell-command (concat powershell " -command \"(Get-Clipboard -Format Image).Save(\\\"C:/Users/Public/" file-name "\\\")\""))
         (make-directory "./image" t)
         (rename-file (concat "/mnt/c/Users/Public/" file-name) file-path-wsl)
         (insert (concat "#+ATTR_LATEX: :width \\linewidth\n"))
         (org-indent-line)
-        (insert (concat "[[file:" file-path-wsl "]]"))))
+        (insert (concat "[[file:" file-path-wsl "]]"))
+        (org-display-inline-images)))
 
     ;; dashboard
     (defun solarion-homepage (&rest _)
@@ -1080,8 +1056,7 @@
       "b" #'org-mark-ring-goto
       "a" '(:ignore t :which-key "Attach")
       "aa" #'org-attach
-      ;; "ap" #'solarion/org-download-paste-clipboard
-      "ap" #'my-yank-image-from-win-clipboard-through-powershell
+      "ap" #'solarion/org-download-paste-clipboard-wsl
       "e" #'(org-export-dispatch :which-key "Export")
       "d" '(:ignore t :which-key "Date")
       "dd" #'org-deadline
@@ -1458,7 +1433,6 @@
       (setq org-hide-leading-stars t)
       ;; export settings
       (setq org-export-with-tags nil)
-      (setq org-latex-image-default-width "\\linewidth")
       ;; latex settings
       (setq org-latex-compiler "xelatex")
       (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n colorlinks=true,\n linkcolor=black\n}\n")
@@ -1477,7 +1451,7 @@
             '(("" "siunitx")
               ("" "mathrsfs")
               ("scheme=plain" "ctex")))
-      (setq org-image-actual-width 400)
+      (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
       (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
       )
