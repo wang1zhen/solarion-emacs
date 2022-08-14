@@ -313,6 +313,10 @@
                   (kill-buffer)))
           (message "Not a file visiting buffer!"))))
 
+    (defun flash-mode-line ()
+      (invert-face 'mode-line)
+      (run-with-timer 0.1 nil #'invert-face 'mode-line))
+
     (provide 'init-func)
   #+end_src
 
@@ -455,8 +459,10 @@
                   tab-width 8
                   indent-tabs-mode nil)     ; Permanently indent with spaces, never with TABs
 
-    (setq visible-bell t
-          inhibit-compacting-font-caches t  ; Don’t compact font caches during GC.
+    ;; flash the modeline for visual bell
+    (setq visible-bell nil
+          ring-bell-function 'flash-mode-line)
+    (setq inhibit-compacting-font-caches t  ; Don’t compact font caches during GC.
           delete-by-moving-to-trash t       ; Deleting files go to OS's trash folder
           make-backup-files nil             ; Forbide to make backup files
           create-lockfiles nil              ; Forbide to make lockfiles
