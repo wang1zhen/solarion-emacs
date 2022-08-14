@@ -903,11 +903,11 @@
     (general-def [f10] #'indent-buffer) ;; f12 reserved for yakuake
     (general-def [f5] #'revert-buffer)
     (general-def ";" (general-key-dispatch 'self-insert-command
-                    :timeout 0.25
-                    "'" #'comment-line))
+                       :timeout 0.25
+                       "'" #'comment-line))
     (general-def "j" (general-key-dispatch 'self-insert-command
-                    :timeout 0.25
-                    "k" (general-key "C-g")))
+                       :timeout 0.25
+                       "k" (general-key "C-g")))
 
     (general-unbind "M-`")	;; reserved for tmux
 
