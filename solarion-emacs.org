@@ -1898,8 +1898,8 @@
             rime-user-data-dir (concat user-emacs-directory "rime/")
             rime-posframe-properties '(:internal-border-width 2))
       :config
-      (general-unbind "S-DEL")
-      (add-to-list 'rime-translate-keybindings "S-DEL"))
+      (general-def rime-mode-map "C-`" #'rime-send-keybinding)
+      (general-def rime-active-mode-map "S-<delete>" #'rime-send-keybinding))
 
     (provide 'init-rime)
   #+end_src

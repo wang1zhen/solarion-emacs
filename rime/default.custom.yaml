@@ -1,6 +1,6 @@
 patch:
   schema_list:
-    - schema: luna_pinyin
+    - schema: double_pinyin_flypy # 小鹤双拼
   "ascii_composer/switch_key":
     Caps_lock: clear
     Control_L: noop
@@ -8,8 +8,6 @@ patch:
     Shift_L: commit_code
     Shift_R: inline_ascii
   "menu/page_size": 7
-  schema_list:
-    - {schema: luna_pinyin}
   "switcher/hotkeys":
     - "Control+grave"
   key_binder:
