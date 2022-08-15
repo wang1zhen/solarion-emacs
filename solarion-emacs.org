@@ -867,10 +867,12 @@
       :diminish
       :config
       (require 'smartparens-config)
-      (setq sp-cancel-autoskip-on-backward-movement nil)
       (add-hook 'org-mode-hook #'smartparens-mode)
       (add-hook 'LaTeX-mode-hook #'smartparens-mode)
-      (add-hook 'emacs-lisp-mode-hook #'smartparens-mode))
+      (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+      ;; custom pairs
+      (sp-local-pair 'org-mode "=" nil :actions :rem)
+      (sp-local-pair 'org-mode "/" nil :actions :rem))
 
     (use-package yaml-mode
       :config
@@ -1246,6 +1248,12 @@
       (setq corfu-quick2 "jkl")
       (general-def corfu-map "`" #'corfu-quick-complete)
       )
+
+    (use-package cape
+      :init
+      ;; Add `completion-at-point-functions', used by `completion-at-point'.
+      (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+      (add-to-list 'completion-at-point-functions #'cape-file))
 
     ;; (use-package corfu-doc
     ;;   :after corfu
