@@ -872,6 +872,10 @@
       (add-hook 'LaTeX-mode-hook #'smartparens-mode)
       (add-hook 'emacs-lisp-mode-hook #'smartparens-mode))
 
+    (use-package yaml-mode
+      :config
+      (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode)))
+
     (provide 'init-edit)
   #+end_src
 
