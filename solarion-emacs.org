@@ -871,8 +871,9 @@
       (add-hook 'LaTeX-mode-hook #'smartparens-mode)
       (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
       ;; custom pairs
-      (sp-local-pair 'org-mode "=" nil :actions :rem)
-      (sp-local-pair 'org-mode "/" nil :actions :rem))
+      (with-eval-after-load 'org
+        (sp-local-pair 'org-mode "=" nil :actions :rem)
+        (sp-local-pair 'org-mode "/" nil :actions :rem)))
 
     (use-package yaml-mode
       :config
