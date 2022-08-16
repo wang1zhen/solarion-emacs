@@ -821,7 +821,7 @@
     ;; Move to the beginning/end of line or code
     (use-package mwim
       :config
-      (general-def  "C-a" #'mwim-beginning-of-code-or-line)
+      (general-def "C-a" #'mwim-beginning-of-code-or-line)
       (general-def "C-e" #'mwim-end-of-code-or-line))
 
     ;; Undo-fu
