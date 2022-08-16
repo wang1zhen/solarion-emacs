@@ -1738,7 +1738,10 @@
                (executable-find "libtool")  ;; install libtool-bin
                (executable-find "make"))
       (use-package vterm
-        :init (setq vterm-always-compile-module t))
+        :init
+        (setq vterm-always-compile-module t)
+        :bind (:map vterm-mode-map
+                    ("C-\\" . toggle-input-method)))
       (use-package vterm-toggle
         :bind
         ([f2] . vterm-toggle)
@@ -1747,7 +1750,7 @@
               ("C-<return>" . vterm-toggle-insert-cd)
               ([f2] . vterm-toggle))))
 
-      (provide 'init-vterm)
+    (provide 'init-vterm)
   #+end_src
 
 * init-persp.el
