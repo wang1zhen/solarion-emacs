@@ -558,9 +558,10 @@
         (add-hook mode (lambda () (setq display-line-numbers 'visual)))))
 
     ;; Display ugly ^L page breaks as tidy horizontal lines
-    (use-package page-break-lines
-      :diminish
-      :hook (after-init . global-page-break-lines-mode))
+    ;; Conflicts with org-roam-buffer-toggle
+    ;; (use-package page-break-lines
+    ;;   :diminish
+    ;;   :hook (after-init . global-page-break-lines-mode))
 
     ;; Suppress GUI features
     (setq use-file-dialog nil
@@ -1629,7 +1630,6 @@
 
     (use-package org-roam
       :diminish
-      :hook (after-init . org-roam-db-autosync-enable)
       :init
       (setq
        org-roam-v2-ack t
@@ -1658,7 +1658,8 @@
         (interactive)
         (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
           (consult-ripgrep org-roam-directory)))
-      )
+      (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+      (org-roam-db-autosync-mode))
 
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
@@ -1685,7 +1686,6 @@
       (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode)))
 
     (use-package org-roam-ui
-      :hook (after-init . org-roam-ui-mode)
       :config
       (setq org-roam-ui-sync-theme t
             org-roam-ui-follow t
