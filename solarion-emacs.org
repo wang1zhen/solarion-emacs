@@ -123,7 +123,7 @@
     (require 'init-ui)
     (require 'init-themes)
     (require 'init-scroll)
-    (require 'init-fonts)       ;; 字体检查 言 ♪
+    (require 'init-fonts)
     (require 'init-edit)
 
     ;; Keybindings
@@ -815,44 +815,32 @@
 * init-fonts.el
 
   The font settings are mainly for GUI Emacs, this would not affect TUI Emacs.
+  font check
+  Chinese:
+  言
+  Symbols:
+  ♪
+  Kana:
+  夜に駆ける
+
   #+begin_src emacs-lisp :tangle ./lisp/init-fonts.el :mkdirp yes
     ;;; init-fonts.el --- Fonts configurations (for GUI) -*- lexical-bindings: t -*-
 
     ;;; Code:
 
-    (require 'cl-lib)
-
-    (defcustom solarion-font-size-factor
-      3
-      "A factor for fonts to determine the actual font size in GUI.\nMultiplied by 60.")
-
     (defun solarion-config-font ()
       (when (display-graphic-p)
-        ;; Configure font-size-factor with respect to system-name
-        (cond
-         ((equal (system-name) "DESKTOP-R1700") (setq solarion-font-size-factor 3))
-         ((equal (system-name) "Arch-X230") (setq solarion-font-size-factor 3))
-         (t (setq solarion-font-size-factor 2)))
-
         ;; Set default font
-        (cl-loop for font in '("CaskaydiaCove Nerd Font" "Cascadia Code"
-                               "FiraCode Nerd Font" "Fira Code"
-                               "Hack" "Source Code Pro" "Consolas")
-                 when (font-installed-p font)
-                 return (set-face-attribute 'default nil
-                                            :font font
-                                            :height (* solarion-font-size-factor 60)))
+        (set-face-attribute 'default
+                            nil
+                            :font "CaskaydiaCove Nerd Font"
+                            :height 150)
 
-        ;; Specify font for Chinese characters
-        (cl-loop for font in '("霞鹜文楷" "Sarasa Mono SC" "WenQuanYi Micro Hei Mono" "Microsoft Yahei")
-                 when (font-installed-p font)
-                 return (set-fontset-font t '(#x4e00 . #x9fff) (font-spec :family font :weight 'bold)))))
-
-    ;; fonts required: DejaVu Sans, DejaVu Sans Mono, Quivira,
-    ;; Symbola, Noto Sans, Noto Sans Symbols
-    (use-package unicode-fonts
-      :config
-      (unicode-fonts-setup))
+        ;; CJK fonts
+        (set-fontset-font t 'han (font-spec :family "霞鹜文楷" :weight 'bold))
+        (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
+        ;; Emoji
+        (set-fontset-font t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
 
     (use-package ligature
       :straight '(ligature :type git :host github :repo "mickeynp/ligature.el")
@@ -873,7 +861,8 @@
                                            "\\\\" "://"))
       (global-ligature-mode t))
 
-    (add-hook 'after-init-hook #'solarion-config-font)
+    (solarion-config-font)
+    (add-hook 'window-setup-hook #'solarion-config-fonts)
     (add-hook 'server-after-make-frame-hook #'solarion-config-font)
 
     (provide 'init-fonts)
@@ -1593,7 +1582,7 @@
       ;; maketitle command
       (setq org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       ;; size of the preview latex fragments
-      (plist-put org-format-latex-options :scale (/ solarion-font-size-factor 1.5))
+      (plist-put org-format-latex-options :scale 2)
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
       (general-def org-mode-map "C-RET" #'org-meta-return)
       (general-def org-mode-map "C-<return>" #'org-meta-return)
