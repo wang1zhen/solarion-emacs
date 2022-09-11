@@ -1654,6 +1654,7 @@
       (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
       (org-roam-db-autosync-mode))
 
+    ;; Automatically insert table of contents after the heading with :TOC: tag
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
 
