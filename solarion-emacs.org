@@ -828,7 +828,7 @@
 
     ;;; Code:
 
-    (defun solarion-config-font ()
+    (defun solarion-config-fonts ()
       (when (display-graphic-p)
         ;; Set default font
         (set-face-attribute 'default
@@ -841,6 +841,10 @@
         (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
         ;; Emoji
         (set-fontset-font t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
+
+    (solarion-config-fonts)
+    (add-hook 'window-setup-hook #'solarion-config-fonts)
+    (add-hook 'server-after-make-frame-hook #'solarion-config-fonts)
 
     (use-package ligature
       :straight '(ligature :type git :host github :repo "mickeynp/ligature.el")
@@ -860,10 +864,6 @@
                                            "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
                                            "\\\\" "://"))
       (global-ligature-mode t))
-
-    (solarion-config-font)
-    (add-hook 'window-setup-hook #'solarion-config-fonts)
-    (add-hook 'server-after-make-frame-hook #'solarion-config-font)
 
     (provide 'init-fonts)
   #+end_src
