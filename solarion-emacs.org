@@ -1658,9 +1658,7 @@
       :hook (org-mode . toc-org-mode))
 
     ;; Auto-toggle Org LaTeX fragments
-    (use-package org-fragtog
-      :diminish
-      :hook (org-mode . org-fragtog-mode))
+    (use-package org-fragtog)
 
     ;; matlab mode, currently only for org mode, could be separated
     ;; the package name is matlab, yet it provides `matlab'
