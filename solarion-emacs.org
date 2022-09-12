@@ -1568,8 +1568,8 @@
       (setq org-ellipsis "\t▾")
       (setq org-tags-column -80)
       (setq org-log-done 'time)
-      (setq org-hide-emphasis-markers nil);; Show bold and italic verbosely
-      (setq org-link-descriptive nil);; Show links verbosely
+      (setq org-hide-emphasis-markers nil) ;; Show bold and italic verbosely
+      (setq org-link-descriptive t) ;; Show links verbosely
       (setq org-hide-leading-stars t)
       ;; export settings
       (setq org-export-with-tags nil)
