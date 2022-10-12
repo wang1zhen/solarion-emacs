@@ -296,25 +296,44 @@
       (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
     (defun copy-line (arg)
-        "Copy lines (as many as prefix argument) in the kill ring.
+      "Copy lines (as many as prefix argument) in the kill ring.
           Ease of use features:
           - Move to start of next line.
           - Appends the copy on sequential calls.
           - Use newline as last char even on the last line of the buffer.
           - If region is active, copy its lines."
-        (interactive "p")
-        (let ((beg (line-beginning-position))
-              (end (line-end-position arg)))
-          (when mark-active
-            (if (> (point) (mark))
-                (setq beg (save-excursion (goto-char (mark)) (line-beginning-position)))
-              (setq end (save-excursion (goto-char (mark)) (line-end-position)))))
-          (if (eq last-command 'copy-line)
-              (kill-append (buffer-substring beg end) (< end beg))
-            (kill-ring-save beg end)))
-        (kill-append "\n" nil)
-        (beginning-of-line (or (and arg (1+ arg)) 2))
-        (if (and arg (not (= 1 arg))) (message "%d lines copied" arg)))
+      (interactive "p")
+      (let ((beg (line-beginning-position))
+            (end (line-end-position arg)))
+        (when mark-active
+          (if (> (point) (mark))
+              (setq beg (save-excursion (goto-char (mark)) (line-beginning-position)))
+            (setq end (save-excursion (goto-char (mark)) (line-end-position)))))
+        (if (eq last-command 'copy-line)
+            (kill-append (buffer-substring beg end) (< end beg))
+          (kill-ring-save beg end)))
+      (kill-append "\n" nil)
+      (beginning-of-line (or (and arg (1+ arg)) 2))
+      (if (and arg (not (= 1 arg))) (message "%d lines copied" arg)))
+
+    (defun solarion/git-add-commit-push ()
+      "Simple commit current git project and push to its upstream."
+      (interactive)
+      (when (and buffer-file-name
+                 (buffer-modified-p))
+        (save-buffer))                   ;; save it first if modified.
+      (magit-diff-unstaged)
+      (when (yes-or-no-p "Do you really want to commit everything?")
+        (magit-stage-modified t)         ;; stage modified and untracked
+        (magit-diff-staged)
+        (let ((msg (read-string "Commit Message: ")))
+          (when (= 0 (length msg))
+            (setq msg (format-time-string "commit by magit in emacs@%Y-%m-%d %H:%M:%S"
+                                          (current-time))))
+          (magit-call-git "commit" "-m" msg)
+          (magit-push-current-to-upstream nil)
+          (message "now do async push to %s" (magit-get "remote" "origin" "url"))))
+      (magit-mode-bury-buffer))
 
     (provide 'init-func)
   #+end_src
@@ -1167,7 +1186,7 @@
       ;; "g'" #'forge-dispatch
       "gb" #'magit-branch-checkout
       "gg" #'magit-status
-      "gG" #'magit-status-here
+      "gG" #'solarion/git-add-commit-push
       "gD" #'magit-file-delete
       "gB" #'magit-blame
       "gC" #'magit-clone
