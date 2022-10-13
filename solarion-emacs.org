@@ -335,6 +335,13 @@
           (message "now do async push to %s" (magit-get "remote" "origin" "url"))))
       (magit-mode-bury-buffer))
 
+    (defun solarion/indent-buffer-and-format ()
+      "Indent buffer and format code"
+      (interactive)
+      (indent-buffer)
+      (when (format-all--language-id-buffer)
+        (format-all-buffer t)))
+
     (provide 'init-func)
   #+end_src
 
@@ -932,6 +939,9 @@
       (setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
       )
 
+    (use-package format-all
+      :commands format-all-buffer)
+
     ;; Jump to things in Emacs tree-style
     (use-package avy
       :hook (after-init . avy-setup-default)
@@ -1074,7 +1084,7 @@
 
     ;;; Code:
     ;; misc
-    (general-def [f10] #'indent-buffer) ;; f12 reserved for yakuake
+    (general-def [f10] #'solarion/indent-buffer-and-format) ;; f12 reserved for yakuake
     (general-def [f5] #'revert-buffer)
     (general-def ";" (general-key-dispatch 'self-insert-command
                        :timeout 0.25
