@@ -940,7 +940,7 @@
       )
 
     (use-package format-all
-      :commands format-all-buffer)
+      :commands (format-all-buffer format-all--language-id-buffer))
 
     ;; Jump to things in Emacs tree-style
     (use-package avy
