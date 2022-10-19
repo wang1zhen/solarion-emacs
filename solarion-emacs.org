@@ -1231,6 +1231,7 @@
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
       "op" #'(powerthesaurus-lookup-dwim :which-key "Powerthesaurus")
+      "oy" #'yadm
       )
 
     ;; Local leader
