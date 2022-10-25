@@ -1790,7 +1790,7 @@
        ;; just save, dont ask me before each compilation
        TeX-save-query nil)
 
-      (TeX-engine-set 'xetex)
+      (setq-default TeX-engine 'xetex)
 
       (setq preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
 
