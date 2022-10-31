@@ -1933,7 +1933,9 @@
         :init
         (setq vterm-always-compile-module t)
         :bind (:map vterm-mode-map
-                    ("C-\\" . toggle-input-method)))
+                    ("C-\\" . toggle-input-method)
+                    ("C-q" . vterm-send-next-key)))
+
       (use-package vterm-toggle
         :bind
         ([f2] . vterm-toggle)
