@@ -1329,6 +1329,14 @@
       ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
       (setq vertico-cycle t))
 
+    (use-package vertico-posframe
+      :after vertico
+      :init
+      (vertico-posframe-mode 1)
+      (setq vertico-posframe-parameters
+            '((left-fringe . 8)
+              (right-fringe . 8))))
+
     (use-package vertico-directory
       :after vertico
       :straight nil
@@ -1339,6 +1347,12 @@
                   ("C-DEL" . vertico-directory-delete-word))
       ;; Tidy shadowed file names
       :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
+    (use-package all-the-icons-completion
+      :after (marginalia all-the-icons)
+      :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+      :init
+      (all-the-icons-completion-mode))
 
     (use-package pinyinlib
       :after orderless
