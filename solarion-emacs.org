@@ -476,7 +476,8 @@
               next-line))
       (setq keyfreq-excluded-regexp
             '("\\`vertico-.*\\'"
-              "\\`iscroll-.*\\'")))
+              "\\`iscroll-.*\\'"
+              "\\`vterm-.*\\'")))
 
     ;; Misc
     (fset 'yes-or-no-p 'y-or-n-p)
