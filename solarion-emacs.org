@@ -849,10 +849,12 @@
       ;; (setq iscroll-preserve-screen-position t)
       :hook (org-mode . iscroll-mode))
 
-    (use-package golden-ratio-scroll-screen
-      :bind
-      ([remap scroll-up-command] . golden-ratio-scroll-screen-up)
-      ([remap scroll-down-command] . golden-ratio-scroll-screen-down))
+    ;; (use-package golden-ratio-scroll-screen
+    ;;   :bind
+    ;;   ([remap scroll-up-command] . golden-ratio-scroll-screen-up)
+    ;;   ([remap scroll-down-command] . golden-ratio-scroll-screen-down))
+
+    (setq scroll-preserve-screen-position 'always)
 
     (when (fboundp 'pixel-scroll-precision-mode)
       (pixel-scroll-precision-mode))
@@ -1093,6 +1095,9 @@
     (general-def "j" (general-key-dispatch 'self-insert-command
                        :timeout 0.25
                        "k" (general-key "C-g")))
+    (general-def "k" (general-key-dispatch 'self-insert-command
+                       :timeout 0.25
+                       "j" #'avy-goto-char-timer))
     (general-def :keymaps 'override "C-c k" #'copy-line)
 
     (general-unbind "M-`")	;; reserved for tmux
@@ -1120,7 +1125,6 @@
       "p" #'(projectile-command-map :which-key "Projectile")
 
       ;; keys
-      "a" #'(avy-goto-char-timer :which-key "Avy")
       "C-." #'consult-imenu  ;; "C-c ." for org-time-stamp
       "=" #'er/expand-region
 
