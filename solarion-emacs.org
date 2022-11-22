@@ -1133,6 +1133,7 @@
       "ws" #'split-window-below-and-focus
       "wv" #'split-window-right-and-focus
       "wd" #'(delete-window :which-key "Delete window")
+      "wq" #'(quit-window :which-key "Quit window")
       "wr" #'(hydra-window-resize/body :which-key "Window Resize")
       "w=" #'(balance-windows :which-key "Balance Windows")
       "1" #'(winum-select-window-1 :which-key "Switch to window 1")
@@ -1236,8 +1237,7 @@
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
       "op" #'(powerthesaurus-lookup-dwim :which-key "Powerthesaurus")
-      "oy" #'yadm
-      )
+      "oy" #'yadm)
 
     ;; Local leader
     ;; org-mode
