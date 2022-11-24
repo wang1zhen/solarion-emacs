@@ -829,7 +829,7 @@
       (setq ef-themes-headings nil)
       (setq ef-themes-mixed-fonts nil)
       (setq ef-themes-variable-pitch-ui nil)
-      (ef-themes-select 'ef-summer))
+      (ef-themes-select 'ef-winter))
 
     (provide 'init-themes)
   #+end_src
