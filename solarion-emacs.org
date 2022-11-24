@@ -2113,6 +2113,7 @@
 
     ;;; Code:
 
+    ;; requires librime-dev on Debian
     (use-package rime
       :init
       (setq default-input-method "rime"
