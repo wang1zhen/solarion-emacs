@@ -883,7 +883,7 @@
         ;; Set default font
         (set-face-attribute 'default
                             nil
-                            :font "CaskaydiaCove Nerd Font"
+                            :font "CaskaydiaCove Nerd Font Mono"
                             :height 150)
 
         ;; Fixed-pitch (monospaced) fonts 等宽字体
@@ -902,23 +902,76 @@
     (add-hook 'window-setup-hook #'solarion-config-fonts)
     (add-hook 'server-after-make-frame-hook #'solarion-config-fonts)
 
+    ;; https://github.com/mickeynp/ligature.el
     (use-package ligature
       :straight '(ligature :type git :host github :repo "mickeynp/ligature.el")
       :config
-      (ligature-set-ligatures 't '("www" "ff" "fi" "ffi"))
-      (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                           ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                           "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                           "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                           "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                           "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                           "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                           "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                           ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                           "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                           "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                           "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                           "\\\\" "://"))
+      ;; Enable the "www" ligature in every possible major mode
+      (ligature-set-ligatures 't '("www"))
+      ;; Enable traditional ligature support in eww-mode, if the
+      ;; `variable-pitch' face supports it
+      (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+      ;; Enable all Cascadia and Fira Code ligatures in programming modes
+      (ligature-set-ligatures 'prog-mode
+                              '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
+                                ;; =:= =!=
+                                ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
+                                ;; ;; ;;;
+                                (";" (rx (+ ";")))
+                                ;; && &&&
+                                ("&" (rx (+ "&")))
+                                ;; !! !!! !. !: !!. != !== !~
+                                ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
+                                ;; ?? ??? ?:  ?=  ?.
+                                ("?" (rx (or ":" "=" "\." (+ "?"))))
+                                ;; %% %%%
+                                ("%" (rx (+ "%")))
+                                ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
+                                ;; |->>-||-<<-| |- |== ||=||
+                                ;; |==>>==<<==<=>==//==/=!==:===>
+                                ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
+                                                "-" "=" ))))
+                                ;; \\ \\\ \/
+                                ("\\" (rx (or "/" (+ "\\"))))
+                                ;; ++ +++ ++++ +>
+                                ("+" (rx (or ">" (+ "+"))))
+                                ;; :: ::: :::: :> :< := :// ::=
+                                (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
+                                ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
+                                ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
+                                                "="))))
+                                ;; .. ... .... .= .- .? ..= ..<
+                                ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
+                                ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
+                                ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
+                                ;; *> */ *)  ** *** ****
+                                ("*" (rx (or ">" "/" ")" (+ "*"))))
+                                ;; www wwww
+                                ("w" (rx (+ "w")))
+                                ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
+                                ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
+                                ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
+                                ;; << <<< <<<<
+                                ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
+                                                "-"  "/" "|" "="))))
+                                ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
+                                ;; >> >>> >>>>
+                                (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
+                                ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
+                                ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
+                                             (+ "#"))))
+                                ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
+                                ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
+                                ;; __ ___ ____ _|_ __|____|_
+                                ("_" (rx (+ (or "_" "|"))))
+                                ;; Fira code: 0xFF 0x12
+                                ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
+                                ;; Fira code:
+                                "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
+                                ;; The few not covered by the regexps.
+                                "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
+      ;; Enables ligature checks globally in all buffers. You can also do it
+      ;; per mode with `ligature-mode'.
       (global-ligature-mode t))
 
     (provide 'init-fonts)
