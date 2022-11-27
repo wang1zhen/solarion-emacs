@@ -886,6 +886,12 @@
                             :font "CaskaydiaCove Nerd Font"
                             :height 150)
 
+        ;; Fixed-pitch (monospaced) fonts 等宽字体
+        (set-face-attribute 'fixed-pitch
+                            nil
+                            :font "CaskaydiaCove Nerd Font Mono"
+                            :height 150)
+
         ;; CJK fonts
         (set-fontset-font t 'han (font-spec :family "霞鹜文楷" :weight 'bold))
         (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
