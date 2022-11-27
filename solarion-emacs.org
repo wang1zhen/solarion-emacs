@@ -1055,6 +1055,8 @@
       :config
       (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode)))
 
+    (use-package lorem-ipsum)
+
     (provide 'init-edit)
   #+end_src
 
