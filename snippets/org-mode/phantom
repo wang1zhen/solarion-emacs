@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: phantom
-# key: ph
-# --
-\phantom{m}
-$0
