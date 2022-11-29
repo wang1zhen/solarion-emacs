@@ -640,6 +640,14 @@
       :config
       (set-face-attribute 'which-key-group-description-face nil :weight 'bold))
 
+    (use-package which-key-posframe
+      :init
+      (which-key-posframe-mode)
+      :config
+      (setq which-key-posframe-parameters
+                '((left-fringe . 8)
+                  (right-fringe . 8))))
+
     (use-package command-log-mode
       :commands command-log-mode)
 
