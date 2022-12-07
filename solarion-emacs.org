@@ -501,10 +501,6 @@
 
     ;; Use the system clipboard
     (setq select-enable-clipboard t)
-    ;; TODO need fix for WSLg
-    ;; Xclip is needed (with X410 or VcXsrv on windows)
-    ;; (use-package xclip
-    ;;   :hook (after-init . xclip-mode))
 
     ;; Always focus the help window
     (setq help-window-select t)
@@ -517,7 +513,6 @@
 
     ;; Disable scratch buffer text
     (setq initial-scratch-message nil)
-    ;; (setq initial-major-mode 'org-mode)
 
     (provide 'init-basic)
   #+end_src
@@ -605,12 +600,6 @@
                       conf-mode-hook))
         (add-hook mode (lambda () (setq display-line-numbers 'visual)))))
 
-    ;; Display ugly ^L page breaks as tidy horizontal lines
-    ;; Conflicts with org-roam-buffer-toggle
-    ;; (use-package page-break-lines
-    ;;   :diminish
-    ;;   :hook (after-init . global-page-break-lines-mode))
-
     ;; Suppress GUI features
     (setq use-file-dialog nil
           use-dialog-box nil
@@ -645,8 +634,8 @@
       (which-key-posframe-mode)
       :config
       (setq which-key-posframe-parameters
-                '((left-fringe . 8)
-                  (right-fringe . 8))))
+            '((left-fringe . 8)
+              (right-fringe . 8))))
 
     (use-package command-log-mode
       :commands command-log-mode)
@@ -674,22 +663,6 @@
 
     (use-package posframe)
 
-    ;; minimap is useless and makes keycast not shown
-    ;; (use-package minimap
-    ;;   :init
-    ;;   (setq minimap-width-fraction 0.10
-    ;;         minimap-minimum-width 10
-    ;;         minimap-window-location 'right)
-    ;;   (setq minimap-major-modes '(prog-mode text-mode))
-    ;;   (defun minimap--customize nil
-    ;;     (with-current-buffer minimap-buffer-name
-    ;;       (setq-local fringe-indicator-alist (append '((continuation nil nil)) fringe-indicator-alist))
-    ;;       (setq-local window-size-fixed 'width)
-    ;;       (set-window-fringes (minimap-get-window) 1 1 nil)))
-    ;;   :hook (after-init . minimap-mode)
-    ;;   :config
-    ;;   (advice-add #'minimap-new-minimap :after #'minimap--customize))
-
     (provide 'init-ui)
   #+end_src
 
@@ -711,123 +684,6 @@
     ;;   (setq modus-themes-paren-match '(intense))
     ;;   (setq modus-themes-org-blocks nil)
     ;;   (setq modus-themes-completions '((selection . (intense))))
-    ;;   ;; modus-summertime
-    ;;   ;; https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-demo/
-    ;;   ;; (setq modus-themes-operandi-color-overrides
-    ;;   ;;       '((bg-main . "#fff0f2")
-    ;;   ;;         (bg-dim . "#fbe6ef")
-    ;;   ;;         (bg-alt . "#f5dae6")
-    ;;   ;;         (bg-hl-line . "#fad8e3")
-    ;;   ;;         (bg-active . "#efcadf")
-    ;;   ;;         (bg-inactive . "#f3ddef")
-    ;;   ;;         (bg-active-accent . "#ffbbef")
-    ;;   ;;         (bg-region . "#dfc5d1")
-    ;;   ;;         (bg-region-accent . "#efbfef")
-    ;;   ;;         (bg-region-accent-subtle . "#ffd6ef")
-    ;;   ;;         (bg-header . "#edd3e0")
-    ;;   ;;         (bg-tab-active . "#ffeff2")
-    ;;   ;;         (bg-tab-inactive . "#f8d3ef")
-    ;;   ;;         (bg-tab-inactive-accent . "#ffd9f5")
-    ;;   ;;         (bg-tab-inactive-alt . "#e5c0d5")
-    ;;   ;;         (bg-tab-inactive-alt-accent . "#f3cce0")
-    ;;   ;;         (fg-main . "#543f78")
-    ;;   ;;         (fg-dim . "#5f476f")
-    ;;   ;;         (fg-alt . "#7f6f99")
-    ;;   ;;         (fg-unfocused . "#8f6f9f")
-    ;;   ;;         (fg-active . "#563068")
-    ;;   ;;         (fg-inactive . "#8a5698")
-    ;;   ;;         (fg-docstring . "#5f5fa7")
-    ;;   ;;         (fg-comment-yellow . "#a9534f")
-    ;;   ;;         (fg-escape-char-construct . "#8b207f")
-    ;;   ;;         (fg-escape-char-backslash . "#a06d00")
-    ;;   ;;         (bg-special-cold . "#d3e0f4")
-    ;;   ;;         (bg-special-faint-cold . "#e0efff")
-    ;;   ;;         (bg-special-mild . "#c4ede0")
-    ;;   ;;         (bg-special-faint-mild . "#e0f0ea")
-    ;;   ;;         (bg-special-warm . "#efd0c4")
-    ;;   ;;         (bg-special-faint-warm . "#ffe4da")
-    ;;   ;;         (bg-special-calm . "#f0d3ea")
-    ;;   ;;         (bg-special-faint-calm . "#fadff9")
-    ;;   ;;         (fg-special-cold . "#405fb8")
-    ;;   ;;         (fg-special-mild . "#407f74")
-    ;;   ;;         (fg-special-warm . "#9d6f4f")
-    ;;   ;;         (fg-special-calm . "#af509f")
-    ;;   ;;         (bg-completion . "#ffc5e5")
-    ;;   ;;         (bg-completion-subtle . "#f7cfef")
-    ;;   ;;         (red . "#ed2f44")
-    ;;   ;;         (red-alt . "#e0403d")
-    ;;   ;;         (red-alt-other . "#e04059")
-    ;;   ;;         (red-faint . "#ed4f44")
-    ;;   ;;         (red-alt-faint . "#e0603d")
-    ;;   ;;         (red-alt-other-faint . "#e06059")
-    ;;   ;;         (green . "#217a3c")
-    ;;   ;;         (green-alt . "#417a1c")
-    ;;   ;;         (green-alt-other . "#006f3c")
-    ;;   ;;         (green-faint . "#318a4c")
-    ;;   ;;         (green-alt-faint . "#518a2c")
-    ;;   ;;         (green-alt-other-faint . "#20885c")
-    ;;   ;;         (yellow . "#b06202")
-    ;;   ;;         (yellow-alt . "#a95642")
-    ;;   ;;         (yellow-alt-other . "#a06f42")
-    ;;   ;;         (yellow-faint . "#b07232")
-    ;;   ;;         (yellow-alt-faint . "#a96642")
-    ;;   ;;         (yellow-alt-other-faint . "#a08042")
-    ;;   ;;         (blue . "#275ccf")
-    ;;   ;;         (blue-alt . "#475cc0")
-    ;;   ;;         (blue-alt-other . "#3340ef")
-    ;;   ;;         (blue-faint . "#476ce0")
-    ;;   ;;         (blue-alt-faint . "#575ccf")
-    ;;   ;;         (blue-alt-other-faint . "#3f60d7")
-    ;;   ;;         (magenta . "#bf317f")
-    ;;   ;;         (magenta-alt . "#d033c0")
-    ;;   ;;         (magenta-alt-other . "#844fe4")
-    ;;   ;;         (magenta-faint . "#bf517f")
-    ;;   ;;         (magenta-alt-faint . "#d053c0")
-    ;;   ;;         (magenta-alt-other-faint . "#846fe4")
-    ;;   ;;         (cyan . "#007a9f")
-    ;;   ;;         (cyan-alt . "#3f709f")
-    ;;   ;;         (cyan-alt-other . "#107f7f")
-    ;;   ;;         (cyan-faint . "#108aaf")
-    ;;   ;;         (cyan-alt-faint . "#3f80af")
-    ;;   ;;         (cyan-alt-other-faint . "#3088af")
-    ;;   ;;         (red-active . "#cd2f44")
-    ;;   ;;         (green-active . "#116a6c")
-    ;;   ;;         (yellow-active . "#993602")
-    ;;   ;;         (blue-active . "#475ccf")
-    ;;   ;;         (magenta-active . "#7f2ccf")
-    ;;   ;;         (cyan-active . "#007a8f")
-    ;;   ;;         (red-nuanced-bg . "#ffdbd0")
-    ;;   ;;         (red-nuanced-fg . "#ed6f74")
-    ;;   ;;         (green-nuanced-bg . "#dcf0dd")
-    ;;   ;;         (green-nuanced-fg . "#3f9a4c")
-    ;;   ;;         (yellow-nuanced-bg . "#fff3aa")
-    ;;   ;;         (yellow-nuanced-fg . "#b47232")
-    ;;   ;;         (blue-nuanced-bg . "#e3e3ff")
-    ;;   ;;         (blue-nuanced-fg . "#201f6f")
-    ;;   ;;         (magenta-nuanced-bg . "#fdd0ff")
-    ;;   ;;         (magenta-nuanced-fg . "#c0527f")
-    ;;   ;;         (cyan-nuanced-bg . "#dbefff")
-    ;;   ;;         (cyan-nuanced-fg . "#0f3f60")
-    ;;   ;;         (bg-diff-heading . "#b7cfe0")
-    ;;   ;;         (fg-diff-heading . "#041645")
-    ;;   ;;         (bg-diff-added . "#d6f0d6")
-    ;;   ;;         (fg-diff-added . "#004520")
-    ;;   ;;         (bg-diff-changed . "#fcefcf")
-    ;;   ;;         (fg-diff-changed . "#524200")
-    ;;   ;;         (bg-diff-removed . "#ffe0ef")
-    ;;   ;;         (fg-diff-removed . "#891626")
-    ;;   ;;         (bg-diff-refine-added . "#84cfa4")
-    ;;   ;;         (fg-diff-refine-added . "#002a00")
-    ;;   ;;         (bg-diff-refine-changed . "#cccf8f")
-    ;;   ;;         (fg-diff-refine-changed . "#302010")
-    ;;   ;;         (bg-diff-refine-removed . "#da92b0")
-    ;;   ;;         (fg-diff-refine-removed . "#500010")
-    ;;   ;;         (bg-diff-focus-added . "#a6e5c6")
-    ;;   ;;         (fg-diff-focus-added . "#002c00")
-    ;;   ;;         (bg-diff-focus-changed . "#ecdfbf")
-    ;;   ;;         (fg-diff-focus-changed . "#392900")
-    ;;   ;;         (bg-diff-focus-removed . "#efbbcf")
-    ;;   ;;         (fg-diff-focus-removed . "#5a0010")))
     ;;   :config
     ;;   (modus-themes-load-operandi))
 
@@ -856,11 +712,6 @@
       :init
       ;; (setq iscroll-preserve-screen-position t)
       :hook (org-mode . iscroll-mode))
-
-    ;; (use-package golden-ratio-scroll-screen
-    ;;   :bind
-    ;;   ([remap scroll-up-command] . golden-ratio-scroll-screen-up)
-    ;;   ([remap scroll-down-command] . golden-ratio-scroll-screen-down))
 
     (setq scroll-preserve-screen-position 'always)
 
@@ -1520,14 +1371,6 @@
       (add-to-list 'completion-at-point-functions #'cape-dabbrev)
       (add-to-list 'completion-at-point-functions #'cape-file))
 
-    ;; (use-package corfu-doc
-    ;;   :after corfu
-    ;;   :hook (corfu-mode . corfu-doc-mode)
-    ;;   :bind (:map corfu-map
-    ;;               ("M-p" . corfu-doc-scroll-down)
-    ;;               ("M-n" . corfu-doc-scroll-up)
-    ;;               ("M-d" . corfu-doc-toggle)))
-
     (provide 'init-corfu)
   #+end_src
 
@@ -1980,7 +1823,6 @@
                 (- (length load-path) (length (get 'load-path 'initial-value)))
                 (* 1e3 (float-time (time-subtract after-init-time before-init-time)))))
       (setq dashboard-init-info (solarion-init-time))
-
       (setq dashboard-banner-logo-title (concat "Emacs " emacs-version)
             dashboard-startup-banner "~/.emacs.d/logo.png"
             dashboard-image-banner-max-height 400
@@ -2133,8 +1975,7 @@
 
       ;; Don't save persp configs in `recentf'
       (with-eval-after-load 'recentf
-        (push persp-save-dir recentf-exclude))
-      )
+        (push persp-save-dir recentf-exclude)))
 
     (provide 'init-persp)
   #+end_src
@@ -2212,36 +2053,6 @@
               browse-url-generic-args     cmd-args
               browse-url-browser-function 'browse-url-generic
               search-web-default-browser 'browse-url-generic)))
-
-    ;; no longer needed for gui emacs
-    ;; (defun wsl-copy-region-to-clipboard (start end)
-    ;;   "Copy region to Windows clipboard."
-    ;;   (interactive "r")
-    ;;   (call-process-region start end "clip.exe" nil 0)
-    ;;   (setq deactivate-mark t))
-
-    ;; (defun wsl-cut-region-to-clipboard (start end)
-    ;;   (interactive "r")
-    ;;   (call-process-region start end "clip.exe" nil 0)
-    ;;   (kill-region start end)
-    ;;   (setq deactivate-mark t))
-
-    ;; (defun wsl-clipboard-to-string ()
-    ;;   "Return Windows clipboard as string."
-    ;;   (let ((coding-system-for-read 'dos))
-    ;;     (substring			;; remove added trailing \n
-    ;;      (shell-command-to-string
-    ;;       "powershell.exe -Command Get-Clipboard") 0 -1)))
-
-    ;; (defun wsl-paste-from-clipboard (arg)
-    ;;   "Insert Windows clipboard at point. With prefix ARG, also add to kill-ring"
-    ;;   (interactive "P")
-    ;;   (let ((clip (wsl-clipboard-to-string)))
-    ;;     (insert clip)
-    ;;     (if arg (kill-new clip))))
-
-    ;; (general-def "C-S-c" #'wsl-copy-region-to-clipboard)
-    ;; (general-def "C-S-v" #'wsl-paste-from-clipboard)
 
     (provide 'init-wsl)
   #+end_src
