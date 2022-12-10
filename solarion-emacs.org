@@ -1022,13 +1022,6 @@
 
     (general-unbind "M-`")	;; reserved for tmux
 
-    ;; dashboard
-    (general-def dashboard-mode-map
-      "H" #'solarion-homepage
-      "R" #'restore-previous-session
-      "C" #'solarion-edit-config
-      "U" #'straight-pull-all)
-
     (general-create-definer global-leader-def
       :keymaps 'override
       :prefix "C-c")
@@ -1835,14 +1828,20 @@
             dashboard-set-init-info t
             dashboard-set-footer nil
             dashboard-set-navigator t
-            dashboard-navigator-buttons '(((nil "Homepage (H)" "Browse homepage" solarion-homepage)
+            dashboard-navigator-buttons `(((nil "Homepage (H)" "Browse homepage" solarion-homepage)
                                            (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config (C)" "Open custom file" solarion-edit-config)
                                            (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
       (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
         (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
-      (add-hook 'dashboard-mode-hook #'dashboard-jump-to-recents))
+      (add-hook 'dashboard-mode-hook #'dashboard-jump-to-recents)
+      :config
+      (general-def dashboard-mode-map
+        "H" #'solarion-homepage
+        "R" #'restore-previous-session
+        "C" #'solarion-edit-config
+        "U" #'straight-pull-all))
 
     (provide 'init-dashboard)
   #+end_src
