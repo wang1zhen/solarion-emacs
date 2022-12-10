@@ -1835,8 +1835,6 @@
       (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
         (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
-      (when (fboundp 'dashboard-jump-to-recents)
-        (add-hook 'dashboard-mode-hook #'dashboard-jump-to-recents))
       :config
       (general-def dashboard-mode-map
         "H" #'solarion-homepage
