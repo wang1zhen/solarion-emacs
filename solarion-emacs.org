@@ -640,17 +640,12 @@
     (use-package command-log-mode
       :commands command-log-mode)
 
-    (use-package keycast
-      :after doom-modeline
-      :config
-      (define-minor-mode keycast-mode
-        "Show current command and its key binding in the mode line (fix for use with doom-mode-line)."
-        :global t
-        (if keycast-mode
-            (add-hook 'pre-command-hook 'keycast--update t)
-          (remove-hook 'pre-command-hook 'keycast--update)))
-      (add-to-list 'global-mode-string '("" keycast-mode-line))
-      (keycast-mode))
+    ;; (use-package keycast
+    ;;   :after doom-modeline
+    ;;   :config
+    ;;   (setq keycast-mode-line-insert-after '(:eval (doom-modeline-format--main)))
+    ;;   (add-to-list 'global-mode-string '("" keycast-mode-line))
+    ;;   (keycast-mode-line-mode))
 
     (use-package helpful
       :bind
@@ -1150,7 +1145,9 @@
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
       "op" #'(powerthesaurus-lookup-dwim :which-key "Powerthesaurus")
-      "oy" #'yadm)
+      "oy" #'yadm
+      ;; "ok" #'(keycast-mode-line-mode :which-key "Keycast")
+      )
 
     ;; Local leader
     ;; org-mode
