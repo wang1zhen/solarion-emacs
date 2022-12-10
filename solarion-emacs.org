@@ -1411,6 +1411,9 @@
     ;;; Code:
 
     (use-package magit
+      :bind
+      (:map magit-mode-map
+            ("p" . magit-push))
       :init
       (setq magit-display-buffer-function #'magit-display-buffer-traditional
             git-commit-major-mode 'org-mode))
