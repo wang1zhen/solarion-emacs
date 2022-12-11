@@ -598,7 +598,7 @@
                       html-mode-hook
                       rust-mode-hook
                       conf-mode-hook))
-        (add-hook mode (lambda () (setq display-line-numbers 'visual)))))
+        (add-hook mode (lambda () (setq display-line-numbers t)))))
 
     ;; Suppress GUI features
     (setq use-file-dialog nil
