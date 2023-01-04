@@ -1101,10 +1101,6 @@
       ;; git
       "g" '(:ignore t :which-key "Git")
       "gR" #'vc-revert
-      "gr" #'git-gutter:revert-hunk
-      "gs" #'git-gutter:stage-hunk
-      "g[" #'git-gutter:previous-hunk
-      "g]" #'git-gutter:next-hunk
       "g/" #'magit-dispatch
       "g." #'magit-file-dispatch
       ;; "g'" #'forge-dispatch
@@ -1415,9 +1411,12 @@
       (setq magit-display-buffer-function #'magit-display-buffer-traditional
             git-commit-major-mode 'org-mode))
 
-    (use-package git-gutter
+    (use-package diff-hl
       :diminish
-      :hook (after-init . global-git-gutter-mode))
+      :init
+      (global-diff-hl-mode)
+      (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+      (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
     (provide 'init-magit)
   #+end_src
