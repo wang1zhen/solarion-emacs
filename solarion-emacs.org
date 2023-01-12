@@ -1661,21 +1661,22 @@
 
     ;; 不能与 `(setq initial-major-mode 'org-mode)' 一同使用
     ;; 会造成emacsclient启动卡住，无法正常生成frame
-    (use-package xenops
-      :if (executable-find "latex")
-      :hook (org-mode latex-mode LaTeX-mode)
-      :init
-      (defun xenops-math-reveal-alt (element)
-        (xenops-element-overlays-delete element)
-        (if current-prefix-arg
-            (delete-file (xenops-math-get-cache-file element)))
-        (let ((element-type (plist-get element :type))
-              (begin-content (plist-get element :begin-content)))
-          (goto-char (if (eq element-type 'block-math)
-                         (1+ begin-content)
-                       begin-content))))
-      (advice-add #'xenops-math-reveal :override #'xenops-math-reveal-alt)
-      (setq xenops-math-image-scale-factor 2.0))
+    ;; closing parens under org-mode generates double closing parens
+    ;; (use-package xenops
+    ;;   :if (executable-find "latex")
+    ;;   :hook (org-mode latex-mode LaTeX-mode)
+    ;;   :init
+    ;;   (defun xenops-math-reveal-alt (element)
+    ;;     (xenops-element-overlays-delete element)
+    ;;     (if current-prefix-arg
+    ;;         (delete-file (xenops-math-get-cache-file element)))
+    ;;     (let ((element-type (plist-get element :type))
+    ;;           (begin-content (plist-get element :begin-content)))
+    ;;       (goto-char (if (eq element-type 'block-math)
+    ;;                      (1+ begin-content)
+    ;;                    begin-content))))
+    ;;   (advice-add #'xenops-math-reveal :override #'xenops-math-reveal-alt)
+    ;;   (setq xenops-math-image-scale-factor 2.0))
 
     (provide 'init-org)
   #+end_src
