@@ -1548,6 +1548,7 @@
       (setq org-hide-leading-stars t)
       ;; export settings
       (setq org-export-with-tags nil)
+      (setq org-export-with-sub-superscripts '{})
       ;; latex settings
       (setq org-latex-compiler "xelatex")
       (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n colorlinks=true,\n linkcolor=black\n}\n")
