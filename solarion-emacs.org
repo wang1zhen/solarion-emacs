@@ -1499,6 +1499,7 @@
     ;;; Code:
 
     (use-package tramp
+      :straight (:type built-in)
       :config
       (add-to-list 'tramp-methods
                    '("yadm"
