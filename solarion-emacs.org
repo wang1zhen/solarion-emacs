@@ -41,7 +41,7 @@
 - [[#init-perspel][init-persp.el]]
 - [[#init-dictel][init-dict.el]]
 - [[#init-powerthesaurusel][init-powerthesaurus.el]]
-- [[#init-rimeel][init-rime.el]]
+- [[#init-imel][init-im.el]]
 - [[#init-wslel][init-wsl.el]]
 
 * Installation
@@ -152,7 +152,7 @@
 
     (require 'init-dict)
     (require 'init-powerthesaurus)
-    (require 'init-rime)
+    (require 'init-im)
 
     ;; WSL specific setting
     (when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
@@ -2016,10 +2016,10 @@
     (provide 'init-powerthesaurus)
   #+end_src
 
-* init-rime.el
+* init-im.el
 
-  #+begin_src emacs-lisp :tangle ./lisp/init-rime.el :mkdirp yes
-    ;;; init-rime.el --- 中文输入法 Emacs Rime -*- lexical-binding: t -*-
+  #+begin_src emacs-lisp :tangle ./lisp/init-im.el :mkdirp yes
+    ;;; init-im.el --- 输入法相关 -*- lexical-binding: t -*-
 
     ;;; Code:
 
@@ -2036,7 +2036,25 @@
       (general-def rime-mode-map "C-`" #'rime-send-keybinding)
       (general-def rime-active-mode-map "S-<delete>" #'rime-send-keybinding))
 
-    (provide 'init-rime)
+    ;; requires emacs-mozc on Debian
+    (use-package mozc
+      :init
+      (setq mozc-candidate-style 'overlay))
+
+    (defun solarion/toggle-input-method ()
+      "Toggle between nil, rime and japanese-mozc input methods."
+      (interactive)
+      (cond
+        ((equal current-input-method nil)
+         (set-input-method 'rime))
+        ((equal current-input-method "rime")
+         (set-input-method 'japanese-mozc))
+        ((equal current-input-method "japanese-mozc")
+         (set-input-method 'rime))))
+
+    (general-def :keymaps 'override "C-c SPC" #'solarion/toggle-input-method)
+
+    (provide 'init-im)
   #+end_src
 
 * init-wsl.el
