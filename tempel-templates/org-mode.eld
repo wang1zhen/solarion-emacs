@@ -26,7 +26,7 @@ org-mode
          "#+LATEX: \clearpage" n n>)
 (ph "\\phantom{m}" n>)
 (vs > "#+LATEX: \\vspace{5cm}" n n>)
-(lec "#+TITLE: " p n
+(lec "#+TITLE: " (file-name-base (buffer-file-name)) n
      "#+DATE: " p n
      "#+AUTHOR: " p n
      "#+LATEX_CLASS: article" n
@@ -40,3 +40,20 @@ org-mode
      "#+OPTIONS: toc:2" n
      "#+STARTUP: overview" n
      "#+STARTUP: inlineimages" n n)
+
+(jp "#+TITLE: " (file-name-base (buffer-file-name)) n
+    "#+DATE: " p n
+    "#+AUTHOR: 一咪" n
+    "#+LATEX_CLASS: article" n
+    "#+LATEX_CLASS_OPTIONS: [a4paper,12pt]" n
+    "#+LATEX_HEADER: \\usepackage[scheme=plain]{ctex}" n
+    "#+LATEX_HEADER: \\setlength{\\parindent}{0pt}" n
+    "#+LATEX_HEADER: \\usepackage{geometry}" n
+    "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
+    "#+LATEX_COMPILER: xelatex" n
+    "#+OPTIONS: toc:nil" n
+    "#+LATEX_HEADER: \\setCJKmainfont{Noto Serif CJK JP}" n
+    "#+LATEX_HEADER: \\usepackage{setspace}" n
+    "#+LATEX_HEADER: \\setstretch{2}" n n
+    "* 単語" n n
+    "* 文法" n n)
