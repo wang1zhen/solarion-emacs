@@ -40,7 +40,6 @@
 - [[#init-vtermel][init-vterm.el]]
 - [[#init-perspel][init-persp.el]]
 - [[#init-dictel][init-dict.el]]
-- [[#init-powerthesaurusel][init-powerthesaurus.el]]
 - [[#init-imel][init-im.el]]
 - [[#init-wslel][init-wsl.el]]
 
@@ -151,7 +150,6 @@
     (require 'init-persp)
 
     (require 'init-dict)
-    (require 'init-powerthesaurus)
     (require 'init-im)
 
     ;; WSL specific setting
@@ -1140,7 +1138,6 @@
       "ot" #'(consult-theme :which-key "Choose Theme")
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
-      "op" #'(powerthesaurus-lookup-dwim :which-key "Powerthesaurus")
       "oy" #'yadm
       ;; "ok" #'(keycast-mode-line-mode :which-key "Keycast")
       )
@@ -2002,18 +1999,6 @@
                          )))
 
     (provide 'init-dict)
-  #+end_src
-
-* init-powerthesaurus.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-powerthesaurus.el :mkdirp yes
-    ;;; init-dict.el --- Replace words or sentences with synonyms, antonyms -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package powerthesaurus)
-
-    (provide 'init-powerthesaurus)
   #+end_src
 
 * init-im.el
