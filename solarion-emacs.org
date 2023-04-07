@@ -188,8 +188,7 @@
     (setq use-package-enable-imenu-support t)
     (require 'use-package)
 
-    ;; Native compile, requires Emacs 28+
-    (setq package-native-compile t)
+    ;; Native compile
     ;; Log warnings but not pop up the *Warnings* buffer
     (setq native-comp-async-report-warnings-errors 'silent)
 
