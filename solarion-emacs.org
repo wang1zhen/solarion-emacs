@@ -698,14 +698,14 @@
 
     ;;; Code:
 
-    ;; (setq scroll-preserve-screen-position t)
+    (setq scroll-preserve-screen-position 'always)
+    (setq next-screen-context-lines 5)
 
     (use-package iscroll
       :init
       ;; (setq iscroll-preserve-screen-position t)
       :hook (org-mode . iscroll-mode))
 
-    (setq scroll-preserve-screen-position 'always)
 
     (when (fboundp 'pixel-scroll-precision-mode)
       (pixel-scroll-precision-mode))
