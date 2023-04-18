@@ -744,8 +744,8 @@
                             :height 150)
 
         ;; CJK fonts
-        (set-fontset-font t 'han (font-spec :family "霞鹜文楷" :weight 'bold))
-        (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
+        (set-fontset-font t 'han (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
+        (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP" :weight 'semi-bold :slant 'normal))
         ;; Emoji
         (set-fontset-font t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
 
