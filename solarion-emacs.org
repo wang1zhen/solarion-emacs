@@ -1140,7 +1140,8 @@
 
       ;; custom
       "o" '(:ignore t :which-key "Custom Entry")
-      "ot" #'(consult-theme :which-key "Choose Theme")
+      "oT" #'(consult-theme :which-key "Choose Theme")
+      "ot" #'(ef-themes-load-random :which-key "Random Theme")
       "oo" #'occur
       "of" #'(fanyi-dwim :which-key "Dict")
       "oy" #'yadm
