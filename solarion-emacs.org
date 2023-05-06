@@ -897,13 +897,19 @@
       (general-def "C-a" #'mwim-beginning-of-code-or-line)
       (general-def "C-e" #'mwim-end-of-code-or-line))
 
-    ;; Undo-fu
-    (use-package undo-fu
+    (general-def "C-/" #'undo-only)
+    (general-def "C-r" #'undo-redo)
+
+    ;; vundo
+    (use-package vundo
       :config
-      (general-def "C-/" #'undo-fu-only-undo)
-      (general-def "C-r" #'undo-fu-only-redo)
-      (general-def "C-x u" #'undo-fu-only-undo)
-      (general-def "C-x r" #'undo-fu-only-redo))
+      (general-def "C-x u" #'vundo)
+      (general-def "C-x r" #'vundo)
+      (general-def vundo-mode-map "C-n" #'vundo-next)
+      (general-def vundo-mode-map "C-p" #'vundo-previous)
+      (general-def vundo-mode-map "C-f" #'vundo-forward)
+      (general-def vundo-mode-map "C-b" #'vundo-backward)
+      (setq vundo-glyph-alist vundo-unicode-symbols))
 
     ;; Handling capitalized subwords in a nomenclature
     (use-package subword
