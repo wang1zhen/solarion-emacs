@@ -626,13 +626,13 @@
       :config
       (set-face-attribute 'which-key-group-description-face nil :weight 'bold))
 
-    (use-package which-key-posframe
-      :init
-      (which-key-posframe-mode)
-      :config
-      (setq which-key-posframe-parameters
-            '((left-fringe . 8)
-              (right-fringe . 8))))
+    ;; (use-package which-key-posframe
+    ;;   :init
+    ;;   (which-key-posframe-mode)
+    ;;   :config
+    ;;   (setq which-key-posframe-parameters
+    ;;         '((left-fringe . 8)
+    ;;           (right-fringe . 8))))
 
     (use-package command-log-mode
       :commands command-log-mode)
@@ -1243,13 +1243,13 @@
       ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
       (setq vertico-cycle t))
 
-    (use-package vertico-posframe
-      :after vertico
-      :init
-      (vertico-posframe-mode 1)
-      (setq vertico-posframe-parameters
-            '((left-fringe . 8)
-              (right-fringe . 8))))
+    ;; (use-package vertico-posframe
+    ;;   :after vertico
+    ;;   :init
+    ;;   (vertico-posframe-mode 1)
+    ;;   (setq vertico-posframe-parameters
+    ;;         '((left-fringe . 8)
+    ;;           (right-fringe . 8))))
 
     (use-package vertico-directory
       :after vertico
@@ -1297,7 +1297,9 @@
       :bind
       ("C-s" . consult-line)
       ([remap switch-to-buffer] . consult-buffer)
-      ([remap yank-pop] . consult-yank-pop))
+      ([remap yank-pop] . consult-yank-pop)
+      :config
+      (setq consult-fontify-preserve nil))
 
     (use-package embark
       :bind
