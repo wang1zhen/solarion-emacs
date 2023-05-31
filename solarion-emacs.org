@@ -2032,7 +2032,7 @@
     ;; requires emacs-mozc on Debian
     (use-package mozc
       :init
-      (setq mozc-candidate-style 'overlay))
+      (setq mozc-candidate-style 'echo-area))
 
     (defun solarion/toggle-input-method ()
       "Toggle between nil, rime and japanese-mozc input methods."
