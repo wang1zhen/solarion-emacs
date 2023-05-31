@@ -1,7 +1,7 @@
 org-mode
 
 (title "#+TITLE: " p n "#+AUTHOR: " p n n)
-(example > "#+begin_example" n> r> n> "#+end_example")
+(ex > "#+begin_example" n> r> n> "#+end_example")
 (center > "#+begin_center" n> r> n> "#+end_center")
 (comment > "#+begin_comment" n> r> n> "#+end_comment")
 (quote > "#+begin_quote" n> r> n> "#+end_quote")
