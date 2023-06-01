@@ -745,6 +745,7 @@
 
         ;; CJK fonts
         (set-fontset-font t 'han (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
+        (set-fontset-font t 'cjk-misc (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
         (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP" :weight 'semi-bold :slant 'normal))
         ;; Emoji
         (set-fontset-font t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
