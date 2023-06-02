@@ -56,4 +56,5 @@ org-mode
     "#+LATEX_HEADER: \\usepackage{setspace}" n
     "#+LATEX_HEADER: \\setstretch{2}" n n
     "* 単語" n n
-    "* 文法" n n)
+    "* 文法" n n
+    "* 造句" n n)
