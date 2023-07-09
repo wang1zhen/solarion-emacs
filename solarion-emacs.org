@@ -655,6 +655,25 @@
 
     (use-package posframe)
 
+    (use-package shackle
+      :hook (after-init . shackle-mode)
+      :init
+      (setq shackle-select-reused-windows nil) ; default nil
+      (setq shackle-default-alignment 'right) ; default below
+      (setq shackle-select-reused-windows t)
+      (setq shackle-rules
+            '(("*vterm*" :size 0.3 :align below :popup t)
+              ;; (compilation-mode :ignore t)
+              ;; ("\\*Async Shell.*\\*" :regexp t :ignore t)
+              ;; ("\\*corfu.*\\*" :regexp t :ignore t)
+              ;; ("*eshell*" :select t :size 0.4 :align t :popup t)
+              (helpful-mode :size 0.4 :align t :popup t)
+              (help-mode :size 0.4 :align t :popup t)
+              ;; ("*Messages*" :select t :size 0.4 :align t :popup t)
+              (magit-status-mode :inhibit-window-quit t :other t)
+              (magit-log-mode :inhibit-window-quit t :other t)
+              ("\\*Org Src.*\\*" :regexp t :inhibit-window-quit t :other t))))
+
     (provide 'init-ui)
   #+end_src
 
