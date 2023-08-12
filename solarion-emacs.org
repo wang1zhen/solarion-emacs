@@ -1058,6 +1058,8 @@
       ;; keys
       "C-." #'consult-imenu  ;; "C-c ." for org-time-stamp
       "=" #'er/expand-region
+      "C-s" #'consult-ripgrep
+      "C-SPC" #'consult-mark
 
       ;; window
       "w" '(:ignore t :which-key "Window")
@@ -1337,6 +1339,8 @@
       ;; auto-updating embark collect buffer
       :hook
       (embark-collect-mode . consult-preview-at-point-mode))
+
+    (use-package wgrep)
 
     (provide 'init-vertico)
   #+end_src
