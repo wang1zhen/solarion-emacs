@@ -987,11 +987,13 @@
         (sp-local-pair 'org-mode "=" nil :actions :rem)
         (sp-local-pair 'org-mode "/" nil :actions :rem)))
 
-    (use-package yaml-mode
-      :config
-      (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode)))
-
     (use-package lorem-ipsum)
+
+    ;; (treesit-auto-install-all)
+    (use-package treesit-auto
+      :config
+      (global-treesit-auto-mode)
+      (setq treesit-font-lock-level 4))
 
     (provide 'init-edit)
   #+end_src
