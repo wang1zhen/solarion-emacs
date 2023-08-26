@@ -2092,5 +2092,25 @@
               browse-url-browser-function 'browse-url-generic
               search-web-default-browser 'browse-url-generic)))
 
+    ;; ;; fix wsl to windows copy (yank) for emacs-pgtk
+    ;; (defun shell-command-on-str (cmd &optional str)
+    ;;   "Insert result of calling CMD with STR as input.
+
+    ;; STR is current-kill if unspecified.
+    ;; "
+    ;;   (interactive (list (read-shell-command "Shell command on region: ")))
+    ;;   (setq str (or str
+    ;;                 (current-kill 0)))
+    ;;   (insert (with-temp-buffer
+    ;;             (insert str)
+    ;;             (shell-command-on-region (point-min) (point-max) cmd nil 'replace)
+    ;;             (buffer-string))))
+
+    ;; (defun wsl-update-clip (&rest _args)
+    ;;   (interactive)
+    ;;   (shell-command-on-str "clip.exe"))
+
+    ;; (advice-add 'kill-new :after #'wsl-update-clip)
+
     (provide 'init-wsl)
   #+end_src
