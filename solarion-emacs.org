@@ -990,10 +990,12 @@
     (use-package lorem-ipsum)
 
     ;; (treesit-auto-install-all)
-    (use-package treesit-auto
-      :config
-      (global-treesit-auto-mode)
-      (setq treesit-font-lock-level 4))
+    ;; emacs29
+    (when (fboundp 'tree-sitter-mode)
+      (use-package treesit-auto
+        :config
+        (global-treesit-auto-mode)
+        (setq treesit-font-lock-level 4)))
 
     (provide 'init-edit)
   #+end_src
