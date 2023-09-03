@@ -539,6 +539,10 @@
 
     ;;; Code:
 
+    (defconst solarion-font-size
+      260
+      "Font size for default font and modeline")
+
     ;; Title
     (setq frame-title-format '((:eval (if (buffer-file-name)
                                           (abbreviate-file-name (buffer-file-name))
@@ -569,10 +573,10 @@
       :init
       (setq doom-modeline-modal-icon nil)
       ;; Must use mono font here
-      (set-face-attribute 'mode-line nil :font "CaskaydiaCove Nerd Font Mono" :height 140)
-      (set-face-attribute 'mode-line-inactive nil :font "CaskaydiaCove Nerd Font Mono" :height 140)
+      (set-face-attribute 'mode-line nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)
+      (set-face-attribute 'mode-line-inactive nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)
       (unless (version< emacs-version "29")
-        (set-face-attribute 'mode-line-active nil :font "CaskaydiaCove Nerd Font Mono" :height 140)) ;; For Emacs 29+
+        (set-face-attribute 'mode-line-active nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)) ;; For Emacs 29+
       (doom-modeline-mode t))
 
     ;; Icons
@@ -754,13 +758,13 @@
         (set-face-attribute 'default
                             nil
                             :font "CaskaydiaCove Nerd Font Mono"
-                            :height 150)
+                            :height solarion-font-size)
 
         ;; Fixed-pitch (monospaced) fonts 等宽字体
         (set-face-attribute 'fixed-pitch
                             nil
                             :font "CaskaydiaCove Nerd Font Mono"
-                            :height 150)
+                            :height solarion-font-size)
 
         ;; CJK fonts
         (set-fontset-font t 'han (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
