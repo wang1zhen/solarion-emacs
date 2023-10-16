@@ -949,8 +949,7 @@
     (use-package lorem-ipsum)
 
     ;; (treesit-auto-install-all)
-    ;; emacs29
-    (when (fboundp 'tree-sitter-mode)
+    (when (featurep 'treesit)
       (use-package treesit-auto
         :config
         (global-treesit-auto-mode)
