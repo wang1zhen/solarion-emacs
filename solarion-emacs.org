@@ -943,6 +943,7 @@
       (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
       ;; custom pairs
       (with-eval-after-load 'org
+        (sp-local-pair 'org-mode "\\[" "\\]")
         (sp-local-pair 'org-mode "=" nil :actions :rem)
         (sp-local-pair 'org-mode "/" nil :actions :rem)))
 
