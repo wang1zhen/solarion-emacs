@@ -1,8 +1,11 @@
 latex-mode
 
-(beg "\\begin{" (s env) "}" n> r> n> "\\end{" (s env) "}")
-(beq "\\begin{equation}" n> r> n> "\\end{equation}")
-(bseq "\\begin{equation*}" n> r> n> "\\end{equation*}")
+(beg > "\\begin{" (s env) "}" n> r> n> "\\end{" (s env) "}")
+(beq > "\\begin{equation}" n> r> n> "\\end{equation}")
+(bseq > "\\begin{equation*}" n> r> n> "\\end{equation*}")
+(bit > "\\begin{itemize}" n> "\\item "r> n> "\\end{itemize}")
+(benum > "\\begin{enumeration}" n> "\\item"r> n> "\\end{enumeration}")
+(gra > "\\includegraphics[" (s size) "]" "{" r "}")
 (bb "\\mathbb{" p "}")
 (mc "\\mathcal{" p "}")
 (newpage "#+LATEX: \phantom{苟利国家生死以，岂因祸福避趋之。}" n>
