@@ -5,7 +5,8 @@ latex-mode
 (bseq > "\\begin{equation*}" n> r> n> "\\end{equation*}")
 (bit > "\\begin{itemize}" n> "\\item "r> n> "\\end{itemize}")
 (benum > "\\begin{enumeration}" n> "\\item"r> n> "\\end{enumeration}")
-(gra > "\\includegraphics[" (s size) "]" "{" r "}")
+(gra > "\\includegraphics[" p "]" "{" p "}")
+(bfr > "\\begin{frame}" n> "\\frametitle{" p "}" n> p n> "\\end{frame}")
 (bb "\\mathbb{" p "}")
 (mc "\\mathcal{" p "}")
 (newpage "#+LATEX: \phantom{苟利国家生死以，岂因祸福避趋之。}" n>
