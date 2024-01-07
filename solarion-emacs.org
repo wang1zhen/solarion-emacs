@@ -1559,7 +1559,11 @@
       (setq org-latex-packages-alist
             '(("" "siunitx")
               ("" "mathrsfs")
-              ("scheme=plain" "ctex")))
+              ("scheme=plain" "ctex")
+              ;; mlmodern is thicker
+              ;; ("" "mlmodern")
+              ("" "lmodern")
+              ("T1" "fontenc")))
       (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
       (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
