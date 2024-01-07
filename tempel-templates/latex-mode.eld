@@ -2,7 +2,11 @@ latex-mode
 
 (beg > "\\begin{" (s env) "}" n> r> n> "\\end{" (s env) "}")
 (beq > "\\begin{equation}" n> r> n> "\\end{equation}")
+(bal "\\begin{align}" n> r> n> "\\end{align}" :post (org-edit-special))
+(bga "\\begin{gather}" n> r> n> "\\end{gather}" :post (org-edit-special))
 (bseq > "\\begin{equation*}" n> r> n> "\\end{equation*}")
+(bsal "\\begin{align*}" n> r> n> "\\end{align*}" :post (org-edit-special))
+(bsga "\\begin{gather*}" n> r> n> "\\end{gather*}" :post (org-edit-special))
 (bit > "\\begin{itemize}" n> "\\item "r> n> "\\end{itemize}")
 (benum > "\\begin{enumeration}" n> "\\item"r> n> "\\end{enumeration}")
 (gra > "\\includegraphics[" p "]" "{" p "}")
