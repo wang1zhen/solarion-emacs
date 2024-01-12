@@ -33,7 +33,6 @@ org-mode
      "#+AUTHOR: " p n
      "#+LATEX_CLASS: article" n
      "#+LATEX_CLASS_OPTIONS: [a4paper,12pt]" n
-     "#+LATEX_HEADER: \\usepackage[scheme=plain]{ctex}" n
      "#+LATEX_HEADER: \\setlength{\\parindent}{0pt}" n
      "#+LATEX_HEADER: \\usepackage{geometry}" n
      "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
@@ -48,7 +47,6 @@ org-mode
     "#+AUTHOR: 一咪" n
     "#+LATEX_CLASS: article" n
     "#+LATEX_CLASS_OPTIONS: [a4paper,12pt]" n
-    "#+LATEX_HEADER: \\usepackage[scheme=plain]{ctex}" n
     "#+LATEX_HEADER: \\setlength{\\parindent}{0pt}" n
     "#+LATEX_HEADER: \\usepackage{geometry}" n
     "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
