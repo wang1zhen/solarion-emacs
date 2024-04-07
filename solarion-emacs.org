@@ -434,6 +434,7 @@
       :straight nil
       :hook ((after-init . size-indication-mode)
              (text-mode . visual-line-mode)
+             (helpful-mode . visual-line-mode)
              ((prog-mode org-mode markdown-mode conf-mode latex-mode) . (lambda () (setq show-trailing-whitespace t))))
       :init
       (setq column-number-mode t
