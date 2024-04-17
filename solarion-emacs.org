@@ -566,7 +566,7 @@
 
     ;; always split vertically
     (setq split-height-threshold nil
-          split-width-threshold 120)
+          split-width-threshold 80)
 
     ;; Mode-line
     (use-package doom-modeline
@@ -2082,6 +2082,9 @@
     ;;   (shell-command-on-str "clip.exe"))
 
     ;; (advice-add 'kill-new :after #'wsl-update-clip)
+
+    ;; Fix wayland Copy from wsl to Windows
+    (setq select-active-regions nil)
 
     (provide 'init-wsl)
   #+end_src
