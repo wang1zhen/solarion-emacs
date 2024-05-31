@@ -23,9 +23,9 @@ org-mode
 (bsal "\\begin{align*}" n> r> n> "\\end{align*}" :post (org-edit-special))
 (bsga "\\begin{gather*}" n> r> n> "\\end{gather*}" :post (org-edit-special))
 (bb "\\mathbb{" p "}")
-(newpage "#+LATEX: \phantom{苟利国家生死以，岂因祸福避趋之。}" n>
-         "#+LATEX: \thispagestyle{empty}" n>
-         "#+LATEX: \clearpage" n n>)
+(newpage "#+LATEX: \\phantom{苟利国家生死以，岂因祸福避趋之。}" n>
+         "#+LATEX: \\thispagestyle{empty}" n>
+         "#+LATEX: \\clearpage" n n>)
 (ph "\\phantom{m}" n>)
 (vs > "#+LATEX: \\vspace{5cm}" n n>)
 (lec "#+TITLE: " (file-name-base (buffer-file-name)) n

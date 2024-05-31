@@ -13,9 +13,9 @@ latex-mode
 (bfr > "\\begin{frame}" n> "\\frametitle{" p "}" n> p n> "\\end{frame}")
 (bb "\\mathbb{" p "}")
 (mc "\\mathcal{" p "}")
-(newpage "#+LATEX: \phantom{苟利国家生死以，岂因祸福避趋之。}" n>
-         "#+LATEX: \thispagestyle{empty}" n>
-         "#+LATEX: \clearpage" n n>)
+(newpage "#+LATEX: \\phantom{苟利国家生死以，岂因祸福避趋之。}" n>
+         "#+LATEX: \\thispagestyle{empty}" n>
+         "#+LATEX: \\clearpage" n n>)
 (ph "\\phantom{m}" n>)
 (vs > "#+LATEX: \\vspace{5cm}" n n>)
 (lec "#+TITLE: " p n
