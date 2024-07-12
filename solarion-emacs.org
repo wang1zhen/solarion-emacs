@@ -951,11 +951,10 @@
     (use-package lorem-ipsum)
 
     ;; (treesit-auto-install-all)
-    (when (featurep 'treesit)
-      (use-package treesit-auto
-        :config
-        (global-treesit-auto-mode)
-        (setq treesit-font-lock-level 4)))
+    (use-package treesit-auto
+      :config
+      (global-treesit-auto-mode)
+      (setq treesit-font-lock-level 4))
 
     (provide 'init-edit)
   #+end_src
