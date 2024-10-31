@@ -1820,10 +1820,10 @@
                                            (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config (C)" "Open custom file" solarion-edit-config)
                                            (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
-      (dashboard-setup-startup-hook)
       (when (< (length command-line-args) 2)
-        (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
+        (setq initial-buffer-choice 'dashboard-open))
       :config
+      (dashboard-setup-startup-hook)
       (general-def dashboard-mode-map
         "H" #'solarion-homepage
         "R" #'restore-previous-session
@@ -2058,8 +2058,8 @@
     (defun wl-paste ()
       (shell-command-to-string "wl-paste -n"))
 
-    (setq interprogram-cut-function 'wl-copy)
-    (setq interprogram-paste-function 'wl-paste)
+    ;; (setq interprogram-cut-function 'wl-copy)
+    ;; (setq interprogram-paste-function 'wl-paste)
 
     (provide 'init-wsl)
   #+end_src
