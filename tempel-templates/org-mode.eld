@@ -42,19 +42,16 @@ org-mode
      "#+STARTUP: overview" n
      "#+STARTUP: inlineimages" n n)
 
-(jp "#+TITLE: " (file-name-base (buffer-file-name)) n
-    "#+DATE: " p n
-    "#+AUTHOR: 一咪" n
-    "#+LATEX_CLASS: article" n
-    "#+LATEX_CLASS_OPTIONS: [a4paper,12pt]" n
-    "#+LATEX_HEADER: \\setlength{\\parindent}{0pt}" n
-    "#+LATEX_HEADER: \\usepackage{geometry}" n
-    "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
-    "#+LATEX_COMPILER: xelatex" n
-    "#+OPTIONS: toc:nil" n
-    "#+LATEX_HEADER: \\setCJKmainfont{Noto Serif CJK JP}" n
-    "#+LATEX_HEADER: \\usepackage{setspace}" n
-    "#+LATEX_HEADER: \\setstretch{2}" n n
-    "* 単語" n n
-    "* 文法" n n
-    "* 造句" n n)
+(note "#+TITLE: " (file-name-base (buffer-file-name)) n
+      "#+DATE: " p n
+      "#+LATEX_CLASS: article" n
+      "#+LATEX_CLASS_OPTIONS: [a4paper,12pt]" n
+      "#+LATEX_HEADER: \\setlength{\\parindent}{0pt}" n
+      "#+LATEX_HEADER: \\usepackage{geometry}" n
+      "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
+      "#+LATEX_HEADER: \\usepackage{mathrsfs}" n
+      "#+LATEX_HEADER: \\author{WANG Yizhen\\王~一臻\\オウ~イシン\\37-236970}" n
+      "#+LATEX_COMPILER: xelatex" n
+      "#+OPTIONS: toc:nil author: nil" n
+      "#+STARTUP: overview" n
+      "#+STARTUP: inlineimages" n n)
