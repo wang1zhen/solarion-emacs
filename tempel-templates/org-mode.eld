@@ -50,8 +50,8 @@ org-mode
       "#+LATEX_HEADER: \\usepackage{geometry}" n
       "#+LATEX_HEADER: \\geometry{a4paper,scale=0.8}" n
       "#+LATEX_HEADER: \\usepackage{mathrsfs}" n
-      "#+LATEX_HEADER: \\author{WANG Yizhen\\王~一臻\\オウ~イシン\\37-236970}" n
+      "#+LATEX_HEADER: \\author{WANG Yizhen\\\\王~一臻\\\\オウ~イシン\\\\37-236970}" n
       "#+LATEX_COMPILER: xelatex" n
-      "#+OPTIONS: toc:nil author: nil" n
+      "#+OPTIONS: toc:nil author:nil" n
       "#+STARTUP: overview" n
       "#+STARTUP: inlineimages" n n)
