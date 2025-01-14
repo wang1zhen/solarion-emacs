@@ -580,9 +580,9 @@
         (set-face-attribute 'mode-line-active nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)) ;; For Emacs 29+
       (doom-modeline-mode t))
 
-    ;; Icons
-    ;; NOTE: Must run `M-x all-the-icons-install-fonts', and install fonts manually on Windows
-    (use-package all-the-icons)
+    (use-package nerd-icons
+      :init
+      (setq nerd-icons-font-family "CaskaydiaCove Nerd Font Mono"))
 
     (use-package display-line-numbers
       :straight nil
@@ -631,13 +631,13 @@
       :config
       (set-face-attribute 'which-key-group-description-face nil :weight 'bold))
 
-    ;; (use-package which-key-posframe
-    ;;   :init
-    ;;   (which-key-posframe-mode)
-    ;;   :config
-    ;;   (setq which-key-posframe-parameters
-    ;;         '((left-fringe . 8)
-    ;;           (right-fringe . 8))))
+    (use-package which-key-posframe
+      :init
+      (which-key-posframe-mode)
+      :config
+      (setq which-key-posframe-parameters
+            '((left-fringe . 8)
+              (right-fringe . 8))))
 
     (use-package command-log-mode
       :commands command-log-mode)
@@ -1228,13 +1228,13 @@
       ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
       (setq vertico-cycle t))
 
-    ;; (use-package vertico-posframe
-    ;;   :after vertico
-    ;;   :init
-    ;;   (vertico-posframe-mode 1)
-    ;;   (setq vertico-posframe-parameters
-    ;;         '((left-fringe . 8)
-    ;;           (right-fringe . 8))))
+    (use-package vertico-posframe
+      :after vertico
+      :init
+      (vertico-posframe-mode 1)
+      (setq vertico-posframe-parameters
+            '((left-fringe . 8)
+              (right-fringe . 8))))
 
     (use-package vertico-directory
       :after vertico
@@ -1247,11 +1247,11 @@
       ;; Tidy shadowed file names
       :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
-    (use-package all-the-icons-completion
-      :after (marginalia all-the-icons)
-      :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-      :init
-      (all-the-icons-completion-mode))
+    (use-package nerd-icons-completion
+      :after (marginalia nerd-icons)
+      :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
+      :config
+      (nerd-icons-completion-mode))
 
     (use-package pinyinlib
       :after orderless
@@ -1348,6 +1348,10 @@
       (setq cape-dabbrev-check-other-buffers nil) ;; only check current buffer for completion
       (add-to-list 'completion-at-point-functions #'cape-dabbrev)
       (add-to-list 'completion-at-point-functions #'cape-file))
+
+    (use-package nerd-icons-corfu
+      :config
+      :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
     (provide 'init-corfu)
   #+end_src
@@ -1732,6 +1736,9 @@
             dired-dwim-target t
             dired-recursive-deletes 'always
             dired-recursive-copies 'always))
+
+    (use-package nerd-icons-dired
+      :hook (dired-mode . nerd-icons-dired-mode))
 
     (use-package dired-rsync
       :after dired
