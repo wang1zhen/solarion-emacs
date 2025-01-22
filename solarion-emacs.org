@@ -80,9 +80,6 @@
     (push '(menu-bar-lines . 0) default-frame-alist)
     (push '(tool-bar-lines . 0) default-frame-alist)
     (push '(vertical-scroll-bars) default-frame-alist)
-
-    ;; Suppress the 'Package cl is deprecated' warning
-    (setq byte-compile-warnings '(not obsolete))
   #+end_src
 
 * init.el
@@ -256,9 +253,6 @@
         (org-display-inline-images)))
 
     ;; dashboard
-    (defun solarion-homepage (&rest _)
-      (interactive)
-      (browse-url "https://github.com/wang1zhen/solarion-emacs"))
     (defun solarion-edit-config (&rest _)
       (interactive)
       (find-file (concat user-emacs-directory "solarion-emacs.org")))
@@ -440,11 +434,6 @@
             ;; track-eol t                     ; Keep cursor at end of lines. Require line-move-visual is nil.
             set-mark-command-repeat-pop t)  ; Repeating C-SPC after popping mark pops it again
       )
-
-    (use-package time
-      :straight nil
-      :init (setq display-time-24hr-format t
-                  display-time-day-and-date t))
 
     (use-package so-long
       :straight nil
@@ -1785,8 +1774,7 @@
                                         dashboard-insert-newline
                                         dashboard-insert-init-info
                                         dashboard-insert-items)
-            dashboard-navigator-buttons `(((nil "Homepage (H)" "Browse homepage" solarion-homepage)
-                                           (nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
+            dashboard-navigator-buttons `(((nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
                                            (nil "Config (C)" "Open custom file" solarion-edit-config)
                                            (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
       (when (< (length command-line-args) 2)
@@ -1794,7 +1782,6 @@
       :config
       (dashboard-setup-startup-hook)
       (general-def dashboard-mode-map
-        "H" #'solarion-homepage
         "R" #'restore-previous-session
         "C" #'solarion-edit-config
         "U" #'straight-pull-all))
