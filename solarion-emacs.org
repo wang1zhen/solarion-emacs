@@ -640,13 +640,6 @@
     (use-package command-log-mode
       :commands command-log-mode)
 
-    ;; (use-package keycast
-    ;;   :after doom-modeline
-    ;;   :config
-    ;;   (setq keycast-mode-line-insert-after '(:eval (doom-modeline-format--main)))
-    ;;   (add-to-list 'global-mode-string '("" keycast-mode-line))
-    ;;   (keycast-mode-line-mode))
-
     (use-package helpful
       :bind
       ([remap describe-function] . helpful-callable)
@@ -701,7 +694,6 @@
 
     (use-package iscroll
       :init
-      ;; (setq iscroll-preserve-screen-position t)
       :hook (org-mode . iscroll-mode))
 
 
