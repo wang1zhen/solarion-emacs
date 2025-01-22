@@ -38,7 +38,6 @@
 - [[#init-dashboardel][init-dashboard.el]]
 - [[#init-vtermel][init-vterm.el]]
 - [[#init-perspel][init-persp.el]]
-- [[#init-dictel][init-dict.el]]
 - [[#init-imel][init-im.el]]
 - [[#init-wslel][init-wsl.el]]
 
@@ -147,7 +146,6 @@
     (require 'init-vterm)
     (require 'init-persp)
 
-    (require 'init-dict)
     (require 'init-im)
 
     ;; WSL specific setting
@@ -1094,9 +1092,7 @@
       "oT" #'(consult-theme :which-key "Choose Theme")
       "ot" #'(ef-themes-load-random :which-key "Random Theme")
       "oo" #'occur
-      "of" #'(fanyi-dwim :which-key "Dict")
       "oy" #'yadm
-      ;; "ok" #'(keycast-mode-line-mode :which-key "Keycast")
       )
 
     ;; Local leader
@@ -1937,29 +1933,6 @@
         (push persp-save-dir recentf-exclude)))
 
     (provide 'init-persp)
-  #+end_src
-
-* init-dict.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-dict.el :mkdirp yes
-    ;;; init-dict.el --- Youdao dictionary -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package fanyi
-      :commands fanyi-dwim
-      :custom
-      (fanyi-providers '(;; Longman
-                         fanyi-longman-provider
-                         ;; 海词
-                         fanyi-haici-provider
-                         ;; 有道同义词词典
-                         ;; fanyi-youdao-thesaurus-provider
-                         ;; Etymonline
-                         ;; fanyi-etymon-provider
-                         )))
-
-    (provide 'init-dict)
   #+end_src
 
 * init-im.el
