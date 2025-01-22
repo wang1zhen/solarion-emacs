@@ -19,7 +19,6 @@
 - [[#init-basicel][init-basic.el]]
 - [[#init-generalel][init-general.el]]
 - [[#init-uiel][init-ui.el]]
-- [[#init-themesel][init-themes.el]]
 - [[#init-scrollel][init-scroll.el]]
 - [[#init-fontsel][init-fonts.el]]
 - [[#init-editel][init-edit.el]]
@@ -120,7 +119,6 @@
     (require 'init-general)
 
     (require 'init-ui)
-    (require 'init-themes)
     (require 'init-scroll)
     (require 'init-fonts)
     (require 'init-edit)
@@ -679,30 +677,6 @@
               (magit-log-mode :inhibit-window-quit t :other t)
               ("\\*Org Src.*\\*" :regexp t :inhibit-window-quit t :other t))))
 
-    (provide 'init-ui)
-  #+end_src
-
-* init-themes.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-themes.el :mkdirp yes
-    ;;; init-themes.el --- Theme related configs goes here. -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    ;; (use-package modus-themes
-    ;;   :init
-    ;;   (setq modus-themes-italic-constructs t)
-    ;;   (setq modus-themes-bold-constructs t)
-    ;;   (setq modus-themes-syntax '(alt-syntax green-strings yellow-comments))
-    ;;   (setq modus-themes-links '(neutral-underline background))
-    ;;   (setq modus-themes-hl-line '(intense))
-    ;;   (setq modus-themes-markup '(italic bold intense background))
-    ;;   (setq modus-themes-paren-match '(intense))
-    ;;   (setq modus-themes-org-blocks nil)
-    ;;   (setq modus-themes-completions '((selection . (intense))))
-    ;;   :config
-    ;;   (modus-themes-load-operandi))
-
     (use-package ef-themes
       :straight '(ef-themes :type git :host github :repo "protesilaos/ef-themes")
       :init
@@ -711,7 +685,7 @@
       (setq ef-themes-variable-pitch-ui nil)
       (ef-themes-select 'ef-cyprus))
 
-    (provide 'init-themes)
+    (provide 'init-ui)
   #+end_src
 
 * init-scroll.el
