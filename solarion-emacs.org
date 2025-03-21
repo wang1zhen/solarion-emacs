@@ -972,7 +972,7 @@
 
     (use-package hydra
       :config
-      (defhydra hydra-window-resize (:timeout 4)
+      (defhydra solarion/hydra-window-resize (:timeout 4)
         "Resize window"
         ("j" enlarge-window "Increase height")
         ("k" shrink-window "Decrease height")
@@ -1034,7 +1034,7 @@
       "wv" #'split-window-right-and-focus
       "wd" #'(delete-window :which-key "Delete window")
       "wq" #'(kill-buffer-and-window :which-key "Kill buffer and window")
-      "wr" #'(hydra-window-resize/body :which-key "Window Resize")
+      "wr" #'(solarion/hydra-window-resize/body :which-key "Window Resize")
       "w=" #'(balance-windows :which-key "Balance Windows")
       "1" #'(winum-select-window-1 :which-key "Switch to window 1")
       "2" #'(winum-select-window-2 :which-key "Switch to window 2")
