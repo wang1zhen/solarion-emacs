@@ -1234,6 +1234,7 @@
       :after vertico
       :init
       (vertico-posframe-mode 1)
+      :config
       (setq vertico-posframe-parameters
             '((left-fringe . 8)
               (right-fringe . 8))))
@@ -1250,10 +1251,10 @@
       :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
     (use-package nerd-icons-completion
-      :after (marginalia nerd-icons)
+      :after marginalia
       :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
       :config
-      (nerd-icons-completion-mode))
+      (nerd-icons-completion-mode 1))
 
     (use-package pinyinlib
       :after orderless
