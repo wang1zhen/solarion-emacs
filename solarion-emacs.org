@@ -13,6 +13,7 @@
 - [[#solarion-emacs][Solarion Emacs]]
 - [[#installation][Installation]]
 - [[#early-initel][early-init.el]]
+- [[#init-custom-varsel][init-custom-vars.el]]
 - [[#initel][init.el]]
 - [[#init-straightel][init-straight.el]]
 - [[#init-funcel][init-func.el]]
@@ -84,6 +85,44 @@
     (tooltip-mode -1)
   #+end_src
 
+* init-custom-vars.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-custom-vars.el :mkdirp yes
+    ;;; init-custom-vars.el --- Customizable variables for Solarion -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (defgroup solarion-fonts nil
+      "Font configuration for Solarion Emacs."
+      :group 'faces)
+
+    (defcustom solarion-font-default "CaskaydiaCove Nerd Font Mono"
+      "Default monospace font used in Emacs (e.g., for code, modeline)."
+      :type 'string
+      :group 'solarion-fonts)
+
+    (defcustom solarion-font-variable "CaskaydiaCove Nerd Font"
+      "Variable-pitch font for UI elements (if used)."
+      :type 'string
+      :group 'solarion-fonts)
+
+    (defcustom solarion-font-cjk "Noto Serif CJK SC"
+      "CJK font for displaying Chinese/Japanese/Korean."
+      :type 'string
+      :group 'solarion-fonts)
+
+    (defcustom solarion-font-emoji "Noto Color Emoji"
+      "Font for emoji symbols."
+      :type 'string
+      :group 'solarion-fonts)
+
+    (defcustom solarion-font-size 140
+      "Font size (in 1/10 pt) for Emacs default font."
+      :type 'integer
+      :group 'solarion-fonts)
+
+    (provide 'init-custom-vars)
+  #+end_src
 * init.el
 
   #+begin_src emacs-lisp :tangle ./init.el
@@ -92,6 +131,9 @@
     ;;; Code:
 
     (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+    ;; custom
+    (require 'init-custom-vars)
 
     ;; Ensure custom.el exists, or copy from example
     (let ((custom-file-path (expand-file-name "custom.el" user-emacs-directory))
@@ -539,11 +581,6 @@
 
     ;;; Code:
 
-    (defcustom solarion-font-size 140
-      "Font size for default font and modeline."
-      :type 'integer
-      :group 'solarion-ui)
-
     ;; Title
     (setq frame-title-format '((:eval (if (buffer-file-name)
                                           (abbreviate-file-name (buffer-file-name))
@@ -574,15 +611,13 @@
       :init
       (setq doom-modeline-modal-icon nil)
       ;; Must use mono font here
-      (set-face-attribute 'mode-line nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)
-      (set-face-attribute 'mode-line-inactive nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)
-      (unless (version< emacs-version "29")
-        (set-face-attribute 'mode-line-active nil :font "CaskaydiaCove Nerd Font Mono" :height solarion-font-size)) ;; For Emacs 29+
+      (set-face-attribute 'mode-line nil :font solarion-font-default :height solarion-font-size)
+      (set-face-attribute 'mode-line-inactive nil :font solarion-font-default :height solarion-font-size)
       (doom-modeline-mode t))
 
     (use-package nerd-icons
       :init
-      (setq nerd-icons-font-family "CaskaydiaCove Nerd Font Mono"))
+      (setq nerd-icons-font-family solarion-font-default))
 
     (use-package display-line-numbers
       :straight nil
@@ -723,25 +758,21 @@
     ;;; Code:
 
     (defun solarion-config-fonts ()
+      "Apply font configuration based on user custom variables."
       (when (display-graphic-p)
-        ;; Set default font
-        (set-face-attribute 'default
-                            nil
-                            :font "CaskaydiaCove Nerd Font Mono"
-                            :height solarion-font-size)
+        ;; Default font
+        (set-face-attribute 'default nil :font solarion-font-default :height solarion-font-size)
 
-        ;; Fixed-pitch (monospaced) fonts 等宽字体
-        (set-face-attribute 'fixed-pitch
-                            nil
-                            :font "CaskaydiaCove Nerd Font Mono"
-                            :height solarion-font-size)
+        ;; Fixed-pitch (等宽字体)
+        (set-face-attribute 'fixed-pitch nil :font solarion-font-default :height solarion-font-size)
 
-        ;; CJK fonts
-        (set-fontset-font t 'han (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
-        (set-fontset-font t 'cjk-misc (font-spec :family "Noto Serif CJK SC" :weight 'semi-bold :slant 'normal))
+        ;; CJK 字体
+        (set-fontset-font t 'han (font-spec :family solarion-font-cjk :weight 'semi-bold :slant 'normal))
+        (set-fontset-font t 'cjk-misc (font-spec :family solarion-font-cjk :weight 'semi-bold :slant 'normal))
         (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP" :weight 'semi-bold :slant 'normal))
+
         ;; Emoji
-        (set-fontset-font t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
+        (set-fontset-font t 'symbol (font-spec :family solarion-font-emoji) nil 'prepend)))
 
     (solarion-config-fonts)
     (add-hook 'window-setup-hook #'solarion-config-fonts)
