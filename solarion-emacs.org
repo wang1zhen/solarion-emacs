@@ -539,9 +539,10 @@
 
     ;;; Code:
 
-    (defconst solarion-font-size
-      260
-      "Font size for default font and modeline")
+    (defcustom solarion-font-size 140
+      "Font size for default font and modeline."
+      :type 'integer
+      :group 'solarion-ui)
 
     ;; Title
     (setq frame-title-format '((:eval (if (buffer-file-name)
@@ -618,7 +619,8 @@
     (use-package rainbow-delimiters
       :hook
       (prog-mode . rainbow-delimiters-mode)
-      (LaTeX-mode . rainbow-delimiters-mode))
+      (LaTeX-mode . rainbow-delimiters-mode)
+      :commands rainbow-delimiters-mode)
 
     (use-package which-key
       :diminish which-key-mode
@@ -631,6 +633,7 @@
       (set-face-attribute 'which-key-group-description-face nil :weight 'bold))
 
     (use-package which-key-posframe
+      :after which-key
       :init
       (which-key-posframe-mode)
       :config
@@ -645,7 +648,8 @@
       :bind
       ([remap describe-function] . helpful-callable)
       ([remap describe-variable] . helpful-variable)
-      ([remap describe-key] . helpful-key))
+      ([remap describe-key] . helpful-key)
+      :commands (helpful-callable helpful-variable helpful-key))
 
     (use-package winum
       :hook (after-init . winum-mode))
@@ -655,7 +659,6 @@
     (use-package shackle
       :hook (after-init . shackle-mode)
       :init
-      (setq shackle-select-reused-windows nil) ; default nil
       (setq shackle-default-alignment 'right) ; default below
       (setq shackle-select-reused-windows t)
       (setq shackle-rules
