@@ -93,10 +93,15 @@
 
     (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-    ;; Custom file
-    (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-    (when (file-exists-p custom-file)
-      (load custom-file))
+    ;; Ensure custom.el exists, or copy from example
+    (let ((custom-file-path (expand-file-name "custom.el" user-emacs-directory))
+          (example-path (expand-file-name "custom-example.el" user-emacs-directory)))
+      (unless (file-exists-p custom-file-path)
+        (when (file-exists-p example-path)
+          (copy-file example-path custom-file-path)))
+      (setq custom-file custom-file-path)
+      (when (file-exists-p custom-file)
+        (load custom-file)))
 
     ;; Adjust garbage collection thresholds during startup, and thereafter
     (let ((normal-gc-cons-threshold (* 20 1024 1024))
@@ -350,9 +355,6 @@
     ;;; init-basic.el --- Default configurations -*- lexical-binding: t -*-
 
     ;;; Code:
-
-    (setq user-full-name "wang1zhen"
-          user-mail-address "wang1zhendire@hotmail.com")
 
     ;; Increase how much is read from processes in a single chunk (default is 4kb)
     (setq read-process-output-max #x10000)  ; 64kb
