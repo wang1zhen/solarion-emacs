@@ -161,6 +161,9 @@
 
     ;;; Code:
 
+    ;; Set timeout to avoid blocking on bad connections
+    (setq url-queue-timeout 30)
+
     (defvar bootstrap-version)
     (let ((bootstrap-file
            (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -177,13 +180,18 @@
       (setq straight-vc-git-default-clone-depth 3)
       (load bootstrap-file nil 'nomessage))
 
-    ;; Install use-package with straight
-    (straight-use-package 'use-package)
-
     ;; Should set before loading `use-package'
     (setq use-package-expand-minimally t)
     (setq use-package-enable-imenu-support t)
+
+    ;; Install use-package with straight
+    (straight-use-package 'use-package)
+
     (require 'use-package)
+
+    ;; Optional:profile use-package loading time
+    ;; M-x use-package-report
+    (setq use-package-compute-statistics t)
 
     ;; Native compile
     ;; Log warnings but not pop up the *Warnings* buffer
