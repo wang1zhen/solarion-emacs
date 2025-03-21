@@ -693,16 +693,15 @@
 
     ;;; Code:
 
-    (setq scroll-preserve-screen-position 'always)
-    (setq next-screen-context-lines 5)
+    (setq scroll-preserve-screen-position 'always
+          next-screen-context-lines 5)
 
     (use-package iscroll
       :init
       :hook (org-mode . iscroll-mode))
 
 
-    (when (fboundp 'pixel-scroll-precision-mode)
-      (pixel-scroll-precision-mode))
+    (pixel-scroll-precision-mode)
 
     (provide 'init-scroll)
   #+end_src
