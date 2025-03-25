@@ -1730,9 +1730,7 @@
 
     (use-package dired
       :straight nil
-      :commands (dired dired-jump)
       :config
-      (general-def dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
       (setq dired-listing-switches "-alh --group-directories-first"
             dired-dwim-target t
             dired-recursive-deletes 'always
@@ -1749,7 +1747,7 @@
     ;; Colourful dired
     (use-package diredfl
       :after dired
-      :config (diredfl-global-mode 1))
+      :hook (dired-mode . diredfl-mode))
 
     (use-package dired-single
       :after dired
@@ -1764,6 +1762,12 @@
       :hook (dired-mode . dired-hide-dotfiles-mode)
       :config
       (general-def dired-mode-map "H" 'dired-hide-dotfiles-mode))
+
+    (defun solarion/dired-here ()
+      "Open current file's directory in Dired."
+      (interactive)
+      (dired default-directory))
+    (general-def "C-c d" #'solarion/dired-here)
 
     (provide 'init-dired)
   #+end_src
