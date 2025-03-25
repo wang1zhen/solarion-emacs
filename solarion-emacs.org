@@ -1687,6 +1687,7 @@
     (use-package latex
       :straight auctex
       :config
+      (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
       (setq
        LaTeX-electric-left-right-brace t
        TeX-parse-self t ;; parse onload
@@ -1705,10 +1706,9 @@
 
       (setq preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
 
-      ;; (setq preview-scale-function 1.5)
+      (setq preview-scale-function 2.0)
 
-      (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
-      (TeX-source-correlate-mode))
+      (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode)))
 
     (use-package auctex-latexmk
       :straight '(auctex-latexmk :type git :host github :fork "wang1zhen/auctex-latexmk")
