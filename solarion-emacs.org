@@ -1405,12 +1405,12 @@
     ;;; Code:
 
     (use-package magit
-      :bind
-      (:map magit-mode-map
-            ("p" . magit-push))
       :init
       (setq magit-display-buffer-function #'magit-display-buffer-traditional
-            git-commit-major-mode 'org-mode))
+            git-commit-major-mode 'org-mode)
+      :config
+      (define-key magit-mode-map (kbd "p") #'magit-push)
+      (define-key magit-mode-map (kbd "P") #'magit-push-current-to-pushremote))
 
     (use-package diff-hl
       :diminish
