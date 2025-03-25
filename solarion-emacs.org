@@ -1461,13 +1461,9 @@
 
     ;; use `clean-buffer-list' from `midngiht.el'
     (use-package midnight
-      :after (dashboard vterm minimap)
       :config
-      ;;kill buffers if they were last disabled more than this seconds ago
+      ;; kill buffers if they were last disabled more than this seconds ago
       (setq clean-buffer-list-delay-special (* 3 60 60))
-
-      (defvar clean-buffer-list-timer nil
-        "Stores clean-buffer-list timer if there is one. You can disable clean-buffer-list by (cancel-timer clean-buffer-list-timer).")
 
       ;; run clean-buffer-list every 30 minites
       (setq clean-buffer-list-timer (run-at-time t 1800 'clean-buffer-list))
@@ -1478,16 +1474,21 @@
       (setq clean-buffer-list-kill-regexps '("^.*$"))
 
       (defvar solarion-clean-buffer-list-kill-never-buffer-names
-        `("*httpd*" "*Messages" "*Backtrace*" "*scratch*" "*Ibuffer*" ,dashboard-buffer-name ,vterm-buffer-name ,minimap-buffer-name)
-        "buffer names not to kill")
-      (dolist (buf solarion-clean-buffer-list-kill-never-buffer-names)
-        (add-to-list 'clean-buffer-list-kill-never-buffer-names buf))
+        (delq nil
+              (list "*httpd*" "*Messages*" "*Backtrace*" "*scratch*" "*Ibuffer*"
+                    (when (boundp 'dashboard-buffer-name) dashboard-buffer-name)
+                    (when (boundp 'vterm-buffer-name) vterm-buffer-name)
+                    (when (boundp 'minimap-buffer-name) minimap-buffer-name)))
+        "Buffer names never to kill.")
+
+      (setq clean-buffer-list-kill-never-buffer-names
+            (append solarion-clean-buffer-list-kill-never-buffer-names clean-buffer-list-kill-never-buffer-names))
 
       (defvar solarion-clean-buffer-list-kill-never-regexps
         nil
         "regexps not to kill")
-      (dolist (buf solarion-clean-buffer-list-kill-never-regexps)
-        (add-to-list 'clean-buffer-list-kill-never-regexps buf)))
+      (setq clean-buffer-list-kill-never-regexp
+            (append solarion-clean-buffer-list-kill-never-regexps clean-buffer-list-kill-never-regexps)))
 
     (provide 'init-midnight)
   #+end_src
