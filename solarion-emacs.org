@@ -1783,7 +1783,10 @@
         (format "Loaded %d packages in %.2f ms."
                 (- (length load-path) (length (get 'load-path 'initial-value)))
                 (* 1e3 (float-time (time-subtract after-init-time before-init-time)))))
-      (setq dashboard-init-info (solarion-init-time))
+      (defun solarion/dashboard-update-packages ()
+        (interactive)
+        (straight-pull-all)
+        (message "Packages updated."))
       (setq dashboard-banner-logo-title (concat "Emacs " emacs-version)
             dashboard-startup-banner "~/.emacs.d/logo.png"
             dashboard-image-banner-max-height 400
@@ -1801,13 +1804,14 @@
                                         dashboard-insert-newline
                                         dashboard-insert-init-info
                                         dashboard-insert-items)
-            dashboard-navigator-buttons `(((nil "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
-                                           (nil "Config (C)" "Open custom file" solarion-edit-config)
-                                           (nil "Update (U)" "Update Packages" (lambda (&rest _) (straight-pull-all))))))
+            dashboard-navigator-buttons `(((,(nerd-icons-octicon "nf-oct-history") "Restore (R)" "Restore previous session" (lambda (&rest _) (restore-previous-session)))
+                                           (,(nerd-icons-codicon "nf-cod-tools") "Config (C)" "Open custom file" solarion-edit-config)
+                                           (,(nerd-icons-mdicon "nf-md-update") "Update (U)" "Update Packages" solarion/dashboard-update-packages))))
       (when (< (length command-line-args) 2)
         (setq initial-buffer-choice 'dashboard-open))
       :config
       (dashboard-setup-startup-hook)
+      (setq dashboard-init-info (solarion-init-time))
       (general-def dashboard-mode-map
         "R" #'restore-previous-session
         "C" #'solarion-edit-config
