@@ -2023,8 +2023,11 @@
     (defun wl-paste ()
       (shell-command-to-string "wl-paste -n"))
 
-    ;; (setq interprogram-cut-function 'wl-copy)
-    ;; (setq interprogram-paste-function 'wl-paste)
+    (when (executable-find "wl-copy")
+      (setq interprogram-cut-function 'wl-copy))
+
+    (when (executable-find "wl-paste")
+      (setq interprogram-paste-function 'wl-paste))
 
     (provide 'init-wsl)
   #+end_src
