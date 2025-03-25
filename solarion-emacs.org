@@ -1708,7 +1708,6 @@
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode)))
 
     (use-package auctex-latexmk
-      :straight '(auctex-latexmk :type git :host github :fork "wang1zhen/auctex-latexmk")
       :hook (LaTeX-mode . (lambda ()
                             (setq TeX-command-default "LatexMk")))
       :config
