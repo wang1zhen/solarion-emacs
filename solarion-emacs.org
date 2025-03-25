@@ -35,7 +35,6 @@
 - [[#init-orgel][init-org.el]]
 - [[#init-latexel][init-latex.el]]
 - [[#init-diredel][init-dired.el]]
-- [[#init-projectileel][init-projectile.el]]
 - [[#init-dashboardel][init-dashboard.el]]
 - [[#init-vtermel][init-vterm.el]]
 - [[#init-perspel][init-persp.el]]
@@ -188,7 +187,6 @@
     (require 'init-latex)
 
     (require 'init-dired)
-    (require 'init-projectile)
 
     (require 'init-dashboard)
     (require 'init-vterm)
@@ -1020,7 +1018,6 @@
 
       ;; maps
       "h" #'(help-command :which-key "Help")
-      "p" #'(projectile-command-map :which-key "Projectile")
 
       ;; keys
       "C-." #'consult-imenu  ;; "C-c ." for org-time-stamp
@@ -1770,29 +1767,6 @@
     (general-def "C-c d" #'solarion/dired-here)
 
     (provide 'init-dired)
-  #+end_src
-
-* init-projectile.el
-
-  #+begin_src emacs-lisp :tangle ./lisp/init-projectile.el :mkdirp yes
-    ;;; init-projectile.el --- Projectile configurations -*- lexical-binding: t -*-
-
-    ;;; Code:
-
-    (use-package projectile
-      :diminish
-      :hook (after-init . projectile-mode)
-      :init
-      (setq solarion-projectile-dir "~/solarion-emacs")
-      (when (file-directory-p solarion-projectile-dir)
-        (setq projectile-project-search-path `(,(file-truename solarion-projectile-dir))))
-      (setq projectile-switch-project-action #'projectile-dired)
-      :config
-      (setq projectile-mode-line-prefix nil
-            projectile-sort-order 'recentf
-            projectile-use-git-grep t))
-
-    (provide 'init-projectile)
   #+end_src
 
 * init-dashboard.el
