@@ -33,6 +33,7 @@
 - [[#init-midnightel][init-midnight.el]]
 - [[#init-trampel][init-tramp.el]]
 - [[#init-orgel][init-org.el]]
+- [[#init-denoteel][init-denote.el]]
 - [[#init-latexel][init-latex.el]]
 - [[#init-diredel][init-dired.el]]
 - [[#init-dashboardel][init-dashboard.el]]
@@ -184,6 +185,7 @@
     (require 'init-tramp)
 
     (require 'init-org)
+    (require 'init-denote)
     (require 'init-latex)
 
     (require 'init-dired)
@@ -295,19 +297,28 @@
     ;; Ask for the filename before pasting an image
     ;; filename should end with ".png/.jpg/.svg"
     (defun solarion/org-download-paste-clipboard-wsl ()
-      "to simplify the logic, use c:/Users/Public as temporary directory, and move it into current directory"
+      "Save clipboard image to a subdirectory named after current Org file, and insert link."
       (interactive)
+      (unless buffer-file-name
+        (user-error "Buffer is not visiting a file"))
       (let* ((powershell (executable-find "powershell.exe"))
              (file-base-name (format-time-string "image-%Y%m%d_%H%M%S.png"))
              (file-name (read-string (format "Filename [%s]: " file-base-name) nil nil file-base-name))
-             (file-path-wsl (concat "./image/" file-name)))
-        (shell-command (concat powershell " -command \"(Get-Clipboard -Format Image).Save(\\\"C:/Users/Public/" file-name "\\\")\""))
-        (make-directory "./image" t)
-        (rename-file (concat "/mnt/c/Users/Public/" file-name) file-path-wsl)
-        (insert (concat "#+ATTR_LATEX: :width \\linewidth\n"))
-        (org-indent-line)
-        (insert (concat "[[file:" file-path-wsl "]]"))
-        (org-display-inline-images)))
+             (org-file-dir (file-name-directory buffer-file-name))
+             (org-base-name (file-name-base buffer-file-name))
+             (image-dir (expand-file-name (concat org-base-name "/") org-file-dir))
+             (file-path-wsl (expand-file-name file-name image-dir)))
+        ;; Step 1: save to Windows temp
+        (shell-command
+         (format "%s -command \"(Get-Clipboard -Format Image).Save(\\\"C:/Users/Public/%s\\\")\""
+                 powershell file-name))
+        ;; Step 2: move into local folder
+        (make-directory image-dir t)
+        (rename-file (concat "/mnt/c/Users/Public/" file-name) file-path-wsl t)
+        ;; Step 3: insert link
+        (let ((relative-path (file-relative-name file-path-wsl org-file-dir)))
+          (insert (format "#+ATTR_LATEX: :width \\linewidth\n#+ATTR_ORG: :width 400\n[[file:%s]]\n" relative-path))
+          (org-display-inline-images))))
 
     ;; dashboard
     (defun solarion-edit-config (&rest _)
@@ -1591,12 +1602,17 @@
        org-superstar-prettify-item-bullets nil))
 
     (use-package org-download
-      :defer t
+      :after org
       :config
       (org-download-enable)
+      (setq org-download-method 'directory)
+      (defun solarion/org-download-image-dir ()
+        "Return a directory name based on current Org filename (e.g. asdf.org → asdf/)."
+        (when buffer-file-name
+          (let ((basename (file-name-base buffer-file-name)))
+            (expand-file-name (concat basename "/") (file-name-directory buffer-file-name)))))
+      (setq org-download-image-dir #'solarion/org-download-image-dir)
       (setq
-       org-download-method 'directory
-       org-download-image-dir (concat (file-name-directory (buffer-file-name)) "images")
        org-download-heading-lvl nil
        org-download-timestamp "%Y%m%d-%H%M%S_")
 
@@ -1665,6 +1681,55 @@
     (provide 'init-org)
   #+end_src
 
+* init-denote.el
+  #+begin_src emacs-lisp :tangle ./lisp/init-denote.el :mkdirp yes
+    ;;; init-denote.el --- Denote -*- lexical-binding: t -*-
+
+    ;;; Code:
+
+    (use-package denote
+      :hook
+      (;; Apply colours to Denote names in Dired.  This applies to all
+       ;; directories.  Check `denote-dired-directories' for the specific
+       ;; directories you may prefer instead.  Then, instead of
+       ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
+       (dired-mode . denote-dired-mode))
+      :bind
+      :config
+      (setq denote-directory (expand-file-name "~/notes"))
+      (setq denote-save-buffers nil)
+      (setq denote-known-keywords '("emacs" "linux" "openwrt"))
+      (setq denote-infer-keywords t)
+      (setq denote-sort-keywords t)
+      (setq denote-prompts '(title keywords))
+      (setq denote-excluded-directories-regexp nil)
+      (setq denote-excluded-keywords-regexp nil)
+      (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
+
+      ;; Pick dates, where relevant, with Org's advanced interface:
+      (setq denote-date-prompt-use-org-read-date t)
+
+      ;; By default, we do not show the context of links.  We just display
+      ;; file names.  This provides a more informative view.
+      (setq denote-backlinks-show-context t)
+
+      ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
+      (denote-rename-buffer-mode t))
+
+    (global-leader-def
+      ;; denote
+      "n" '(:ignore t :which-key "Denote")
+      "nn" #'denote
+      "nd" #'denote-sort-dired
+      "nl" #'denote-link
+      "nL" #'denote-add-links
+      "nb" #'denote-backlinks
+      "nr" #'denote-rename-file
+      "nR" #'denote-rename-file-using-front-matter
+      )
+
+    (provide 'init-denote)
+  #+end_src
 * init-latex.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-latex.el :mkdirp yes
