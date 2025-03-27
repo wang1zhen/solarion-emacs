@@ -1080,24 +1080,6 @@
       "qf" #'(delete-frame :which-key "Delete Frame")
       "qq" #'(save-buffers-kill-terminal :which-key "Quit Emacs")
 
-      ;; roam
-      "r" '(:ignore t :which-key "Roam")
-      "ra" #'org-roam-node-random
-      "rr" #'org-roam-buffer-toggle
-      "rf" #'org-roam-node-find
-      "rg" #'org-roam-graph
-      "ri" #'org-roam-node-insert
-      "rc" #'org-roam-capture
-      "rs" #'solarion/org-roam-rg-search
-      "rS" #'org-roam-db-sync
-      "ro" '(:ignore t :which-key "Node Properties")
-      "roa" #'org-roam-alias-add
-      "roA" #'org-roam-alias-remove
-      "ror" #'org-roam-ref-add
-      "roR" #'org-roam-ref-remove
-      "rot" #'org-roam-tag-add
-      "roT" #'org-roam-tag-remove
-
       ;; git
       "g" '(:ignore t :which-key "Git")
       "gR" #'vc-revert
@@ -1161,22 +1143,6 @@
       "f" #'org-footnote-action
       "h" #'org-toggle-heading
       "i" #'org-toggle-item
-      "r" '(:ignore t :which-key "Roam")
-      "ra" #'org-roam-node-random
-      "rr" #'org-roam-buffer-toggle
-      "rf" #'org-roam-node-find
-      "rg" #'org-roam-graph
-      "ri" #'org-roam-node-insert
-      "rc" #'org-roam-capture
-      "rs" #'solarion/org-roam-rg-search
-      "rS" #'org-roam-db-sync
-      "ro" '(:ignore t :which-key "Node Properties")
-      "roa" #'org-roam-alias-add
-      "roA" #'org-roam-alias-remove
-      "ror" #'org-roam-ref-add
-      "roR" #'org-roam-ref-remove
-      "rot" #'org-roam-tag-add
-      "roT" #'org-roam-tag-remove
       "p" '(:ignore t :which-key "Priority")
       "pd" #'org-priority-down
       "pp" #'org-priority
@@ -1619,39 +1585,6 @@
       ;; to change image width seperately (also hide the annotate #+DOWNLOADED)
       (setq org-download-annotate-function (lambda (_link) "#+ATTR_LATEX: :width \\linewidth\n")))
 
-    (use-package org-roam
-      :diminish
-      :init
-      (setq
-       org-roam-v2-ack t
-       org-roam-directory (file-truename "~/org-roam/")
-       org-id-locations-file (file-truename "~/org-roam/.orgids"))
-      (add-to-list 'display-buffer-alist
-                   '("\\*org-roam\\*"
-                     (display-buffer-in-direction)
-                     (direction . right)
-                     (window-width . 0.33)
-                     (window-height . fit-window-to-buffer)))
-      :config
-      (unless (file-exists-p org-roam-directory)
-        (make-directory org-roam-directory))
-      (setq org-roam-capture-templates
-            '(("d" "Default" plain
-               "%?"
-               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %u\n")
-               :unnarrowed t)
-              ("r" "Research Note" plain
-               (file "~/org-roam/Templates/ResearchNoteTemplate.org")
-               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %u\n")
-               :unnarrowed t)))
-      (defun solarion/org-roam-rg-search ()
-        "Search org-roam directory using consult-ripgrep. With live-preview."
-        (interactive)
-        (let ((consult-ripgrep-command "rg --null --ignore-case --type org --line-buffered --color=always --max-columns=500 --no-heading --line-number . -e ARG OPTS"))
-          (consult-ripgrep org-roam-directory)))
-      (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-      (org-roam-db-autosync-mode))
-
     ;; Automatically insert table of contents after the heading with :TOC: tag
     (use-package toc-org
       :hook (org-mode . toc-org-mode))
@@ -1716,10 +1649,20 @@
       ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
       (denote-rename-buffer-mode t))
 
+    (use-package consult-notes
+      :commands (consult-notes
+                 consult-notes-search-in-all-notes
+                 )
+      :config
+      (when (locate-library "denote")
+        (consult-notes-denote-mode))
+      ;; search only for text files in denote dir
+      (setq consult-notes-denote-files-function (lambda () (denote-directory-files nil t t))))
+
     (global-leader-def
       ;; denote
       "n" '(:ignore t :which-key "Denote")
-      "nn" #'denote
+      "nn" #'consult-notes
       "nd" #'denote-sort-dired
       "nl" #'denote-link
       "nL" #'denote-add-links
