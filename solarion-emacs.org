@@ -1294,16 +1294,7 @@
     ;;; Code:
 
     (use-package corfu
-      :straight (corfu :files (:defaults "extensions/*"))
       :init
-      ;; built-in configurations
-      (setq completion-cycle-threshold 5)
-      ;; Enable indentation+completion using the TAB key.
-      (setq tab-always-indent 'complete)
-      ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
-      ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-      (setq read-extended-command-predicate #'command-completion-default-include-p)
-
       ;; corfu settings
       (setq corfu-cycle t)
       (setq corfu-auto t)
@@ -1311,13 +1302,25 @@
       (setq corfu-auto-delay 0)
       (setq corfu-count 7)
       (setq corfu-preselect-first nil) ;; tab for complete common
+
+      ;; emacs settings
+      ;; TAB cycle if there are only few candidates
+      (setq completion-cycle-threshold 5)
+
+      ;; Enable indentation+completion using the TAB key.
+      ;; `completion-at-point' is often bound to M-TAB.
+      (setq tab-always-indent 'complete)
+
+      ;; Emacs 30 and newer: Disable Ispell completion function.
+      ;; Try `cape-dict' as an alternative.
+      (setq text-mode-ispell-word-completion 'cape-dict)
+
+      ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+      ;; commands are hidden, since they are not used via M-x. This setting is
+      ;; useful beyond Corfu.
+      (setq read-extended-command-predicate #'command-completion-default-include-p)
       :config
       (global-corfu-mode)
-
-      ;; corfu quick
-      (setq corfu-quick1 "asdf")
-      (setq corfu-quick2 "jkl")
-      (general-def corfu-map "`" #'corfu-quick-complete)
       )
 
     (use-package cape
