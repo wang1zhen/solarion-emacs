@@ -1480,15 +1480,13 @@
     (use-package tramp
       :straight (:type built-in)
       :config
-      (when (fboundp 'tramp-register-connection-method)
-        (tramp-register-connection-method
-         "yadm"
-         '((tramp-login-program "yadm")
-           (tramp-login-args (("enter")))
-           (tramp-login-env (("SHELL") ("/bin/sh")))
-           (tramp-remote-shell "/bin/sh")
-           (tramp-remote-shell-args ("-c")))))
-
+      (add-to-list 'tramp-methods
+                   '("yadm"
+                     (tramp-login-program "yadm")
+                     (tramp-login-args (("enter")))
+                     (tramp-login-env (("SHELL") ("/bin/sh")))
+                     (tramp-remote-shell "/bin/sh")
+                     (tramp-remote-shell-args ("-c"))))
       (defun yadm ()
         (interactive)
         (magit-status "/yadm::")))
