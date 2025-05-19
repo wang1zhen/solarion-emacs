@@ -1555,6 +1555,7 @@
       ;; org latex packages
       (setq org-latex-packages-alist
             '(("" "siunitx")
+              ("" "amsmath")
               ("" "mathrsfs")
               ("scheme=plain" "ctex")
               ;; mlmodern is thicker
