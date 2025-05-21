@@ -2049,5 +2049,7 @@
     (when (executable-find "wl-paste")
       (setq interprogram-paste-function 'wl-paste))
 
+    (setq display-mm-dimensions-alist '(("wayland-0" . (797 . 344))))
+
     (provide 'init-wsl)
   #+end_src
