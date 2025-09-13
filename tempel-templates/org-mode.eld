@@ -20,6 +20,8 @@ org-mode
 (beg "\\begin{" (s env) "}" n> r> n> "\\end{" (s env) "}" :post (org-edit-special))
 (beq "\\begin{equation}" n> r> n> "\\end{equation}" :post (org-edit-special))
 (bseq "\\begin{equation*}" n> r> n> "\\end{equation*}" :post (org-edit-special))
+(bal "\\begin{align}" n> r> n> "\\end{align}" :post (org-edit-special))
+(bga "\\begin{gather}" n> r> n> "\\end{gather}" :post (org-edit-special))
 (bsal "\\begin{align*}" n> r> n> "\\end{align*}" :post (org-edit-special))
 (bsga "\\begin{gather*}" n> r> n> "\\end{gather*}" :post (org-edit-special))
 (bb "\\mathbb{" p "}")
