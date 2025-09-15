@@ -57,3 +57,12 @@ org-mode
       "#+OPTIONS: toc:nil author:nil" n
       "#+STARTUP: overview" n
       "#+STARTUP: inlineimages" n n)
+
+(hugo "#+hugo_base_dir: ../../" n
+      "#+hugo_section: " p n
+      "#+STARTUP: content" n
+      "#+TITLE: " (file-name-base (buffer-file-name)) n
+      "#+author: wang1zhen" n
+      "#+DATE: " p n
+      "#+EXPORT_FILE_NAME: " p n
+      "#+hugo_draft: true" n n)
