@@ -9,6 +9,15 @@
 
   Here is my personal configuration file for Emacs. The whole README file is a symlink to =solarion-emacs.org=, and with =org babel=, this file could be tangled into separate emacs-lisp files under =$HOME/.emacs.d/lisp/=.
 
+  前置依赖与说明：
+  - 运行环境：Emacs 29+（使用了 pixel-scroll-precision-mode、treesit 等特性）
+  - LaTeX 预览：Ghostscript（用于 org/LaTeX 片段预览）
+  - vterm 构建：cmake、libtool、make（动态模块构建依赖）
+  - WSL 剪贴板：wl-copy、wl-paste（Wayland 环境下的复制/粘贴支持）
+  - 字体：Nerd Font（等宽）、Noto Serif CJK（中日韩）、Noto Color Emoji（Emoji）
+
+  软链与自动导出（tangle）：本仓库的 README.org 指向 solarion-emacs.org。保存本文件时会自动 tangle 生成 lisp/ 下的模块文件；具体钩子与逻辑详见后文配置（auto tangle 的实现说明）。
+
 * Table of Contents                                                        :TOC:
 - [[#solarion-emacs][Solarion Emacs]]
 - [[#installation][Installation]]
@@ -50,6 +59,20 @@
     git clone git@github.com:wang1zhen/solarion-emacs ~/.emacs.d
   #+end_src
 
+  或使用 HTTPS 与浅克隆（首次拉取更快）：
+
+  #+begin_src shell :tangle no
+    git clone --depth=1 https://github.com/wang1zhen/solarion-emacs ~/.emacs.d
+  #+end_src
+
+  *系统依赖（按需安装）*
+
+  - Emacs 29+（建议 GUI 版本以使用 posframe/字体配置）
+  - Ghostscript（LaTeX 预览与导出辅助）
+  - cmake、libtool、make（用于构建 vterm 动态模块）
+  - wl-copy、wl-paste（WSL/Wayland 剪贴板集成）
+  - 字体：Nerd Font、Noto Serif CJK、Noto Color Emoji
+
   *Tangle the org file*
 
   #+begin_src shell :tangle no
@@ -83,9 +106,20 @@
     (push '(vertical-scroll-bars) default-frame-alist)
     (setq inhibit-startup-screen t)
     (tooltip-mode -1)
+
+    ;; 启动优化：临时禁用 file-name-handler 以减少 I/O 开销，启动后恢复
+    (defvar solarion--file-name-handler-alist-backup file-name-handler-alist)
+    (setq file-name-handler-alist nil)
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                (setq file-name-handler-alist solarion--file-name-handler-alist-backup)
+                (makunbound 'solarion--file-name-handler-alist-backup)))
   #+end_src
 
 * init-custom-vars.el
+
+  提示：字体可通过命令定制：`M-x customize-group RET solarion-fonts RET`。
+  若系统缺少指定字体，本配置中的字体设置由 init-fonts.el 处理；可根据需要自行调整字体族与字号。
 
   #+begin_src emacs-lisp :tangle ./lisp/init-custom-vars.el :mkdirp yes
     ;;; init-custom-vars.el --- Customizable variables for Solarion -*- lexical-binding: t -*-
@@ -155,50 +189,58 @@
     ;; Always load newest byte code
     (setq load-prefer-newer t)
 
-    ;; Packages
-    (require 'init-straight)
+    ;; Packages & modules（加载时抑制重绘/消息，启动后恢复，减少闪烁与噪音）
+    (let ((inhibit-redisplay t)
+          (inhibit-message t))
+      (require 'init-straight)
 
-    ;; Useful functions defined
-    (require 'init-func)
+      ;; Useful functions defined
+      (require 'init-func)
 
-    ;; Preferences
-    (require 'init-basic)
-    (require 'init-general)
+      ;; Preferences
+      (require 'init-basic)
+      (require 'init-general)
 
-    (require 'init-ui)
-    (require 'init-scroll)
-    (require 'init-fonts)
-    (require 'init-edit)
+      (require 'init-ui)
+      (require 'init-scroll)
+      (require 'init-fonts)
+      (require 'init-edit)
 
-    ;; Keybindings
-    (require 'init-hydra)
-    (require 'init-map)
+      ;; Keybindings
+      (require 'init-hydra)
+      (require 'init-map)
 
-    (require 'init-vertico)
-    (require 'init-corfu)
-    (require 'init-tempel)
+      (require 'init-vertico)
+      (require 'init-corfu)
+      (require 'init-tempel)
 
-    (require 'init-magit)
-    (require 'init-ibuffer)
-    (require 'init-midnight)
+      (require 'init-magit)
+      (require 'init-ibuffer)
+      (require 'init-midnight)
 
-    (require 'init-tramp)
+      (require 'init-tramp)
 
-    (require 'init-org)
-    (require 'init-denote)
-    (require 'init-latex)
+      (require 'init-org)
+      (require 'init-denote)
+      (require 'init-latex)
 
-    (require 'init-dired)
+      (require 'init-dired)
 
-    (require 'init-dashboard)
-    (require 'init-vterm)
-    (require 'init-persp)
+      (require 'init-dashboard)
+      (require 'init-vterm)
+      (require 'init-persp)
 
-    (require 'init-im)
+      (require 'init-im)
 
-    ;; WSL specific setting
-    (when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
-      (require 'init-wsl))
+      ;; WSL specific setting
+      (when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
+        (require 'init-wsl)))
+
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                (setq inhibit-redisplay nil
+                      inhibit-message nil)
+                (redisplay)))
   #+end_src
 
 * init-straight.el
@@ -211,6 +253,14 @@
     ;; Set timeout to avoid blocking on bad connections
     (setq url-queue-timeout 30)
 
+    ;; 使用文件监视器检测包修改（straight.el 的 watch-files 模式）。
+    ;; 需在 straight 引导之前设置；相比启动时全量 find 更高效，
+    ;; 但会消耗一定的文件监视资源。
+    ;; NOTE: 需要 `watchexec` 可执行文件；若未安装，会在启动时出现
+    ;; “Cannot start filesystem watcher without 'watchexec' installed” 警告。
+    (when (executable-find "watchexec")
+      (setq straight-check-for-modifications '(watch-files)))
+
     (defvar bootstrap-version)
     (let ((bootstrap-file
            (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -218,13 +268,13 @@
       (unless (file-exists-p bootstrap-file)
         (with-current-buffer
             (url-retrieve-synchronously
-             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
              'silent 'inhibit-cookies)
           (goto-char (point-max))
           (eval-print-last-sexp)))
       (setq straight-use-package-by-default t)
       (setq straight-vc-git-default-protocol 'https)
-      (setq straight-vc-git-default-clone-depth 3)
+      (setq straight-vc-git-default-clone-depth 1)
       (load bootstrap-file nil 'nomessage))
 
     ;; Should set before loading `use-package'
@@ -308,6 +358,8 @@
              (org-base-name (file-name-base buffer-file-name))
              (image-dir (expand-file-name (concat org-base-name "/") org-file-dir))
              (file-path-wsl (expand-file-name file-name image-dir)))
+        (unless powershell
+          (user-error "未找到 powershell.exe：该功能仅在 WSL/Windows 环境可用"))
         ;; Step 1: save to Windows temp
         (shell-command
          (format "%s -command \"(Get-Clipboard -Format Image).Save(\\\"C:/Users/Public/%s\\\")\""
@@ -394,8 +446,7 @@
       "Indent buffer and format code"
       (interactive)
       (indent-buffer)
-      (when (format-all--language-id-buffer)
-        (format-all-buffer t)))
+      (ignore-errors (format-all-buffer t)))
 
     (provide 'init-func)
   #+end_src
@@ -559,6 +610,9 @@
     ;; Auto tangle this file after save (without prompt)
     (add-hook 'after-save-hook #'org-babel-auto-tangle)
 
+    ;; 初始 *scratch* buffer 使用 fundamental-mode
+    (setq initial-major-mode 'fundamental-mode)
+
     ;; Disable scratch buffer text
     (setq initial-scratch-message nil)
 
@@ -610,18 +664,42 @@
     (set-fringe-mode 10) ;; 左右边框 仅对GUI生效
     (global-hl-line-mode t)
 
-    ;; always split vertically
-    (setq split-height-threshold nil
-          split-width-threshold 80)
+    ;; 分屏偏好可自定义
+    (defgroup solarion-window nil
+      "Solarion 的窗口分屏偏好。"
+      :group 'windows)
+
+    (defcustom solarion-split-height-threshold nil
+      "赋值给 `split-height-threshold` 的值。nil 表示不进行水平分割（上下分屏）。"
+      :type '(choice (const :tag "禁止水平分割" nil)
+                     integer)
+      :group 'solarion-window)
+
+    (defcustom solarion-split-width-threshold 80
+      "赋值给 `split-width-threshold` 的值。80 表示在宽度大于等于 80 时进行垂直分割（左右分屏）。"
+      :type '(choice (const :tag "禁止垂直分割" nil)
+                     integer)
+      :group 'solarion-window)
+
+    (setq split-height-threshold solarion-split-height-threshold
+          split-width-threshold  solarion-split-width-threshold)
 
     ;; Mode-line
+    (defun solarion-apply-modeline-fonts ()
+      "应用 modeline 字体（避免主题覆盖）。"
+      (when (display-graphic-p)
+        (set-face-attribute 'mode-line nil :font solarion-font-default :height solarion-font-size)
+        (set-face-attribute 'mode-line-inactive nil :font solarion-font-default :height solarion-font-size)))
+
+    ;; 确保切换主题后也保持自定义的 modeline 字体
+    (advice-add 'enable-theme :after (lambda (&rest _) (solarion-apply-modeline-fonts)))
+
     (use-package doom-modeline
       :diminish doom-modeline-mode
       :init
       (setq doom-modeline-modal-icon nil)
       ;; Must use mono font here
-      (set-face-attribute 'mode-line nil :font solarion-font-default :height solarion-font-size)
-      (set-face-attribute 'mode-line-inactive nil :font solarion-font-default :height solarion-font-size)
+      (solarion-apply-modeline-fonts)
       (doom-modeline-mode t))
 
     (use-package nerd-icons
@@ -745,7 +823,8 @@
       :hook (org-mode . iscroll-mode))
 
 
-    (pixel-scroll-precision-mode)
+    (when (fboundp 'pixel-scroll-precision-mode)
+      (pixel-scroll-precision-mode))
 
     (provide 'init-scroll)
   #+end_src
@@ -774,6 +853,9 @@
 
         ;; Fixed-pitch (等宽字体)
         (set-face-attribute 'fixed-pitch nil :font solarion-font-default :height solarion-font-size)
+
+        ;; Variable-pitch（比例字体）
+        (set-face-attribute 'variable-pitch nil :font solarion-font-variable :height solarion-font-size)
 
         ;; CJK 字体
         (set-fontset-font t 'han (font-spec :family solarion-font-cjk :weight 'semi-bold :slant 'normal))
@@ -880,7 +962,8 @@
       :diminish
       :hook (after-init . global-hungry-delete-mode)
       :init (setq hungry-delete-except-modes '(help-mode minibuffer-mode minibuffer-inactive-mode calc-mode)
-                  hungry-delete-chars-to-skip " 	\f"))
+                  hungry-delete-chars-to-skip "
+\f"))
 
     ;; Move to the beginning/end of line or code
     (use-package mwim
@@ -897,7 +980,6 @@
     (use-package vundo
       :config
       (general-def "C-x u" #'vundo)
-      (general-def "C-x r" #'vundo)
       (general-def vundo-mode-map "C-n" #'vundo-next)
       (general-def vundo-mode-map "C-p" #'vundo-previous)
       (general-def vundo-mode-map "C-f" #'vundo-forward)
@@ -939,9 +1021,10 @@
 
     ;; 中英文间自动加入空格
     (use-package pangu-spacing
-      :diminish global-pangu-spacing-mode
+      :diminish pangu-spacing-mode
+      :hook ((text-mode . pangu-spacing-mode)
+             (org-mode . pangu-spacing-mode))
       :init
-      (global-pangu-spacing-mode t)
       (setq pangu-spacing-real-insert-separator t))
 
     ;; occur
@@ -965,6 +1048,8 @@
 
     ;; (treesit-auto-install-all)
     (use-package treesit-auto
+      :init
+      (setq treesit-auto-install 'prompt)
       :config
       (global-treesit-auto-mode)
       (setq treesit-font-lock-level 4))
@@ -1131,6 +1216,8 @@
       "," #'org-switchb
       "." #'consult-org-heading
       "b" #'org-mark-ring-goto
+      ;; 插入结构化模板（如 src/example 等）
+      "s" #'org-insert-structure-template
       "a" '(:ignore t :which-key "Attach")
       "aa" #'org-attach
       "ap" #'solarion/org-download-paste-clipboard-wsl
@@ -1311,9 +1398,9 @@
       ;; `completion-at-point' is often bound to M-TAB.
       (setq tab-always-indent 'complete)
 
-      ;; Emacs 30 and newer: Disable Ispell completion function.
-      ;; Try `cape-dict' as an alternative.
-      (setq text-mode-ispell-word-completion 'cape-dict)
+      ;; Emacs 30 及更新：可替换 ispell 的补全为 cape-dict（向后兼容 Emacs 29）
+      (when (boundp 'text-mode-ispell-word-completion)
+        (setq text-mode-ispell-word-completion 'cape-dict))
 
       ;; Hide commands in M-x which do not apply to the current mode.  Corfu
       ;; commands are hidden, since they are not used via M-x. This setting is
@@ -1327,8 +1414,9 @@
       :init
       ;; Add `completion-at-point-functions', used by `completion-at-point'.
       (setq cape-dabbrev-check-other-buffers nil) ;; only check current buffer for completion
-      (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-      (add-to-list 'completion-at-point-functions #'cape-file))
+      ;; 将 dabbrev 放在 CAPF 链最后，避免影响语言专用补全
+      (add-to-list 'completion-at-point-functions #'cape-file)
+      (add-to-list 'completion-at-point-functions #'cape-dabbrev t))
 
     (use-package nerd-icons-corfu
       :after corfu
@@ -1363,7 +1451,8 @@
       (:map tempel-map
             ([tab] . tempel-next))
       :init
-      (setq tempel-path (concat user-emacs-directory "tempel-templates/*.eld"))
+      (setq tempel-path
+            (list (expand-file-name "tempel-templates/*.eld" user-emacs-directory)))
       (setq tempel-trigger-prefix "<")
       ;; Setup completion at point
       (defun tempel-setup-capf ()
@@ -1393,11 +1482,14 @@
 
     (use-package magit
       :init
-      (setq magit-display-buffer-function #'magit-display-buffer-traditional
-            git-commit-major-mode 'org-mode)
+      (setq magit-display-buffer-function #'magit-display-buffer-traditional)
       :config
       (define-key magit-mode-map (kbd "p") #'magit-push)
-      (define-key magit-mode-map (kbd "P") #'magit-push-current-to-pushremote))
+      (define-key magit-mode-map (kbd "P") #'magit-push-current-to-pushremote)
+      ;; 在 git-commit 缓冲中，将 C-c . 绑定到 org-time-stamp
+      (with-eval-after-load 'git-commit
+        (require 'org)
+        (define-key git-commit-mode-map (kbd "C-c .") #'org-time-stamp)))
 
     (use-package diff-hl
       :diminish
@@ -1416,24 +1508,43 @@
 
     ;;; Code:
 
+    (defconst solarion/ibuffer-custom-groups
+      '(("Dired" (mode . dired-mode))
+        ("Org" (mode . org-mode))
+        ("Emacs" (or (name . "^\\*scratch\\*$")
+                     (name . "^\\*Backtrace\\*$")
+                     (name . "^\\*Messages\\*$")))
+        ("Help" (or (name . "Help")
+                    (name . "^helpful")))
+        ("Magit" (name . "^magit")))
+      "Static ibuffer groups for frequently visited buffers.")
+
+    (defun solarion/ibuffer-project-groups ()
+      "Return ibuffer groups built from project roots when available."
+      (when (require 'ibuffer-project nil t)
+        (ibuffer-project-generate-filter-groups)))
+
+    (defun solarion/ibuffer-group-by-project-and-kind ()
+      "Enable project groups followed by custom fallback groups."
+      (ibuffer-auto-mode 1)
+      (setq ibuffer-filter-groups
+            (append (solarion/ibuffer-project-groups)
+                    solarion/ibuffer-custom-groups))
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic)))
+
     (use-package ibuffer
       :straight nil
-      :hook (ibuffer-mode . (lambda () (ibuffer-auto-mode 1) (ibuffer-switch-to-saved-filter-groups "custom")))
+      :hook (ibuffer-mode . solarion/ibuffer-group-by-project-and-kind)
       :custom
       (ibuffer-show-empty-filter-groups nil)
       (ibuffer-saved-filter-groups
-       '(("custom"
-          ("Dired" (mode . dired-mode))
-          ("Org" (mode . org-mode))
-          ("Emacs" (or
-                    (name . "^\\*scratch\\*$")
-                    (name . "^\\*Backtrace\\*$")
-                    (name . "^\\*Messages\\*$")))
-          ("Help" (or
-                   (name . "Help")
-                   (name . "^helpful")))
-          ("Magit" (name . "^magit"))
-          ))))
+       `(("custom" ,@solarion/ibuffer-custom-groups))))
+
+    (use-package ibuffer-project
+      :straight nil
+      :after ibuffer
+      :commands (ibuffer-project-generate-filter-groups))
 
     (provide 'init-ibuffer)
   #+end_src
@@ -1446,7 +1557,7 @@
 
     ;;; Code:
 
-    ;; use `clean-buffer-list' from `midngiht.el'
+    ;; use `clean-buffer-list' from `midnight.el'
     (use-package midnight
       :config
       ;; kill buffers if they were last disabled more than this seconds ago
@@ -1474,8 +1585,8 @@
       (defvar solarion-clean-buffer-list-kill-never-regexps
         nil
         "regexps not to kill")
-      (setq clean-buffer-list-kill-never-regexp
-            (append solarion-clean-buffer-list-kill-never-regexps clean-buffer-list-kill-never-regexps)))
+    (setq clean-buffer-list-kill-never-regexps
+          (append solarion-clean-buffer-list-kill-never-regexps clean-buffer-list-kill-never-regexps)))
 
     (provide 'init-midnight)
   #+end_src
@@ -1494,12 +1605,15 @@
                    '("yadm"
                      (tramp-login-program "yadm")
                      (tramp-login-args (("enter")))
-                     (tramp-login-env (("SHELL") ("/bin/sh")))
+                     (tramp-login-env (("SHELL" . "/bin/sh")))
                      (tramp-remote-shell "/bin/sh")
                      (tramp-remote-shell-args ("-c"))))
       (defun yadm ()
         (interactive)
         (magit-status "/yadm::")))
+
+    ;; NOTE: Ensure `yadm` is installed and available in PATH for the
+    ;; custom TRAMP method above.
 
     (provide 'init-tramp)
   #+end_src
@@ -1515,6 +1629,7 @@
       :straight (:type built-in)
       :hook
       (org-mode . solarion/org-mode-setup)
+      (org-mode . org-num-mode)
       :config
       (org-babel-do-load-languages
        'org-babel-load-languages
@@ -1526,16 +1641,16 @@
          (gnuplot . t)))
       (setq org-startup-with-inline-images nil)
       (setq org-startup-with-latex-preview nil)
-      (setq org-startup-numerated t);; Start org-mode numbered
       (setq org-adapt-indentation t);; add indentation for newlines
       (setq org-highlight-latex-and-related '(native script entities))
       (setq org-directory "~/org")
-      (setq org-ellipsis "\t[+]")
+      (setq org-ellipsis "[+]")
       (setq org-tags-column -80)
       (setq org-log-done 'time)
       (setq org-hide-emphasis-markers nil) ;; Show bold and italic verbosely
       (setq org-link-descriptive t) ;; Show links verbosely
       (setq org-hide-leading-stars t)
+      (setq org-return-follows-link t)
       ;; export settings
       (setq org-export-with-tags nil)
       (setq org-export-with-sub-superscripts '{})
@@ -1564,11 +1679,10 @@
               ("T1" "fontenc")))
       (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
-      (general-def [remap org-return] #'(lambda () (interactive) (org-return electric-indent-mode)))
       )
 
     (use-package ox-gfm
-      :config (add-to-list 'org-export-backends 'md))
+      :config (add-to-list 'org-export-backends 'gfm))
 
     (use-package org-superstar
       :diminish org-superstar-mode
@@ -1595,7 +1709,9 @@
        org-download-timestamp "%Y%m%d-%H%M%S_")
 
       ;; to change image width seperately (also hide the annotate #+DOWNLOADED)
-      (setq org-download-annotate-function (lambda (_link) "#+ATTR_LATEX: :width \\linewidth\n")))
+      (setq org-download-annotate-function
+            (lambda (_link)
+              "#+ATTR_LATEX: :width \\linewidth\n#+ATTR_ORG: :width 400\n")))
 
     ;; Automatically insert table of contents after the heading with :TOC: tag
     (use-package toc-org
@@ -1727,6 +1843,18 @@
 
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode)))
 
+    ;; Use minted for Org/LaTeX code listings; requires pygments.
+    (if (executable-find "pygmentize")
+        (progn
+          (setq org-latex-listings 'minted)
+          (add-to-list 'org-latex-packages-alist '("" "minted"))
+          ;; NOTE: Install pygments via `uv tool install pygments` (or
+          ;; `uv add pygments` per project) so that `pygmentize` is available.
+          (setq org-latex-pdf-process
+                '("latexmk -shell-escape -bibtex -pdf %f")))
+      (display-warning 'org
+                       "pygmentize not found; minted listings disabled (fall back to default)."))
+
     (use-package auctex-latexmk
       :hook (LaTeX-mode . (lambda ()
                             (setq TeX-command-default "LatexMk")))
@@ -1749,6 +1877,7 @@
       :config
       (setq dired-listing-switches "-alh --group-directories-first"
             dired-dwim-target t
+            dired-create-destination-dirs 'ask
             dired-recursive-deletes 'always
             dired-recursive-copies 'always))
 
@@ -1847,24 +1976,30 @@
 
     ;;; Code:
 
-    (when (and module-file-suffix           ;; dynamic module
-               (executable-find "cmake")
-               (executable-find "libtool")  ;; install libtool-bin
-               (executable-find "make"))
-      (use-package vterm
-        :init
-        (setq vterm-always-compile-module t)
-        :bind (:map vterm-mode-map
-                    ("C-\\" . toggle-input-method)
-                    ("C-q" . vterm-send-next-key)))
+    (if (and module-file-suffix           ;; dynamic module
+             (executable-find "cmake")
+             (executable-find "libtool")  ;; install libtool-bin
+             (executable-find "make"))
+        (progn
+          (use-package vterm
+            :init
+            (setq vterm-always-compile-module t)
+            :bind (:map vterm-mode-map
+                        ("C-\\" . toggle-input-method)
+                        ("C-q" . vterm-send-next-key)))
 
-      (use-package vterm-toggle
-        :bind
-        ([f2] . vterm-toggle)
-        ([C-f2] . vterm-toggle-cd)
-        (:map vterm-mode-map
-              ("C-<return>" . vterm-toggle-insert-cd)
-              ([f2] . vterm-toggle))))
+          (use-package vterm-toggle
+            :bind
+            ([f2] . vterm-toggle)
+            ([C-f2] . vterm-toggle-cd)
+            (:map vterm-mode-map
+                  ("C-<return>" . vterm-toggle-insert-cd)
+                  ([f2] . vterm-toggle))))
+      (unless (get 'solarion/vterm-warning 'shown)
+        (display-warning 'vterm
+                         "vterm disabled: missing module support or build tools (cmake/libtool/make)."
+                         :warning)
+        (put 'solarion/vterm-warning 'shown t)))
 
     (provide 'init-vterm)
   #+end_src
@@ -1961,6 +2096,7 @@
                   (let ((bname (file-name-nondirectory (buffer-name b))))
                     (or (string-prefix-p ".newsrc" bname)
                         (string-prefix-p "magit" bname)
+                        (string-prefix-p "*vterm" bname)
                         (string-prefix-p "COMMIT_EDITMSG" bname)
                         (string-prefix-p "Pfuture-Callback" bname)
                         (string-prefix-p "treemacs-persist" bname)
@@ -2043,12 +2179,14 @@
     (defun wl-paste ()
       (shell-command-to-string "wl-paste -n"))
 
-    (when (executable-find "wl-copy")
-      (setq interprogram-cut-function 'wl-copy))
+    (if (and (executable-find "wl-copy")
+             (executable-find "wl-paste"))
+        (progn
+          (setq interprogram-cut-function 'wl-copy)
+          (setq interprogram-paste-function 'wl-paste))
+      (message "wl-clipboard not found; install it (e.g. sudo apt install wl-clipboard) to enable WSL clipboard sync."))
 
-    (when (executable-find "wl-paste")
-      (setq interprogram-paste-function 'wl-paste))
-
+    ;; WSL tweak to keep Org LaTeX previews scaled correctly under Wayland
     (setq display-mm-dimensions-alist '(("wayland-0" . (797 . 344))))
 
     (provide 'init-wsl)
