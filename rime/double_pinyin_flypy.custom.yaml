@@ -1,35 +1,105 @@
 patch:
+  translator/preedit_format: []
   switches:
-      - name: ascii_mode
-        reset: 0
-      - name: simplification
-        reset: 1                # 增加這一行：默認啓用「繁→簡」轉換。
-        states: [ 漢字, 汉字 ]
-  recognizer:
-    import_preset: default
-    patterns:
-      reverse_lookup: {}
-      punct: '^`([0-9]0?|[A-Za-z]+)$'
+    - name: ascii_mode
+      states: [ 中, Ａ ]
+    - name: ascii_punct
+      states: [ 半角标点, 全角标点 ]
+      reset: 0
+    - name: traditionalization
+      states: [ 简, 繁 ]
+    - name: emoji
+      states: [ 💀, 😄 ]
+      reset: 1
+    - name: full_shape
+      states: [ 半角, 全角 ]
+      reset: 1
+    - name: search_single_char
+      states: [ 正常, 单字 ]
+      abbrev: [ 词, 单 ]
 
   punctuator:
-    import_preset: mysymbols
-
-
-  'speller/alphabet': zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA
-
-  translator/dictionary: double_pinyin_flypy.extended
-  translator/preedit_format: {}
-
-  engine/translators:
-    - punct_translator
-    - reverse_lookup_translator
-    - script_translator
-    - table_translator@custom_phrase
-    #- table_translator
-  custom_phrase:
-    dictionary: ""
-    user_dict: custom_phrase
-    db_class: stabledb
-    enable_completion: false
-    enable_sentence: false
-    initial_quality: 1
+    full_shape:
+      ' ' : { commit: '　' }
+      ',' : { commit: ， }
+      '.' : { commit: 。 }
+      '<' : [ 《, 〈, «, ‹ ]
+      '>' : [ 》, 〉, », › ]
+      '/' : [ ／, ÷ ]
+      '?' : { commit: ？ }
+      ';' : { commit: ； }
+      ':' : { commit: ： }
+      '''' : { pair: [ '‘', '’' ] }
+      '"' : { pair: [ '“', '”' ] }
+      '\' : [ 、, ＼ ]
+      '|' : [ ·, ｜, '§', '¦' ]
+      '`' : ｀
+      '~' : ～
+      '!' : { commit: ！ }
+      '@' : [ ＠, ☯ ]
+      '#' : [ ＃, ⌘ ]
+      '%' : [ ％, '°', '℃' ]
+      '$' : [ ￥, '$', '€', '£', '¥', '¢', '¤', ₩ ]
+      '^' : { commit: …… }
+      '&' : ＆
+      '*' : [ ＊, ·, ・, ×, ※, ❂ ]
+      '(' : （
+      ')' : ）
+      '-' : －
+      '_' : ——
+      '+' : ＋
+      '=' : [ ＝, 々, 〃 ]
+      '[' : [ 「, 【, 〔, ［ ]
+      ']' : [ 」, 】, 〕, ］ ]
+      '{' : [ 『, 〖, ｛ ]
+      '}' : [ 』, 〗, ｝ ]
+    half_shape:
+      ',' : { commit: ， }
+      '.' : { commit: 。 }
+      # '<' : [ 《, 〈, «, ‹ ]
+      # '>' : [ 》, 〉, », › ]
+      '<' : { commit: 《 }
+      '>' : { commit: 》 }
+      # '/' : [ 、, ､, '/', ／, ÷ ]
+      '/' : { commit: '/' }
+      '?' : { commit: ？ }
+      ';' : { commit: ； }
+      ':' : { commit: ： }
+      "'" : { pair: [ '「', '」' ] }
+      '"' : { pair: [ '『', '』' ] }
+      # '\' : [ 、, '\', ＼ ]
+      '\' : { commit: 、 }
+      # '|' : [ ·, ・, '|', ｜, '§', '¦', '‖' ]
+      '|' : { commit: '|' }
+      # '`' : [ '`', ‵, ‶, ‷, ′, ″, ‴, ⁗ ]
+      '`' : { commit: '`' }
+      # '~' : [ '~', ～, ˜, ≈, ≋, ≃, ≅, ≇, ∽, ⋍, ≌, ﹏, ﹋, ﹌ ]
+      '~' : { commit: '~' }
+      '!' : { commit: ！ }
+      # '@' : [ '@', ©, ®, ℗ ]
+      '@' : { commit: '@' }
+      # '#' : [ '#', № ]
+      '#' : { commit: '#' }
+      # '%' : [ '%', ％, '°', '℃', ‰, ‱, ℉ ]
+      '%' : { commit: '%' }
+      # '$' : [ ￥, '$', '€', '£', '¥', '¢', '¤', ₩ ]
+      '$' : { commit: ￥ }
+      '^' : { commit: …… }
+      '&' : '&'
+      # '*' : [ '*', ＊, ·, ・, ×, ※, ❂, ⁂, ☮, ☯, ☣ ]
+      '*' : { commit: '*' }
+      '(' : （
+      ')' : ）
+      '-' : '-'
+      '_' : ——
+      '+' : '+'
+      # '=' : [ '=', 々, 〃 ]
+      '=' : '='
+      # '[' : [ 「, 【, 〔, ［ ]
+      # ']' : [ 」, 】, 〕, ］ ]
+      # '{' : [ 『, 〖, ｛ ]
+      # '}' : [ 』, 〗, ｝ ]
+      '[' : { commit: 〔 }
+      ']' : { commit: 〕 }
+      '{' : { commit: ｛ }
+      '}' : { commit: ｝ }

@@ -2,14 +2,12 @@ patch:
   schema_list:
     - schema: double_pinyin_flypy # 小鹤双拼
   "ascii_composer/switch_key":
-    Caps_lock: clear
+    Caps_Lock: clear
     Control_L: noop
     Control_R: noop
     Shift_L: commit_code
-    Shift_R: inline_ascii
+    Shift_R: commit_code
   "menu/page_size": 7
-  "switcher/hotkeys":
-    - "Control+grave"
   key_binder:
     bindings:
     - {accept: "Control+p", send: Up, when: composing}
@@ -28,8 +26,8 @@ patch:
     # - {accept: ISO_Left_Tab, send: Page_Up, when: composing}
     # - {accept: "Shift+Tab", send: Page_Up, when: composing}
     # - {accept: Tab, send: Page_Down, when: composing}
-    - {accept: minus, send: Page_Up, when: has_menu}
-    - {accept: equal, send: Page_Down, when: has_menu}
+    - {accept: minus, send: Page_Up, when: has_menu}   # disabled: let '-' input normally
+    - {accept: equal, send: Page_Down, when: has_menu} # disabled: let '=' input normally
     - {accept: comma, send: Page_Up, when: paging}
     - {accept: period, send: Page_Down, when: has_menu}
     # - {accept: "Control+Shift+1", select: .next, when: always}
