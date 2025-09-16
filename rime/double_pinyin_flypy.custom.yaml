@@ -103,3 +103,5 @@ patch:
       ']' : { commit: 〕 }
       '{' : { commit: ｛ }
       '}' : { commit: ｝ }
+    symbols:
+      __include: symbols_caps_v:/symbols
