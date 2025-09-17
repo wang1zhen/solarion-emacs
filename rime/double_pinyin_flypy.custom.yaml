@@ -13,7 +13,7 @@ patch:
       reset: 1
     - name: full_shape
       states: [ 半角, 全角 ]
-      reset: 1
+      reset: 0
     - name: search_single_char
       states: [ 正常, 单字 ]
       abbrev: [ 词, 单 ]
