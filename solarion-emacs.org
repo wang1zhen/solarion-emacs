@@ -804,6 +804,9 @@
       (setq ef-themes-variable-pitch-ui nil)
       (ef-themes-select 'ef-cyprus))
 
+    (use-package valign
+      :hook (org-mode . valign-mode))
+
     (provide 'init-ui)
   #+end_src
 
