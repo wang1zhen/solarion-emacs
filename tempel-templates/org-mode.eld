@@ -65,4 +65,5 @@ org-mode
       "#+author: wang1zhen" n
       "#+DATE: " p n
       "#+EXPORT_FILE_NAME: " (file-name-base (buffer-file-name)) n
+      "#+description: " n
       "#+hugo_draft: true" n n)
