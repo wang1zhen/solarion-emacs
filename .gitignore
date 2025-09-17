@@ -1,0 +1,47 @@
+# Emacs byte-compiled and native-compiled files
+*.elc
+*.eln
+
+# Emacs backup and auto-save files
+*~
+\#*\#
+.\#*
+auto-save-list/
+
+# Emacs state files (do not version user-specific state)
+recentf
+places
+history
+bookmarks
+.org-id-locations
+org-id-locations
+.keyfreq
+.keyfreq.lock
+transient/
+persp-confs/
+custom.el
+early-init.el
+init.el
+lisp/
+
+# Local state from external tooling
+.local/
+tramp
+tree-sitter/
+
+# Package manager caches
+eln-cache/
+elpa/
+straight/
+
+# Rime IME generated assets
+rime/build/
+rime/custom_phrase.txt
+rime/installation.yaml
+rime/rime_ice.userdb/
+rime/sync/
+rime/user.yaml
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
