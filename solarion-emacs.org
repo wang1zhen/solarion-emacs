@@ -1654,6 +1654,7 @@
       (setq org-link-descriptive t) ;; Show links verbosely
       (setq org-hide-leading-stars t)
       (setq org-return-follows-link t)
+      (add-to-list 'org-src-lang-modes '("ini" . conf))
       ;; export settings
       (setq org-export-with-tags nil)
       (setq org-export-with-sub-superscripts '{})
