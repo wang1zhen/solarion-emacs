@@ -32,6 +32,7 @@
 - [[#init-scrollel][init-scroll.el]]
 - [[#init-fontsel][init-fonts.el]]
 - [[#init-editel][init-edit.el]]
+- [[#init-treesitel][init-treesit.el]]
 - [[#init-hydrael][init-hydra.el]]
 - [[#init-mapel][init-map.el]]
 - [[#init-verticoel][init-vertico.el]]
@@ -205,6 +206,7 @@
       (require 'init-scroll)
       (require 'init-fonts)
       (require 'init-edit)
+      (require 'init-treesit)
 
       ;; Keybindings
       (require 'init-hydra)
@@ -308,11 +310,6 @@
 
     ;;; Code:
 
-    (defun indent-buffer ()
-      (interactive)
-      (save-excursion
-        (indent-region (point-min) (point-max) nil)))
-
     ;; Font
     (defun font-installed-p (font-name)
       "Check if font with FONT-NAME is available."
@@ -404,11 +401,11 @@
 
     (defun copy-line (arg)
       "Copy lines (as many as prefix argument) in the kill ring.
-          Ease of use features:
-          - Move to start of next line.
-          - Appends the copy on sequential calls.
-          - Use newline as last char even on the last line of the buffer.
-          - If region is active, copy its lines."
+              Ease of use features:
+              - Move to start of next line.
+              - Appends the copy on sequential calls.
+              - Use newline as last char even on the last line of the buffer.
+              - If region is active, copy its lines."
       (interactive "p")
       (let ((beg (line-beginning-position))
             (end (line-end-position arg)))
@@ -441,12 +438,6 @@
           (magit-push-current-to-upstream nil)
           (message "now do async push to %s" (magit-get "remote" "origin" "url"))))
       (magit-mode-bury-buffer))
-
-    (defun solarion/indent-buffer-and-format ()
-      "Indent buffer and format code"
-      (interactive)
-      (indent-buffer)
-      (ignore-errors (format-all-buffer t)))
 
     (provide 'init-func)
   #+end_src
@@ -837,7 +828,7 @@
   The font settings are mainly for GUI Emacs, this would not affect TUI Emacs.
   font check
   Chinese:
-  言
+  遍角次亮采之门
   Symbols:
   ♪
   Kana:
@@ -965,8 +956,7 @@
       :diminish
       :hook (after-init . global-hungry-delete-mode)
       :init (setq hungry-delete-except-modes '(help-mode minibuffer-mode minibuffer-inactive-mode calc-mode)
-                  hungry-delete-chars-to-skip "
-\f"))
+                  hungry-delete-chars-to-skip "\f"))
 
     ;; Move to the beginning/end of line or code
     (use-package mwim
@@ -1049,6 +1039,16 @@
 
     (use-package lorem-ipsum)
 
+    (provide 'init-edit)
+  #+end_src
+
+* init-treesit.el
+
+  #+begin_src emacs-lisp :tangle ./lisp/init-treesit.el :mkdirp yes
+    ;;; init-edit.el --- Treesit settings -*- lexical-binding: t -*-
+
+    ;;; Code:
+
     ;; (treesit-auto-install-all)
     (use-package treesit-auto
       :init
@@ -1057,15 +1057,89 @@
       (global-treesit-auto-mode)
       (setq treesit-font-lock-level 4))
 
-    (provide 'init-edit)
+    (setq treesit-language-source-alist
+          '((bash        "https://github.com/tree-sitter/tree-sitter-bash"       nil      "src")
+            (c           "https://github.com/tree-sitter/tree-sitter-c"          nil      "src")
+            (cpp         "https://github.com/tree-sitter/tree-sitter-cpp"        nil      "src")
+            (css         "https://github.com/tree-sitter/tree-sitter-css"        nil      "src")
+            (go          "https://github.com/tree-sitter/tree-sitter-go"         nil      "src")
+            (html        "https://github.com/tree-sitter/tree-sitter-html"       nil      "src")
+            (java        "https://github.com/tree-sitter/tree-sitter-java"       nil      "src")
+            (javascript  "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+            (typescript  "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+            (tsx         "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+            (json        "https://github.com/tree-sitter/tree-sitter-json"       nil      "src")
+            (python      "https://github.com/tree-sitter/tree-sitter-python"     nil      "src")
+            (rust        "https://github.com/tree-sitter/tree-sitter-rust"       nil      "src")
+            (toml        "https://github.com/tree-sitter/tree-sitter-toml"       nil      "src")
+            (yaml        "https://github.com/ikatyang/tree-sitter-yaml"          nil      "src")
+            ))
+
+
+    (defun solarion/treesit-ensure (&rest langs)
+      "安装缺失的语法解析器。"
+      (dolist (lang langs)
+        (unless (treesit-language-available-p lang)
+          (treesit-install-language-grammar lang))))
+
+    ;; 按需安装（第一次配置后执行一次即可）
+    ;; (solarion/treesit-ensure 'bash 'c 'cpp 'css 'go 'html 'java
+    ;;                          'javascript 'typescript 'tsx 'json
+    ;;                          'python 'rust 'toml 'yaml)
+
+    ;; 将传统主模式自动映射到 *-ts-mode（可按需删减）
+    (setq major-mode-remap-alist
+          '((c-mode          . c-ts-mode)
+            (c++-mode        . c++-ts-mode)
+            (c-or-c++-mode   . c-or-c++-ts-mode)
+            (conf-toml-mode  . toml-ts-mode)
+            (css-mode        . css-ts-mode)
+            (js-mode         . js-ts-mode)
+            (javascript-mode . js-ts-mode)
+            (js-json-mode    . json-ts-mode)
+            (json-mode       . json-ts-mode)
+            (python-mode     . python-ts-mode)
+            (sh-mode         . bash-ts-mode)
+            (typescript-mode . typescript-ts-mode)
+            (yaml-mode       . yaml-ts-mode)
+            ))
+
+    ;; 源码内容相对 #+begin_src 向右缩 2 列
+    (setq org-src-preserve-indentation nil)   ;; 关闭"保留原缩进"
+    (setq org-edit-src-content-indentation 2) ;; 内容右移 2 列
+    (setq org-src-tab-acts-natively t)        ;; 在子缓冲里用主模式缩进
+
+    ;; 缓冲缩进（优先走当前主模式的缩进器；若是 *-ts-mode 就是 treesit）
+    (defun indent-buffer (&optional beg end)
+      "缩进当前缓冲或给定区域。默认整个缓冲区。"
+      (interactive)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (let* ((rb (or beg (point-min)))
+                 (re (or end (point-max)))
+                 ;; Makefile 等保持 TAB
+                 (indent-tabs-mode
+                  (and indent-tabs-mode (derived-mode-p 'makefile-mode))))
+            (indent-region rb re nil)))))
+
+    (defun solarion/indent-buffer-and-format nil
+      "先 treesit/主模式缩进，再调用外部 formatter，最后清理行尾空白。"
+      (interactive)
+
+      (indent-buffer)
+      (when (derived-mode-p 'prog-mode 'conf-mode 'text-mode)
+        (ignore-errors (delete-trailing-whitespace))))
+
+    (provide 'init-treesit)
   #+end_src
 
 * init-hydra.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-hydra.el :mkdirp yes
-    ;;; init-hydra.el --- Hydra configurations -*- lexical-binding: t -*-
+        ;;; init-hydra.el --- Hydra configurations -*- lexical-binding: t -*-
 
-    ;;; Code:
+        ;;; Code:
 
     (use-package hydra
       :config
@@ -1426,14 +1500,14 @@
       :config
       (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
       (setq nerd-icons-corfu-mapping
-          '((array :style "cod" :icon "symbol_array" :face font-lock-type-face)
-            (boolean :style "cod" :icon "symbol_boolean" :face font-lock-builtin-face)
-            ;; You can alternatively specify a function to perform the mapping,
-            ;; use this when knowing the exact completion candidate is important.
-            (file :fn nerd-icons-icon-for-file :face font-lock-string-face)
-            ;; ...
-            (t :style "cod" :icon "code" :face font-lock-warning-face)))
-            ;; Remember to add an entry for `t', the library uses that as default.
+            '((array :style "cod" :icon "symbol_array" :face font-lock-type-face)
+              (boolean :style "cod" :icon "symbol_boolean" :face font-lock-builtin-face)
+              ;; You can alternatively specify a function to perform the mapping,
+              ;; use this when knowing the exact completion candidate is important.
+              (file :fn nerd-icons-icon-for-file :face font-lock-string-face)
+              ;; ...
+              (t :style "cod" :icon "code" :face font-lock-warning-face)))
+      ;; Remember to add an entry for `t', the library uses that as default.
       )
 
     (provide 'init-corfu)
@@ -1588,8 +1662,8 @@
       (defvar solarion-clean-buffer-list-kill-never-regexps
         nil
         "regexps not to kill")
-    (setq clean-buffer-list-kill-never-regexps
-          (append solarion-clean-buffer-list-kill-never-regexps clean-buffer-list-kill-never-regexps)))
+      (setq clean-buffer-list-kill-never-regexps
+            (append solarion-clean-buffer-list-kill-never-regexps clean-buffer-list-kill-never-regexps)))
 
     (provide 'init-midnight)
   #+end_src
@@ -1654,7 +1728,6 @@
       (setq org-link-descriptive t) ;; Show links verbosely
       (setq org-hide-leading-stars t)
       (setq org-return-follows-link t)
-      (add-to-list 'org-src-lang-modes '("ini" . conf))
       ;; export settings
       (setq org-export-with-tags nil)
       (setq org-export-with-sub-superscripts '{})
@@ -1683,6 +1756,29 @@
               ("T1" "fontenc")))
       (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
+
+      ;; treesit
+      (defun solarion/org-set-lang-mode (lang mode-sym)
+        "把 org-src-lang-modes 里 LANG 的映射设为 MODE-SYM，先去重再插入到表头。"
+        (setq org-src-lang-modes
+              (cons (cons lang mode-sym)
+                    (cl-remove-if (lambda (e) (string= (car e) lang))
+                                  org-src-lang-modes))))
+
+      ;; —— 按需写入 treesit 映射（值是不带 -mode 的符号）————
+      (solarion/org-set-lang-mode "json"       'json-ts)
+      (solarion/org-set-lang-mode "toml"       'toml-ts)
+      (solarion/org-set-lang-mode "ini"        'toml-ts)
+      (solarion/org-set-lang-mode "javascript" 'js-ts)
+      (solarion/org-set-lang-mode "js"         'js-ts)
+      (solarion/org-set-lang-mode "typescript" 'typescript-ts)
+      (solarion/org-set-lang-mode "tsx"        'tsx)
+      (solarion/org-set-lang-mode "python"     'python-ts)
+      (solarion/org-set-lang-mode "yaml"       'yaml-ts)
+      (solarion/org-set-lang-mode "c"          'c-ts)
+      (solarion/org-set-lang-mode "cpp"        'c++-ts)
+      (solarion/org-set-lang-mode "bash"       'bash-ts)
+      (solarion/org-set-lang-mode "sh"         'bash-ts)
       )
 
     (use-package ox-gfm
