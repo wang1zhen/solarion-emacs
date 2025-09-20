@@ -1039,13 +1039,106 @@
 
     (use-package lorem-ipsum)
 
+    ;; conf-mode
+    (defcustom solarion/conf-indent-offset 2
+      "Indent width for brace-based conf indentation."
+      :type 'integer :group 'editing)
+
+    (defun solarion/conf--brace-level (pos)
+      "Count brace nesting before POS, skipping comments/strings."
+      (save-excursion
+        (goto-char (point-min))
+        (let ((lvl 0))
+          (while (re-search-forward "[{}]" pos t)
+            (unless (nth 8 (syntax-ppss))      ; 在注释或字符串中则跳过
+              (if (equal (char-before) ?{)
+                  (cl-incf lvl)
+                (cl-decf lvl))))
+          (max 0 lvl))))
+
+    (defun solarion/conf-indent-line ()
+      "Brace-based indent: closing '}' outdents by one level."
+      (interactive)
+      (let* ((bol (save-excursion (back-to-indentation) (point)))
+             (closing (save-excursion (goto-char bol) (looking-at-p "}")))
+             (lvl (solarion/conf--brace-level bol))
+             (target (* solarion/conf-indent-offset (max 0 (if closing (1- lvl) lvl)))))
+        (indent-line-to target)))
+
+    (define-minor-mode solarion/brace-indent-mode
+      "Generic brace-based indentation for conf-like files."
+      :lighter " { }"
+      (if solarion/brace-indent-mode
+          (progn
+            (setq-local indent-line-function #'solarion/conf-indent-line)
+            (setq-local indent-tabs-mode nil))
+        (kill-local-variable 'indent-line-function)))
+
+    (defun solarion/conf--line-str ()
+      (string-trim (buffer-substring-no-properties
+                    (line-beginning-position) (line-end-position))))
+
+    (defun solarion/conf--skip-comment-or-blank-p (s)
+      (or (string-empty-p s) (string-prefix-p "#" s)))
+
+    (defun solarion/conf--yaml-p ()
+      "Heuristic: YAML keys with ':', list items '-', or '---' header."
+      (save-excursion
+        (goto-char (point-min))
+        (let ((checked 0) (hits 0))
+          (while (and (< checked 60) (not (eobp)))
+            (let ((s (solarion/conf--line-str)))
+              (unless (solarion/conf--skip-comment-or-blank-p s)
+                (cl-incf checked)
+                (when (or
+                       (string-match-p "^[[:space:]]*---[[:space:]]*$" s)
+                       (string-match-p "^[[:space:]]*-[[:space:]]" s)
+                       (string-match-p "^[[:space:]]*\\(?:[A-Za-z0-9_.-]+\\|\"[^\"]+\"\\|'[^']+'\\):[[:space:]]" s))
+                  (cl-incf hits))))
+            (forward-line 1))
+          (>= hits 2))))
+
+    (defun solarion/conf--toml-p ()
+      "Heuristic: [section] or repeated key = value lines."
+      (save-excursion
+        (goto-char (point-min))
+        (let ((checked 0) (assigns 0) (has-section nil))
+          (while (and (< checked 80) (not (eobp)))
+            (let ((s (solarion/conf--line-str)))
+              (unless (solarion/conf--skip-comment-or-blank-p s)
+                (cl-incf checked)
+                (when (or (string-match-p "^\\[[^]]+\\]$" s)
+                          (string-match-p "^\\[\\[[^]]+\\]\\]$" s))
+                  (setq has-section t))
+                (when (string-match-p "^[A-Za-z0-9_.-]+\\s*=\\s*.+$" s)
+                  (cl-incf assigns))))
+            (forward-line 1))
+          (or has-section (>= assigns 3)))))
+
+    (defun solarion/conf--looks-like-brace-conf-p ()
+      (save-excursion
+        (goto-char (point-min))
+        (re-search-forward "^[[:space:]]*[^#\n]*{[[:space:]]*$" nil t)))
+
+    (defun solarion/conf--maybe-switch-mode ()
+      "Prefer YAML/TOML. Else enable brace indent."
+      (cond
+       ((solarion/conf--yaml-p) (yaml-mode))
+       ((solarion/conf--toml-p) (toml-mode))
+       ((solarion/conf--looks-like-brace-conf-p)
+        (solarion/brace-indent-mode 1))))
+
+    (add-hook 'conf-unix-mode-hook
+              (lambda ()
+                (solarion/conf--maybe-switch-mode)))
+
     (provide 'init-edit)
   #+end_src
 
 * init-treesit.el
 
   #+begin_src emacs-lisp :tangle ./lisp/init-treesit.el :mkdirp yes
-    ;;; init-edit.el --- Treesit settings -*- lexical-binding: t -*-
+    ;;; init-treesit.el --- Treesit settings -*- lexical-binding: t -*-
 
     ;;; Code:
 
