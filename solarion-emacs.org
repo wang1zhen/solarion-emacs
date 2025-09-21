@@ -1816,11 +1816,40 @@
       (setq org-export-with-tags nil)
       (setq org-export-with-sub-superscripts '{})
       ;; latex settings
-      (setq org-latex-compiler "xelatex")
-      (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n colorlinks=true,\n linkcolor=black\n}\n")
-      ;; set table of contents level
-      (setq org-export-with-toc 3)
-      (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\setcounter{page}{1}\n\\pagestyle{plain}\n\n")
+      ;; .latexmkrc for reference
+      ;; # --- Engine & output ---
+      ;; $pdf_mode = 5;  # 5 = XeLaTeX -> PDF
+      ;; # $out_dir  = './LaTeX.out';
+      ;; $aux_dir  = './LaTeX.aux';
+      ;; $synctex  = 1;
+
+      ;; # Keep going through errors (use -halt-on-error instead if you prefer strict)
+      ;; $xelatex  = 'xelatex -file-line-error -interaction=nonstopmode %O %S';
+
+      ;; # Use biber with biblatex
+      ;; $bibtex   = 'biber %O %B';
+
+      ;; # --- Nomenclature (nlo -> nls) ---
+      ;; add_cus_dep('nlo', 'nls', 0, 'makenomenclature');
+      ;; sub makenomenclature {
+      ;;     system("makeindex -s nomencl.ist -o \"$_[0].nls\" \"$_[0].nlo\"");
+      ;; }
+
+      ;; # --- Cleaning: include nomencl, biber, and common aux files ---
+      ;; push @generated_exts, qw(
+      ;;   nls nlo ilg ind idx
+      ;;   bcf run.xml bbl blg
+      ;;   synctex.gz toc out lot lof aux fls fdb_latexmk nav snm
+      ;; );
+      (setq org-latex-pdf-process
+          '("latexmk -xelatex -shell-escape -f -interaction=nonstopmode %f && latexmk -c"))
+      ;; 清理更多中间文件
+      (require 'ox-latex)
+      (setq org-latex-logfiles-extensions
+            (append org-latex-logfiles-extensions
+                    '("bcf" "run.xml" "bbl" "blg" "synctex.gz" "toc" "out" "lot" "lof"
+                      "aux" "fls" "fdb_latexmk" "nav" "snm" "nls" "nlo" "ilg" "ind" "idx")))
+      (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\pagestyle{plain}\n\n")
       ;; maketitle command
       (setq org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       ;; size of the preview latex fragments
