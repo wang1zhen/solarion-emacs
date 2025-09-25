@@ -2056,18 +2056,6 @@
 
       (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode)))
 
-    ;; Use minted for Org/LaTeX code listings; requires pygments.
-    (if (executable-find "pygmentize")
-        (progn
-          (setq org-latex-listings 'minted)
-          (add-to-list 'org-latex-packages-alist '("" "minted"))
-          ;; NOTE: Install pygments via `uv tool install pygments` (or
-          ;; `uv add pygments` per project) so that `pygmentize` is available.
-          (setq org-latex-pdf-process
-                '("latexmk -shell-escape -bibtex -pdf %f")))
-      (display-warning 'org
-                       "pygmentize not found; minted listings disabled (fall back to default)."))
-
     (use-package auctex-latexmk
       :hook (LaTeX-mode . (lambda ()
                             (setq TeX-command-default "LatexMk")))
