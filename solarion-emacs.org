@@ -1132,6 +1132,16 @@
               (lambda ()
                 (solarion/conf--maybe-switch-mode)))
 
+    (use-package prettier-js
+      :hook
+      ('css-mode . 'prettier-js-mode)
+      ('json-mode . 'prettier-js-mode)
+      ('markdown-mode . 'prettier-js-mode)
+      ('html-mode . 'prettier-js-mode)
+      ('js-mode . 'prettier-js-mode)
+      ('web-mode . 'prettier-js-mode)
+      )
+
     (provide 'init-edit)
   #+end_src
 
