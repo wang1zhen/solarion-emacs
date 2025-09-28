@@ -1198,6 +1198,9 @@
             (yaml-mode       . yaml-ts-mode)
             ))
 
+    (use-package nix-ts-mode
+      :mode "\\.nix\\'")
+
     ;; 源码内容相对 #+begin_src 向右缩 2 列
     (setq org-src-preserve-indentation nil)   ;; 关闭"保留原缩进"
     (setq org-edit-src-content-indentation 2) ;; 内容右移 2 列
@@ -1902,6 +1905,7 @@
       (solarion/org-set-lang-mode "cpp"        'c++-ts)
       (solarion/org-set-lang-mode "bash"       'bash-ts)
       (solarion/org-set-lang-mode "sh"         'bash-ts)
+      (solarion/org-set-lang-mode "nix"        'nix-ts)
       )
 
     (use-package ox-gfm
