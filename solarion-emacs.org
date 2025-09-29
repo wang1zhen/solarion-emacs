@@ -1858,6 +1858,7 @@
           '("latexmk -xelatex -shell-escape -f -interaction=nonstopmode %f && latexmk -c"))
       ;; 清理更多中间文件
       (require 'ox-latex)
+      (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n pdfcreator={%c}, \n pdflang={%L}, hidelinks, colorlinks=false}\n")
       (setq org-latex-logfiles-extensions
             (append org-latex-logfiles-extensions
                     '("bcf" "run.xml" "bbl" "blg" "synctex.gz" "toc" "out" "lot" "lof"
