@@ -1866,6 +1866,8 @@
       (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\pagestyle{plain}\n\n")
       ;; maketitle command
       (setq org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
+      (setq org-latex-src-block-backend 'listings)
+      (setq org-export-with-smart-quotes t)
       ;; size of the preview latex fragments
       (plist-put org-format-latex-options :scale 2)
       (general-def org-src-mode-map "C-c C-c" #'org-edit-src-exit)
