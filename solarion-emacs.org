@@ -1863,7 +1863,7 @@
             (append org-latex-logfiles-extensions
                     '("bcf" "run.xml" "bbl" "blg" "synctex.gz" "toc" "out" "lot" "lof"
                       "aux" "fls" "fdb_latexmk" "nav" "snm" "nls" "nlo" "ilg" "ind" "idx")))
-      (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\n\\pagestyle{plain}\n\n")
+      (setq org-latex-toc-command "\\pagestyle{empty}\n\\tableofcontents\n\\clearpage\n\\setcounter{page}{1}\n\\pagestyle{plain}\n\n")
       ;; maketitle command
       (setq org-latex-title-command "\\maketitle\n\\thispagestyle{empty}")
       (setq org-latex-src-block-backend 'listings)
