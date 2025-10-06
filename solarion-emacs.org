@@ -1855,7 +1855,7 @@
       ;;   synctex.gz toc out lot lof aux fls fdb_latexmk nav snm
       ;; );
       (setq org-latex-pdf-process
-          '("latexmk -xelatex -shell-escape -f -interaction=nonstopmode %f && latexmk -c"))
+            '("latexmk -xelatex -shell-escape -f -interaction=nonstopmode %f && latexmk -c"))
       ;; 清理更多中间文件
       (require 'ox-latex)
       (setq org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n pdfcreator={%c}, \n pdflang={%L}, hidelinks, colorlinks=false}\n")
@@ -1882,7 +1882,8 @@
               ;; mlmodern is thicker
               ;; ("" "mlmodern")
               ("" "lmodern")
-              ("T1" "fontenc")))
+              ("T1" "fontenc")
+              ("" "listings")))
       (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
 
