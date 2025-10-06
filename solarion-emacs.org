@@ -1884,6 +1884,12 @@
               ("" "lmodern")
               ("T1" "fontenc")
               ("" "listings")))
+      (setq org-latex-listings-options
+            '(("breaklines" "true")
+              ("breakatwhitespace" "false")
+              ("basicstyle" "\\ttfamily\\small")
+              ("columns" "flexible")
+              ("keepspaces" "true")))
       (setq org-image-actual-width t)
       (setq org-preview-latex-image-directory (concat user-emacs-directory ".local/ltximg/"))
 
