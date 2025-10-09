@@ -788,12 +788,11 @@
               ("\\*Org Src.*\\*" :regexp t :inhibit-window-quit t :other t))))
 
     (use-package ef-themes
-      :straight '(ef-themes :type git :host github :repo "protesilaos/ef-themes")
-      :init
+      :config
       (setq ef-themes-headings nil)
       (setq ef-themes-mixed-fonts nil)
       (setq ef-themes-variable-pitch-ui nil)
-      (ef-themes-select 'ef-cyprus))
+      (modus-themes-load-theme 'ef-autumn))
 
     (use-package valign
       :hook (org-mode . valign-mode))
